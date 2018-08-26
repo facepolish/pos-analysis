@@ -18,7 +18,7 @@ filepos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/output/'
 fileinputpos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/'
 ext = '.csv'
 col_dtype_new = {'user_id':str,'rank':str}
-col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str} 
+col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str} 
 
 colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'店名':'shop_name',
@@ -29,12 +29,14 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'売上時間':'purchase_time',
 #              u'会員番号':'user_id',
               u'会員カード番号':'user_id',
+              u'生年月日':'birth_date',
               u'顧客コード':'user_code', # genesis customer table & order table
               u'ブランド':'brand',
               u'型名':'type',
               u'商品名':'item_name',
               u'金額(税込)':'price', # genesis order table
-              u'商品金額合計':'price',
+#              u'商品金額合計':'price',
+              u'注文金額合計':'price',  #ECbeing sales
               u'売価':'price', # pos table
               u'数量':'amount',
               u'都道府県':'address',
@@ -47,6 +49,7 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'分類名':'category',
               u'商品コード':'itemcode',
               u'品番名':'item_code1',
+              u'ショップコード':'shop_code',
               u'カテゴリーコード':'categorycode',
               u'カテゴリコード':'categorycode',
               u'【ecbeing】カテゴリコード':'categorycode',
@@ -386,6 +389,7 @@ class DEPTtable (object):
         return(self.namedic[deptid])
 
 class UserTable(object):
+
     def __init__(self,filename):
         self.usertable = pd.read_csv(fileinputpos+filename+ext,encoding = 'CP932',dtype = col_dtype_new)
         self.usertable = self.usertable.set_index('user_id')
@@ -510,3 +514,79 @@ class postable(itemsalestable):
     def __init__(self,filename):
         super(postable,self).__init__(filename)
         self.prefix = 'pos'
+
+class birthtable(object):
+    def __init__(self):
+        filepath = fileinputpos+u'180823会員_性別・年齢.xlsx'
+        convertedfile = fileinputpos+'cleanubirth'+ext
+        if os.path.exists(convertedfile):
+            df = pd.read_csv(convertedfile,encoding = 'CP932',dtype = col_dtype)
+            df.birth_date = pd.to_datetime(df.birth_date,format='%Y/%m/%d')
+        else:
+            
+            df = pd.read_excel(filepath,encoding = 'CP932',dtype = col_dtype)
+            df.rename(columns=colnamedic, inplace=True)
+            df.user_id = df.user_id.str[0:12]
+            df.birth_date = pd.to_datetime(df.birth_date,format='%Y/%m/%d')
+            df.user_id.head(15)
+            df.to_csv(fileinputpos+'cleanubirth'+ext)
+        self.table = df
+
+class websalestable(object):
+    ren_dic = {u'会員番号':'user_id'}# local hack for genesis customer table
+    customertable = pd.read_csv(fileinputpos + 'webshop/genesis/customer/customer.csv',encoding = 'CP932',dtype = col_dtype)
+    customertable.rename(columns= colnamedic,inplace=True)
+    customertable.rename(columns= ren_dic,inplace=True)
+    rem_cols = ['user_id','purchase_date','price']
+    def _fixgen(self,gentable):
+        gentable = gentable.rename(columns=colnamedic)
+#        for i,row in gentable.iterrows():
+#            if row.shop_code == '17289':
+#                print ("Yes Takasu clinic")
+        print ("gentable hight = "+str(gentable.shape[0]))
+        gentable = gentable[gentable['shop_code'] == '17289']
+        print ("gentable hight = "+str(gentable.shape[0]))
+        gentable.purchase_date = pd.to_datetime(gentable.purchase_date,format = '%Y%m%d')
+        gentable = pd.merge(gentable,self.customertable,on='user_code',how = 'left')
+        gentable = gentable.drop('user_code',axis = 1)
+        gentable = gentable.dropna(subset = ['user_id'])
+        gentable = gentable.loc[:,self.rem_cols]
+        return(gentable)
+    def _fixecbeing(self,ectable):
+        ectable = ectable.rename(columns=colnamedic)
+        ectable = ectable.dropna(subset=['order_code'],axis = 0)
+        ectable = ectable.dropna(subset = ['user_id'])
+        ectable.purchase_date = pd.to_datetime(ectable.purchase_date,format = '%Y/%m/%d')
+        ectable = ectable.loc[:,self.rem_cols]
+        return(ectable)
+    def __init__(self,year):
+        genpath = 'webshop/genesis/order/'
+        ecpath = 'webshop/ecbeing/order/'
+        if year == 2015:
+            gen_15a_file = '2015/2015a.csv'
+            gen_15b_file = '2015/2015b.csv'
+            filepath = fileinputpos+genpath
+            gen_15a = pd.read_csv(filepath+gen_15a_file,encoding = 'CP932')
+            gen_15b = pd.read_csv(filepath+gen_15b_file,encoding = 'CP932')
+            gen_15a = self._fixgen(gen_15a)
+            gen_15b = self._fixgen(gen_15b)
+            self.table = gen_15b.append(gen_15a)
+        elif year == 2016:
+            gen_16_file = '2016/2016.csv'
+            ec_16_file = 'sales201601-12.csv'
+            filepath = fileinputpos+genpath
+            gen_16 = pd.read_csv(filepath+gen_16_file,encoding = 'CP932')
+            gen_16 = self._fixgen(gen_16)
+            filepath = fileinputpos+ecpath
+            ec_16 = pd.read_csv(filepath+ec_16_file,encoding = 'CP932',dtype = col_dtype)
+            ec_16 = self._fixecbeing(ec_16)
+            self.table = gen_16.append(ec_16)
+        elif year == 2017:
+            ec_17_file = 'sales201701-12.csv'
+            filepath = fileinputpos+ecpath
+            ec_17 = pd.read_csv(filepath+ec_17_file,encoding = 'CP932',dtype = col_dtype)
+            ec_17 = self._fixecbeing(ec_17)
+            self.table = ec_17
+            
+
+
