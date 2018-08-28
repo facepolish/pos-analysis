@@ -24,6 +24,14 @@ def draw_hist (table,lower,upper = 0):
         drawtable = drawtable[drawtable.price < upper]
     plt.hist(drawtable.purchase_date,bins=100)
     plt.show()
+def high_all_ratio (table):
+    allsum = table.price.sum()
+    table.loc[:,'all_ratio'] = table.price / (float(allsum))
+    highsum = table.high.sum()
+    table.loc[:,'high_ratio'] = table.high / (float(highsum))
+    table.loc[:,'high/all'] = table.high_ratio / table.all_ratio
+    table = table.sort_values(by=['high/all'], ascending=False)
+    return(table)
 
 
 if __name__ == '__main__':
@@ -155,6 +163,7 @@ if __name__ == '__main__':
     brandhigh = brandsumhigh.loc[:,outcols]
     brandhigh.rename(columns = {'price':'high'},inplace=True)
     brandsum = brandsum.join(brandhigh,how='outer')
+    brandsum = high_all_ratio(brandsum)
     brandsum.to_csv(tb.filepos+'brandhigh.csv')
 
     depttable = tb.DEPTtable('HITRMD_DEPT')
@@ -162,6 +171,8 @@ if __name__ == '__main__':
     deptsumhigh = deptsumhigh.loc[:,outcols]
     deptsumhigh.rename(columns = {'price':'high'},inplace=True)
     deptsum = deptsum.join(deptsumhigh,how='outer')
+
+    deptsum = high_all_ratio(deptsum)
     deptsum.rename(index = depttable.namedic,inplace=True)
     deptsum.to_csv(tb.filepos+'deptdhigh.csv')
 
