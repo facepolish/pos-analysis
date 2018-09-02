@@ -353,6 +353,17 @@ def Item(datatable,year,usertable,depttable,shopn,prefix = 'pos'):
 
     return(itemtables,ShopTables,ShopItem)
 
+def high_all_ratio (table,base_col,target_col,prefix = ''):
+    basesum = table.loc[:,base_col].sum()
+    base_ratio = prefix+'base_ratio'
+    target_ratio = prefix+'target_ratio'
+    base_target = prefix+'target/base'
+    table.loc[:,base_ratio] = table.loc[:,base_col] / (float(basesum))
+    targetsum = table.loc[:,target_col].sum()
+    table.loc[:,target_ratio] = table.loc[:,target_col] / (float(targetsum))
+    table.loc[:,base_target] = table.loc[:,target_ratio] / table.loc[:,base_ratio]
+    table = table.sort_values(by=[base_target], ascending=False)
+    return(table)
 
         
 class shopname(object):

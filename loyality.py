@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+﻿import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import datetime
@@ -24,6 +24,7 @@ def draw_hist (table,lower,upper = 0):
         drawtable = drawtable[drawtable.price < upper]
     plt.hist(drawtable.purchase_date,bins=100)
     plt.show()
+
 def high_all_ratio (table):
     allsum = table.price.sum()
     table.loc[:,'all_ratio'] = table.price / (float(allsum))
@@ -32,6 +33,18 @@ def high_all_ratio (table):
     table.loc[:,'high/all'] = table.high_ratio / table.all_ratio
     table = table.sort_values(by=['high/all'], ascending=False)
     return(table)
+def count_male(list):
+    male = u'男性'
+    all_len = len(list)
+    if all_len == 0:
+        return(np.nan)
+    male_count  = 0
+    for item in list:
+        if item == male:
+            male_count+=1
+    return(float(male_count)/float(all_count))
+def simple_count(list):
+    return(len(list))
 
 
 if __name__ == '__main__':
@@ -59,7 +72,6 @@ if __name__ == '__main__':
     table1617 = table1617.append(web17)
 
 
-#    tb.UserTable()
     birth_table = tb.birthtable().table
     birth_table = birth_table.drop_duplicates(subset = 'user_id')
 
@@ -137,6 +149,7 @@ if __name__ == '__main__':
     price_agg = targetprice.groupby('user_id').sum()
     count_agg = targetcount.groupby('user_id').agg(count_days)
     unified_table = price_agg.join(count_agg)
+    unified_table.loc[:,'sales_per_visit'] = unified_table.loc[:,'price']/unified_table.loc[:,'purchase_date']
     draw_hist(unified_table,0,50000)
     draw_hist(unified_table,50000,100000)
     draw_hist(unified_table,100000,200000)
@@ -149,6 +162,61 @@ if __name__ == '__main__':
     draw_hist(unified_table,3000000)
 
     high_purchasers = unified_table[unified_table.price>=300000]
+    sale_per_visit = high_purchasers.sales_per_visit.mean()
+    print("sales per visit of high purchasers is "+str(sale_per_visit))
+    plt.hist(high_purchasers.sales_per_visit,bins = 50)
+    plt.title("sale per visit")
+    plt.show()
+
+    ut = tb.UserTable('cleanutable')
+    high_u_table = ut.usertable[ut.usertable.index.isin(high_purchasers.index)]
+    average_age = high_u_table.age.mean()
+    print ("average age of high users = "+str(average_age))
+    plt.hist(high_u_table.age,bins = 50)
+    plt.title("Age")
+    plt.show()
+
+    high_group = high_u_table.groupby('age').agg({'gender':simple_count})
+    all_group = ut.usertable.groupby('age').agg({'gender':simple_count})
+    high_group = high_group.rename(columns = {'gender':'high_age'})
+    all_group = all_group.rename(columns = {'gender':'all_age'})
+    all_group = all_group.join(high_group,how = 'outer')
+    all_group = tb.high_all_ratio(all_group,'all_age','high_age')
+    all_group.to_csv(tb.filepos+'highuserage.csv')
+
+    high_group = high_u_table.groupby('gender').agg({'age':simple_count})
+    all_group = ut.usertable.groupby('gender').agg({'age':simple_count})
+    high_group = high_group.rename(columns = {'age':'high_gender'})
+    all_group = all_group.rename(columns = {'age':'all_gender'})
+    all_group = all_group.join(high_group,how = 'outer')
+    all_group = tb.high_all_ratio(all_group,'all_gender','high_gender')
+    all_group.to_csv(tb.filepos+'highusergender.csv')
+
+    high_group = high_u_table.groupby('address').agg({'age':simple_count})
+    all_group = ut.usertable.groupby('address').agg({'age':simple_count})
+    high_group = high_group.rename(columns = {'age':'high_gender'})
+    all_group = all_group.rename(columns = {'age':'all_gender'})
+    all_group = all_group.join(high_group,how = 'outer')
+    all_group = tb.high_all_ratio(all_group,'all_gender','high_gender')
+    all_group.to_csv(tb.filepos+'highuseraddress.csv')
+
+    posall = tb.postable('unified').table
+    shoeall = posall[posall.DEPT == 2]
+    shoecount = shoeall.groupby('user_id').agg({'price':simple_count})
+    morethan2 = shoecount[shoecount.price >=2]
+    morethan2sale = target1617[target1617.user_id.isin(morethan2.index)]
+    morethan2_res = morethan2sale.groupby('user_id').agg({'price':sum})
+    plt.hist(morethan2_res.price,bins=100,range =(0,300000))
+    plt.title("more than 2")
+    plt.show()
+    morethan3 = shoecount[shoecount.price >=3]
+    morethan3sale = target1617[target1617.user_id.isin(morethan3.index)]
+    morethan3_res = morethan3sale.groupby('user_id').agg({'price':sum})
+    plt.hist(morethan3_res.price,bins=100,range =(0,300000))
+    plt.title("more than 3")
+    plt.show()
+
+
 
     outcols = ['price']
     brandsum = table17.groupby('brand').sum()
@@ -200,5 +268,26 @@ if __name__ == '__main__':
     total_sales = sum(b_sales.total)
     total_bmonth = sum(b_sales.bmonth)
     print("sales of the month of birthday ratio = "+str(float(total_bmonth)/float(total_sales)))
+    
+    total17 = table17.append(web17)
+    user_sales17 = total17.groupby('user_id').sum()
+    user_sales17 = user_sales17.sort_values(by = ['price'])
+#    price_ranges = [x for x in range(10000,100000,10000)]
+#    price_ranges2 = [x for x in range(100000,3000000,100000)]
+#    price_ranges = price_ranges+price_ranges2
+    price_ranges = [x for x in range(10000,3000000,10000)]
+
+    volumetable = pd.DataFrame(0,index = price_ranges ,columns = ['count','total_sales'])
+    
+    prevhigh = 0
+    for high in price_ranges:
+        rg = user_sales17[user_sales17.price > prevhigh]
+        rg = rg[rg.price<=high]
+        volumetable.loc[high,'count'] = rg.shape[0]
+        volumetable.loc[high,'total_sales'] = rg.price.sum()
+        prevhigh = high
+    volumetable.to_csv(tb.filepos+'volumezone.csv')
+    plt.plot(price_ranges,volumetable.total_sales)
+    plt.show()
 
     
