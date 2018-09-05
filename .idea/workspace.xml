@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="151208f3-b6c2-4ab8-a84c-8e78c05f2b37" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/loyality.py" beforeDir="false" afterPath="$PROJECT_DIR$/loyality.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tableclass.py" beforeDir="false" afterPath="$PROJECT_DIR$/tableclass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usercategory.py" beforeDir="false" afterPath="$PROJECT_DIR$/usercategory.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,64 +15,48 @@
     <session id="1635376012">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="18" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.open.time.5" value="10" />
-          <entry key="project.open.time.6" value="2" />
-          <entry key="project.opened" value="14" />
+          <entry key="project.open.time.5" value="14" />
+          <entry key="project.open.time.6" value="4" />
+          <entry key="project.opened" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="12" />
+          <entry key="py" value="14" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="12" />
+          <entry key="Python" value="14" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="4887" />
+          <entry key="py" value="6242" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="4887" />
+          <entry key="Python" value="6242" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/reshape/merge.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8840">
-              <caret line="557" selection-start-line="557" selection-end-line="557" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/usercategory.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-357">
-              <caret line="29" selection-start-line="29" selection-end-line="29" />
+            <state relative-caret-position="102">
+              <caret line="45" selection-start-line="45" selection-end-line="45" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
+                <marker date="1536072826787" expanded="true" signature="495:1574" ph="..." />
+                <marker date="1536072826787" expanded="true" signature="1138:1574" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="28271">
-              <caret line="1663" selection-start-line="1663" selection-end-line="1663" />
             </state>
           </provider>
         </entry>
@@ -92,6 +75,24 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="510">
               <caret line="36" selection-start-line="36" selection-end-line="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/internals.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="78710">
+              <caret line="4700" selection-start-line="4700" selection-end-line="4700" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/sklearn/cluster/hierarchical.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="11696">
+              <caret line="705" selection-start-line="705" selection-end-line="705" />
             </state>
           </provider>
         </entry>
@@ -126,8 +127,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/generic.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51408">
-              <caret line="3080" selection-start-line="3080" selection-end-line="3080" />
+            <state relative-caret-position="193">
+              <caret line="3078" selection-start-line="3078" selection-end-line="3078" />
             </state>
           </provider>
         </entry>
@@ -197,6 +198,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -208,7 +210,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -371,15 +372,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4694415" weight="0.32917467" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.48261327" weight="0.39635316" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.46364594" weight="0.32917467" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.47839832" weight="0.39635316" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.53055847" side_tool="true" visible="true" weight="0.32917467" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.53635406" side_tool="true" visible="true" weight="0.32917467" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -443,13 +444,33 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/usercategory.py</url>
-          <line>95</line>
+          <line>182</line>
           <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/usercategory.py</url>
-          <line>89</line>
+          <line>175</line>
           <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/usercategory.py</url>
+          <line>151</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/usercategory.py</url>
+          <line>90</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/usercategory.py</url>
+          <line>78</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/usercategory.py</url>
+          <line>76</line>
+          <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -511,6 +532,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/internals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78710">
+          <caret line="4700" selection-start-line="4700" selection-end-line="4700" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/sklearn/cluster/hierarchical.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11696">
+          <caret line="705" selection-start-line="705" selection-end-line="705" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/groupby.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36227">
@@ -532,13 +567,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/generic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51408">
-          <caret line="3080" selection-start-line="3080" selection-end-line="3080" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tableclass.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5950">
@@ -549,12 +577,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/generic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="3078" selection-start-line="3078" selection-end-line="3078" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/usercategory.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-357">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="102">
+          <caret line="45" selection-start-line="45" selection-end-line="45" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
+            <marker date="1536072826787" expanded="true" signature="495:1574" ph="..." />
+            <marker date="1536072826787" expanded="true" signature="1138:1574" ph="..." />
           </folding>
         </state>
       </provider>
