@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<h1>キャンペーン</h1>
+{% if latest_campaign_list %}
+<form action="{% url 'campaign' %}" method="post">
+{% csrf_token %}
+    <ul>
+    {% for campaign in latest_campaign_list %}
+        <li><a href="{% url 'campaign' %}{{ campaign.id }}/">{{ campaign.campaign_name }}</a></li>
+        キャンペーン期間:{{campaign.campaign_start_date|date:"Y/m/d"}}  から  {{campaign.campaign_end_date|date:"Y/m/d"}} まで <input type="checkbox" name="delcampaign" value={{campaign.id}}
+<br>
+        {{campaign.campaign_detail_text}}
+    {% endfor %}
+    </ul>
+	<input type="submit" value="選択したキャンペーンを削除">
+</form>
+{% else %}
+    <p>登録されているキャンペーンはありません</p>
+{% endif %}
+{% endblock %}
+指定条件でキャンペーンのリストを表示

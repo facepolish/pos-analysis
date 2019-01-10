@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+
+<header><h1>{{shop_name}}</h1><br>
+<h2>{{item}}</h2><br>
+<h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
+</header>
+<img src="{% static "bi/chart.png" %}" alt="price trend chart"/><br>
+類似商品ネット価格<br>
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">イメージ<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">ショップ</font></th>
+<th bgcolor="EE0000" width="400"><font color="#FFFFFF">商品</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">価格</font></th>
+</tr>
+{% for row in netitem %}
+   <tr>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200"><img width="200" src={{ row.image}} alt="similar item from net"/></th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200"><a href={{ row.link }}>{{ row.shop }}</a></th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="400">{{ row.text }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.price }}</th>
+    </tr>
+{% endfor %}
+</table>
+同じ週に買われやすい商品<br>
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
+</tr>
+{% for row in weeklyrecommend %}
+<tr>
+    <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.text }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
+</tr>
+{% endfor %}
+</table>
+
+同じ人に買われやすい商品<br>
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
+</tr>
+{% for row in userrecommend %}
+<tr>
+    <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.text }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
+</tr>
+{% endfor %}
+</table>
+
+
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">週<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間平均価格</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間売り上げ</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間最高値</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間最低値</font></th>
+</tr>
+{% for row in toptable %}
+    <tr>
+    {% for cell in row %}
+        {% if forloop.first %}
+            <td bgcolor="#99CC00" align="left" nowrap>
+            <li><a href="{% url 'dashboard_result'%}?theme=2&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&item={{cell}}">{{ cell }}</a></li></td>
+        {% else %}
+            <td bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ cell|floatformat:2|intcomma }}</td>
+        {% endif %}
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
+{% block footnote %}
+simitemprice
+[shop,image_text,image,price,link]
+{% endblock %}

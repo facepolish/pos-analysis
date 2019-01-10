@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<form action="{% url 'dashboard_result' %}" method="get">
+    <hr>
+    {{ form.shops.label }}
+	{{ form.shops }}
+    <hr>
+    {{ form.begin_date.label }}
+    {{ form.begin_date }}
+    <hr>
+    {{ form.end_date.label }}
+    {{ form.end_date }}
+    <hr>
+    {{ form.theme.label }}
+    {{ form.theme }}
+    <input type="submit" value="決定">
+</form>
+{% endblock %}
+    

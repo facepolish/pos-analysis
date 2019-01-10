@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+
+<form action="{% url 'setup' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.datatype.label}} {{form.datatype}} {{ form.upload.label}} {{form.upload}}
+    <input type="submit" value="アップロード" />
+</form>
+{% endblock %}

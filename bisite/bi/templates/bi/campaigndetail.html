@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+
+<header>
+<h1>{{ campaign.campaign_name }}</h1>
+<h2>{{campaign.campaign_detail_text}}</h2>
+<h3>{{campaign.campaign_start_date|date:"Y-m-d"}}から{{campaign.campaign_end_date|date:"Y-m-d"}}まで</h3>
+</header>
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+{% for row in table %}
+    {% if forloop.first %}
+        <tr>
+	    {% for cell in row %}
+            <th bgcolor="EE0000" width="200"><font color="#FFFFFF">{{ cell }}<font></th>
+	    {% endfor %}
+        </tr>
+    {% else %}
+	    <tr>
+	    {% for cell in row %}
+	        {% if forloop.first %}
+	            <td bgcolor="#99CC00" align="left" nowrap>{{ cell }}</td>
+	        {% else %}
+	            <td bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ cell|intcomma }}</td>
+	        {% endif %}
+	    {% endfor %}
+	    </tr>
+	{% endif %}
+{% endfor %}
+</table>
+{% endblock %}

@@ -62,13 +62,17 @@ def sdeptstr(list1,list2,dic1,dic2):
             retlist.append(s)
     return(retlist)
 class brandmetric(object):
-    def __init__(self,postable,tb):
+    def __init__(self,postable,tb,pre=''):
+        self.dimension = 50
         self.prefix = 'count'
-        filename = 'brandveccount.pkl'
+        filename = pre+'brandveccount.pkl'
+        userfilename = pre+'userveccount.pkl'
         filename = tb.filepos+filename
+        userfilename = tb.filepos+userfilename
         depttable = tb.DEPTtable('HITRMD_DEPT')
         if os.path.exists(filename):
             self.itemvec = pd.read_pickle(filename)
+            self.uservec = pd.read_pickle(userfilename)
         else:
             print("pivot table conversion start")
             postable.loc[:,'month'] = list( map((lambda x: x.month), postable.purchase_date))
@@ -93,12 +97,22 @@ class brandmetric(object):
             purchae_table = purchae_table.join(range_table,how ='left').fillna(0)
 
             print("pivot table conversion complete")
-            model = NMF(n_components = 50, init='random',random_state = 0)
+            model = NMF(n_components = self.dimension, init='random',random_state = 0)
             P = model.fit_transform(purchae_table.values)
             Q = model.components_
             Q = normalize(Q.T)
+            self.uservec = pd.DataFrame(P,index = purchae_table.index)
             self.itemvec = pd.DataFrame(Q,index = purchae_table.columns)
             self.itemvec.to_pickle(filename)
+            self.uservec.to_pickle(userfilename)
+    def UserByAtribute(self,features):
+        fvec = np.zeros(self.dimension)
+        for item in features:
+            fvec+=self.itemvec.loc[item,:]
+        udis = np.matmul(fvec,self.uservec.values.T)
+        ret = pd.DataFrame(udis.T,index = self.uservec.index,columns = ['value'])
+        ret = ret.sort_values(by = ['value'],ascending = False)
+        return(ret)
     def SaveItemMetrics(self,brandname):
         vec = self.itemvec.loc[brandname,:].values
 
@@ -125,6 +139,26 @@ if __name__=='__main__':
 #        toptable = toptable.drop("user_id",axis = 1)
         toptable.to_csv(tb.filepos+"top"+str(i)+".csv")
     
+    pos16 = tb.postable(tb.posnamelist[0]).table
+    for i in range(5):
+        temppos = tb.postable(tb.posnamelist[i+1])
+        pos16 = pos16.append(temppos.table)
+    met2 = brandmetric(pos16,tb,'pos16')
+    targetitem = u'スノーピーク'
+    predicted_users = met2.UserByAtribute([targetitem])
+    actual_table = table17[table17.index.isin(predicted_users.index)]
+    actual_table = actual_table[actual_table.brand == targetitem]
+    purchased_users = actual_table.groupby('user_id').sum()
+    purchased_users = purchased_users.sort_values(by=['price'],ascending = False)
+    print ("forecastd users = ",predicted_users.index[0:10])
+    print ("actual users = ",purchased_users.index[0:10])
+    for i in range(10):
+        print ('user = '+str(predicted_users.index[i]))
+        if predicted_users.index[i] in purchased_users.index:
+            print ('actual purchage = '+str(purchased_users.loc[predicted_users.index[i],'price']))
+        else:
+            print('user = ' + str(predicted_users.index[i])+' is not in actual buyers')
+
 
     posall = tb.postable('unified').table
     met = brandmetric(posall,tb)

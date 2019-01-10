@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<header><h1>{{shop_name}}</h1><br>
+<h2>ブランド:{{brand}}</h2>
+<h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
+</header>
+
+<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
+<th bgcolor="EE0000" width="150"><font color="#FFFFFF">レシオ</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">前期間売上</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">今期間売上</font></th>
+</tr>
+{% for row in toptable %}
+    <tr>
+    {% for cell in row %}
+        {% if forloop.first %}
+            <td bgcolor="#99CC00" align="left" nowrap>
+            <li><a href="/bi/dashboard/all/{{ cell }}/">{{ cell }}</a></li></td>
+        {% else %}
+            <td bgcolor="#FFFFFF"  align="right" valigh="top" width="150">{{ cell|intcomma }}</td>
+        {% endif %}
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

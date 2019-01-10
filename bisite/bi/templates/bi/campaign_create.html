@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<h1>キャンペーン登録</h1>
+<form action="{% url 'campaign_create' %}" method="post">
+	{% csrf_token %}
+    <hr>
+	{{ form.campaign_name.label }}{{ form.campaign_name }}
+    <hr>
+	{{ form.campaign_detail_text.label }}{{ form.campaign_detail_text }}
+    <hr>
+    {{ form.campaign_start_date.label }}    {{ form.campaign_start_date }}    {{ form.campaign_end_date.label }}    {{ form.campaign_end_date }}
+    <hr>
+    {{form.UseGender.label}}{{form.UseGender}}{{form.gender}}
+    <hr>
+    {{form.UseGradeRange.label}} {{form.UseGradeRange}}{{form.gradelower}}{{form.gradeupper}}
+    <hr>
+    {{form.UseAgeRange.label}}{{form.UseAgeRange}}{{form.agelower}}{{form.ageupper}}
+    <hr>
+    {{form.UseRegion.label}}{{form.UseRegion}}{{form.region}}
+    <hr>
+    {{form.UsePurchaseAddup.label}}{{form.UsePurchaseAddup}}{{form.start_addup_date}}から{{form.end_addup_date}}まで{{form.purchase_amount}}円購買
+    <hr>
+    {{form.UseBrand.label}}{{form.UseBrand}}{{form.brand_name}}<br>
+    親和度計測期間 {{form.start_brandtest_date}}から{{form.end_brandtest_date}}まで　　
+    絞り込み最大人数{{form.brand_user_max}}
+    <hr>
+    <input type="submit" value="決定">
+</form>
+{% endblock %}

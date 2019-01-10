@@ -14,11 +14,13 @@ from numba import jit
 
 posfile = 'pos.csv'
 userfile = 'user.csv'
-filepos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/output/'
-fileinputpos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/'
+filepos = '../output/'
+fileinputpos = '../input/'
+#filepos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/output/'
+#fileinputpos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/'
 ext = '.csv'
-col_dtype_new = {'user_id':str,'rank':str}
-col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str} 
+col_dtype_new = {'user_id':str,'user_rank':str}
+col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str} 
 
 colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'店名':'shop_name',
@@ -45,7 +47,7 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'年代':'age_group',
               u'来店回数':'visit_count',
               u'仮登録日':'registered_date',
-              u'会員ランク':'rank',
+              u'会員ランク':'user_rank',
               u'分類名':'category',
               u'商品コード':'itemcode',
               u'品番名':'item_code1',
@@ -65,6 +67,17 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
 
 posnamelist = ['pos_2011','pos_2012','pos_2013','pos_2014','pos_2015','pos_2016','pos_2017']
 
+@jit
+def count_days (days):
+    sorted_days = sorted(days)
+    counter = 1
+    day = sorted_days[0].date()
+    for d in sorted_days:
+        today = d.date()
+        if day != today:
+            counter+=1
+            day = today
+    return(counter)
 
 def StandardVec(table):
     dlist = table.columns
@@ -518,6 +531,7 @@ class itemsalestable(object):
     def __init__(self,filename):
         datatable = pd.read_csv(fileinputpos+filename+ext,encoding = 'CP932',dtype = col_dtype)
         datatable.rename(columns = colnamedic, inplace = True)
+        datatable.user_id = datatable.user_id.astype(str)
         datatable.purchase_date = pd.to_datetime(datatable.purchase_date,format = '%Y/%m/%d')
         self.table = datatable
 
@@ -542,6 +556,199 @@ class birthtable(object):
             df.user_id.head(15)
             df.to_csv(fileinputpos+'cleanubirth'+ext)
         self.table = df
+
+class gentype (object):
+    def __init__(self,tup):
+        self.gen1 = tup[0]
+        self.gen2 = tup[1]
+        self.gen3 = tup[2]
+        
+class DEPTSDEPT(object):
+    def __init__(self,tup):
+        self.DEPT = tup[0]
+        self.SDEPT = tup[1]
+'''
+class webtable(itemsalestable):
+    gentoecfile = 'gentoec'
+    folder3 = 'webshop/'    
+    _cnvtable = pd.read_csv(fileinputpos+'webshop/dept_ganesis'+ext,encoding = 'CP932',dtype = col_dtype)
+    _cnvtable.rename(columns = colnamedic,inplace = True)
+    _code1list = pd.Series.unique(_cnvtable.itemcode1)
+    _code2list = pd.Series.unique(_cnvtable.itemcode2)
+    _code3list = pd.Series.unique(_cnvtable.itemcode3)
+    cvpanel = pd.Panel(0,items = _code1list, major_axis = _code2list,minor_axis = _code3list)
+    for i,_row in _cnvtable.iterrows():
+        dt = DEPTSDEPT((_row.DEPT,_row.SDEPT))
+        cvpanel.loc[_row.itemcode1,_row.itemcode2,_row.itemcode3] = dt
+
+    gentoectable = pd.read_csv(fileinputpos+folder3+gentoecfile+ext,encoding = 'CP932',dtype = col_dtype)
+    gentoectable.rename(columns = colnamedic,inplace = True)
+    eccodelist = pd.Series.unique(gentoectable.categorycode)
+    ectogencode = pd.DataFrame(0,index = ['gencode'],columns = eccodelist)
+
+    for i, row in gentoectable.iterrows():
+        gencode = row.genesis
+        print ('this row is '+row.genesis+'   '+row.categorycode)
+        gen1 = gencode[0:2]
+        gen2 = gencode[2:7]
+        if gen2 == '99999':
+            gen2 = '999999'
+            gen3 = gencode[8:]
+        else:
+            gen3 = gencode[7:]
+#        gen1 = int(gen1)
+#        gen2 = int (gen2)
+#        if gen3.isdigit():
+#            gen3 = int(gen3)
+#        else:
+#            continue
+        
+        if (gen1 in cvpanel.items) and (gen2 in cvpanel.major_axis) and (gen3 in cvpanel.minor_axis):
+            if not (0 == cvpanel[gen1,gen2,gen3]):
+                tu = gentype((gen1,gen2,gen3))
+                ectogencode.loc['gencode',row.categorycode] = tu
+
+    def __init__(self,filename):
+        super(webtable,self).__init__(filename)
+        
+class ecbeingtable(webtable):
+    folder = 'webshop/ecbeing/order/'
+    folder2 = 'webshop/ecbeing/item/'
+        
+    goodsfile = 'goods'
+
+    itemtoectable = pd.read_csv(fileinputpos+folder2+goodsfile+ext,encoding = 'CP932',dtype = col_dtype)
+    itemtoectable.rename(columns = colnamedic,inplace = True)
+#    print (' goods table columns')
+#    print(itemtoectable.columns)
+#    print(itemtoectable.head(10))
+    for i in range(len(itemtoectable.categorycode)):
+        s = itemtoectable.categorycode[i]
+        slis = s.split('-')
+        if len(slis)>1:
+#            print ('splitted string is '+s)
+            itemtoectable.categorycode[i] = slis[1]
+    itemcodelist = pd.Series.unique(itemtoectable.categorycode)
+    itemtoeccode = pd.DataFrame(0,index = ['eccode'],columns = itemcodelist)
+    for i, row in itemtoectable.iterrows():
+#        if i%1000 == 0:
+#            print ('i = '+str(i))
+        itemtoeccode.loc['eccode',row.itemcode] = row.categorycode
+
+
+
+    def __init__(self,filename):
+        cachefilename = 'cache'+filename
+        if not os.path.exists(fileinputpos+self.folder+cachefilename+ext):
+
+            super(ecbeingtable,self).__init__(self.folder+filename)
+            datatable2 = pd.read_csv(fileinputpos+self.folder2+self.goodsfile+ext,encoding = 'CP932',dtype = col_dtype)
+            datatable2.rename(columns = colnamedic, inplace = True)
+            print ('datatable2 goods file columns ')
+            print (datatable2.columns)
+            self.table = pd.merge(self.table,datatable2,on ='itemcode',how = 'left')
+            print ('merged table columns')
+            print (self.table.columns)
+            print('max rows = ' + str(self.table.shape[0]))
+            ChkFlag = 0
+            erritems = []
+            errcodes = []
+
+            for index,row in self.table.iterrows():
+#                print ('index = '+str(index))
+                icode = row.itemcode
+                if not (icode in self.itemtoeccode.columns):
+                    if not(icode in erritems):
+                        erritems.append(icode)
+                        print ('item code = '+str(icode)+' is missing in goods table')
+                        print (row)
+                    self.table.drop(index,inplace = True)
+                    ChkFlag = 1
+                    continue
+                eccode = self.itemtoeccode.loc['eccode',icode]
+                self.table.loc[index,'eccode'] = eccode
+                if not (eccode in self.ectogencode.columns):
+                    if not(eccode in errcodes):
+                        errcodes.append(eccode)
+                        print ('eccode code = '+str(eccode)+' is missing in ectogencode.columns')
+                        print (row)
+#                    self.table.drop(index,inplace = True)
+                    ChkFlag = 1
+                    continue                    
+                gens = self.ectogencode.loc['gencode',eccode]
+                if gens == 0 :
+                    if not(eccode in errcodes):
+                        errcodes.append(eccode)
+                        print ('eccode code = '+str(eccode)+' is missing in ectogencode.columns')
+                        print (row)
+#                    self.table.drop(index,inplace = True)
+                    ChkFlag = 1
+                    continue
+                gen1 = gens.gen1
+                gen2 = gens.gen2
+                gen3 = gens.gen3
+                
+                dep = self.cvpanel.loc[gen1,gen2,gen3]
+                self.table.loc[index,'DEPT'] = dep.DEPT
+                self.table.loc[index,'SDEPT'] = dep.SDEPT
+            print (" missing items are "+str(erritems))
+            print (" missing codes are "+str(errcodes))
+
+            if ChkFlag == 0:
+                self.table.to_csv (fileinputpos+self.folder+cachefilename+ext)
+
+        else:
+            self.table = pd.read_csv(fileinputpos+self.folder+cachefilename+ext,encoding = 'CP932',dtype = col_dtype)
+        self.table = self.table.dropna(axis = 0,subset = ['user_id'])
+        
+        self.prefix = 'web'
+        
+class genesistable(webtable):
+    usercodetable = pd.read_csv(fileinputpos+'webshop/genesis/customer/customer'+ext,encoding = 'CP932',dtype = col_dtype)
+    usercodetable.rename(columns = colnamedic,inplace = True)
+#    print(usercodetable.head(3))
+    
+    itemcodetable = pd.read_csv(fileinputpos+'webshop/genesis/item/mitem'+ext,encoding = 'CP932',dtype = col_dtype)
+    itemcodetable.rename(columns = colnamedic,inplace = True)
+#    print(itemcodetable.head(3))
+    
+    def __init__(self,filename):
+        detailfile = 'AcceptDetail'
+        folder = 'webshop/genesis/order/'
+        filename = str(filename)
+        folder = folder+filename+'/'
+        folder = fileinputpos+folder
+        cachefilename = 'cache'+filename
+        
+        if True : #not os.path.exists(folder+cachefilename+ext):
+            datatable = pd.read_csv(folder+filename+ext,encoding = 'CP932',dtype = col_dtype)
+            datatable.rename(columns = colnamedic,inplace = True)
+            print(datatable.head(10))
+            datatable.purchase_date = pd.to_datetime(datatable.purchase_date,format = '%Y%m%d')
+            self.table = datatable
+            self.table.rename(columns = colnamedic,inplace = True)
+            self.table = pd.merge(self.table,self.usercodetable, on = 'user_code',how = 'left')
+            self.table.user_id = self.table.user_id.str[0:12]
+            datatable2 = pd.read_csv(folder+detailfile+ext,encoding = 'CP932',dtype = col_dtype)
+            datatable2.rename(columns = colnamedic,inplace = True)
+            self.table = pd.merge(self.table, datatable2,on = 'order_code',how = 'left')
+            self.table = pd.merge(self.table,self.itemcodetable,on = 'itemcode',how = 'left')
+
+            for i in range(self.table.shape[0]):
+                code1 = self.table.loc[self.table.index[i],'itemcode1']
+                code2 = self.table.loc[self.table.index[i],'itemcode2']
+                code3 = self.table.loc[self.table.index[i],'itemcode3']
+                if  (code1==code1 and code2 == code2 and code3 == code3):
+                    depts = self.cvpanel.loc[code1,code2,code3]
+                    self.table.loc[self.table.index[i], 'DEPT']  = depts.DEPT
+                    self.table.loc[self.table.index[i], 'SDEPT'] = depts.SDEPT
+            self.table.to_csv(folder+cachefilename+ext)
+        else:
+            self.table = pd.read_csv(folder+cachefilename+ext,encoding = 'CP932',dtype = col_dtype)
+
+
+        self.prefix = 'web'
+
 
 class websalestable(object):
     ren_dic = {u'会員番号':'user_id'}# local hack for genesis customer table
@@ -593,11 +800,14 @@ class websalestable(object):
             ec_16 = self._fixecbeing(ec_16)
             self.table = gen_16.append(ec_16)
         elif year == 2017:
-            ec_17_file = 'sales201701-12.csv'
-            filepath = fileinputpos+ecpath
-            ec_17 = pd.read_csv(filepath+ec_17_file,encoding = 'CP932',dtype = col_dtype)
-            ec_17 = self._fixecbeing(ec_17)
-            self.table = ec_17
+            ec_17_file = 'sales201701-12detail'
+#            ec_17_file = 'sales201701-12.csv'
+#            filepath = fileinputpos+ecpath
+#            ec_17 = pd.read_csv(filepath+ec_17_file,encoding = 'CP932',dtype = col_dtype)
+#            ec_17 = self._fixecbeing(ec_17)
+#            self.table = ec_17
+            ect = ecbeingtable(ec_17_file)
+            self.table = ect.table
             
-
+'''
 
