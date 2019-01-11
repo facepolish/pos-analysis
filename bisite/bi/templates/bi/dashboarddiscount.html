@@ -2,30 +2,34 @@
 {% load humanize %}
 {% load static %}
 {% block mainbody %}
-<header><h1>{{shop_name}}</h1><br>
+<header>
+<h1>{{shop_name}}</h1><br>
 <h2>商品別割引</h2>
 <h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
 </header>
-
-<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
-<tr>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">期間平均価格</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">期間最高値</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">割引率</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">期間売り上げ</font></th>
-</tr>
-{% for row in toptable %}
-    <tr>
-    {% for cell in row %}
-        {% if forloop.first %}
+<table id="myTable"  boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333" class="tablesorter">
+	<thead>
+		<tr>
+			<th>商品 </th>
+			<th>カテゴリー</th>
+			<th>平均価格</th>
+			<th>期間最高値</th>
+			<th>割引率</th>
+			<th>期間売り上げ</th>
+		</tr>
+	</thead>
+	 <tbody>
+	{% for row in toptable %}
+	    <tr>
             <td bgcolor="#99CC00" align="left" nowrap>
-            <li><a href="{% url 'dashboard_result'%}?theme=2&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&item={{cell}}">{{ cell }}</a></li></td>
-        {% else %}
-            <td bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ cell|floatformat:2|intcomma }}</td>
-        {% endif %}
-    {% endfor %}
-    </tr>
-{% endfor %}
+            <li><a href="{% url 'dashboard_result'%}?theme=2&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&item={{row.item}}">{{ row.item }}</a></li></td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.unit_avg|floatformat:2|intcomma }}</td>
+            <td>{{ row.unit_max|floatformat:2|intcomma }}</td>
+            <td>{{ row.discount|floatformat:2|intcomma }}</td>
+            <td>{{ row.sales|floatformat:2|intcomma }}</td>
+	    </tr>
+	{% endfor %}
+	</tbody>
 </table>
 {% endblock %}

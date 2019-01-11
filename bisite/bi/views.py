@@ -239,7 +239,15 @@ def TermLocalize(term):
     return(termret)
 img_file = '../media/bi/img.png'
 
+def highshareitems(table,share):
+    table = table.sort_values(('price','sumprice'),ascending=False)
+    limit_sumval = sum(table.price.sumprice)*share
+    table.loc[:,'csum'] = table.price.sumprice.cumsum()
+    table=table[table.csum<limit_sumval]
+    return(table)
+
 @login_required
+@permission_required("bi.access_pos_data")
 def dashboard_result(request):
     brand = request.GET.get('brand',None)
     shop_code = request.GET.get('shops',str(0))
@@ -295,10 +303,10 @@ def dashboard_result(request):
         '''
         table = PosQueryDiscount(term,shop_code)
         table = table.sort_values(('price','sumprice'),ascending=False)
-        table = table.iloc[:20,:]
+        table = highshareitems(table,0.5)
         tablelist = []
         for index,row in table.iterrows():
-            rowlist = [index,row.unit_price.avgprice,row.unit_price.maxprice,row.ratio,row.price.sumprice]
+            rowlist = {'item':index,'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice}
             tablelist.append(rowlist)
         context['toptable'] = tablelist
     elif theme == '2':
@@ -337,6 +345,7 @@ def dashboard_result(request):
     return HttpResponse(template.render(context,request))
 
 @login_required
+@permission_required("bi.access_pos_data")
 def dashboard(request):
     template = loader.get_template('bi/dashboardtop.html')
     context = {'form':DashBoardForm(),}
