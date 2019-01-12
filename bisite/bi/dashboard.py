@@ -431,7 +431,10 @@ class ItemRelatedInfo(object):
         self.cartrecommend = cartrec.iloc[1:11, :]
         self.cartrecommend.loc[:, 'brand'] = [tp.GetItemData(x)['brand'] for x in self.cartrecommend.index]
         self.cartrecommend.loc[:, 'itemname'] = [tp.GetItemData(x)['name'] for x in self.cartrecommend.index]
+        self.cartrecommend.loc[:, 'category'] = [tp.GetCategory(x) for x in self.cartrecommend.index]
+
         csrec = itemrec.getsamecustomerrecommendlist(itemid)
         self.csrecommend = csrec.iloc[1:11, :]
         self.csrecommend.loc[:, 'brand'] = [tp.GetItemData(x)['brand'] for x in self.csrecommend.index]
         self.csrecommend.loc[:, 'itemname'] = [tp.GetItemData(x)['name'] for x in self.csrecommend.index]
+        self.csrecommend.loc[:, 'category'] = [tp.GetCategory(x) for x in self.csrecommend.index]

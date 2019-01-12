@@ -30,12 +30,14 @@
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">分類<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
 </tr>
 {% for row in weeklyrecommend %}
 <tr>
     <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.text }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.category }}</th>
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
 </tr>
 {% endfor %}
@@ -46,12 +48,14 @@
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">分類<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
 </tr>
 {% for row in userrecommend %}
 <tr>
     <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.text }}</th>
+    <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.category }}</th>
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
 </tr>
 {% endfor %}

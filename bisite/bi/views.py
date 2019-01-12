@@ -335,10 +335,10 @@ def dashboard_result(request):
             context['netitem'] = pricelist
         wr = []
         for ind,row in iteminfo.cartrecommend.iterrows():
-            wr.append({'brand':row.brand,'text':row.itemname,'score':row.score})
+            wr.append({'brand':row.brand,'text':row.itemname,'category':row.category,'score':row.score})
         cr = []
         for ind,row in iteminfo.csrecommend.iterrows():
-            cr.append({'brand':row.brand,'text':row.itemname,'score':row.score})
+            cr.append({'brand':row.brand,'text':row.itemname,'category':row.category,'score':row.score})
         context['weeklyrecommend'] = wr
         context['userrecommend'] = cr
 
