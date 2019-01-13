@@ -5,7 +5,7 @@ from .models import Campaign,Shops,Customer,UpListFile,PosData,Item
 from .forms import DashBoardForm,CampaignCreateForm,SetupDataForm
 import pandas as pd
 from django.template import loader
-from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo
+from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales
 from datetime import datetime,timedelta
 from pytz import timezone
 import logging
@@ -41,8 +41,20 @@ def campaign_create(request):
             chunklist=userlist[beg:upper]
             cs = Customer.objects.filter(user_id__in=chunklist)
             campaign.target_customers.add(*cs)
-
         campaign.save()
+        table = PosQuerySales(userlist,(s-timedelta(days=365),s))
+        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+        ax[0].plot(table.index,table.sales,label='Weekly Sales',color='b')
+        ax[0].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
+        ax[0].set_title('Weekly sales of Selected customers')
+        ax[0].legend()
+        ax[1].plot(table.index,table.ratio,label='Ratio',color='g')
+        ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
+        ax[1].set_title('Sales Share of Selected customers')
+        ax[1].legend()
+        fig.savefig('static/bi/chart2.png',format="png")
+        
+
         count =  campaign.target_customers.count()
         context = {'user_count':count}
         template = loader.get_template('bi/campaign_check.html')

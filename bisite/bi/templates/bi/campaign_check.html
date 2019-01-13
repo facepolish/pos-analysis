@@ -1,1 +1,9 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+
 {{user_count}}
+<img src="{% static "bi/chart2.png" %}" alt="price trend chart"/><br>
+
+{% endblock %}

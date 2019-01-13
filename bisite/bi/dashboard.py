@@ -176,6 +176,22 @@ def PosQueryPriceTrend(term, item, shop=None):
     pricetrend.index = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in pricetrend.index]
     return (pricetrend)
 
+def PosQuerySales(userlist,term):
+    tb = KojitsuPos()
+    pos = tb.GetPosTable()
+    tpos = pos[pos.purchase_date>=term[0]]
+    tpos = tpos[tpos.purchase_date<=term[1]]
+    tpos = tpos[['price','user_id','year_week']]
+    tpos2 = tpos[tpos.user_id.isin(userlist)]
+    tpos = tpos[['price','year_week']]
+    tpos2 = tpos2[['price','year_week']]
+    sumpos = tpos.groupby('year_week').sum()
+    sumpos2 = tpos2.groupby('year_week').sum()
+    sumpos2.loc[:,'ratio'] = sumpos2.price/sumpos.price
+    sumpos2 = sumpos2.rename(columns = {'price':'sales'})
+    sumpos2.index = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumpos2.index]
+    return(sumpos2)
+
 
 def PosQueryDiscount(term, shop=None):
     tb = KojitsuPos()
