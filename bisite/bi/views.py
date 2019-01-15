@@ -10,11 +10,44 @@ from datetime import datetime,timedelta
 from pytz import timezone
 import logging
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
+import matplotlib
+
 from django.contrib.auth.decorators import login_required,permission_required
 
 @login_required
 @permission_required("bi.access_pos_data")
 def campaign_create(request):
+    def RatioGraph(tabletpl,outputfile,title1,title2):
+        font = {'family': 'IPAexGothic'}
+        class numcol(object):
+#            colors = list(matplotlib.colors.cnames.keys())
+            colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
+            c_count = len(colors)
+            def __init__(self):
+                self.count = 0
+            def color(self):
+                cn = self.count
+                self.count = (cn+1)%numcol.c_count
+                col = numcol.colors[cn]
+                return(col)
+        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+        fontp = font_manager.FontProperties(**font)
+        plt.rcParams['font.family'] = 'IPAexGothic'
+        ax[0].set_title(title1,**font)
+        ax[0].set_xticklabels(tabletpl[0].columns,rotation='vertical',fontsize = 'small',**font)
+        ax[1].set_xticklabels(tabletpl[1].columns,rotation='vertical',fontsize = 'small',**font)
+        ax[1].set_title(title2,**font)
+        nc = numcol()
+        for ind,row in tabletpl[0].iterrows():
+            ax[0].plot(tabletpl[0].columns,row,label=str(ind),color=nc.color())
+        nc = numcol()
+        for ind,row in tabletpl[1].iterrows():
+            ax[1].plot(tabletpl[1].columns,row,label=str(ind),color=nc.color())
+        ax[0].legend(prop=fontp)
+        ax[1].legend(prop=fontp)
+        fig.savefig(outputfile,format="png")
+    
     if request.method == 'GET':
         template = loader.get_template('bi/campaign_create.html')
         context = {'form':CampaignCreateForm}
@@ -42,7 +75,7 @@ def campaign_create(request):
             cs = Customer.objects.filter(user_id__in=chunklist)
             campaign.target_customers.add(*cs)
         campaign.save()
-        table = PosQuerySales(userlist,(s-timedelta(days=365),s))
+        table,topratio,topbrand = PosQuerySales(userlist,(s-timedelta(days=365),s))
         fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
         ax[0].plot(table.index,table.sales,label='Weekly Sales',color='b')
         ax[0].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
@@ -54,6 +87,8 @@ def campaign_create(request):
         ax[1].legend()
         fig.savefig('static/bi/chart2.png',format="png")
         
+        RatioGraph(topratio,'static/bi/chart3.png','指定顧客種別売り上げ','指定顧客種別購入比率')
+        RatioGraph(topbrand,'static/bi/chart4.png','指定顧客ブランド別売り上げ','指定顧客ブランド別購入比率')
 
         count =  campaign.target_customers.count()
         context = {'user_count':count}

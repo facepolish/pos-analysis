@@ -21,6 +21,7 @@ itemvecfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/itemvec.pkl')
 itemiddicfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/itemid.pkl')
 depttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/dept.pkl')
 sdepttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/sdept.pkl')
+deptsdepttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/deptsdept.pkl')
 
 
 def PivotSum(table):
@@ -87,8 +88,10 @@ class KojitsuPos(object):
         item_vec.to_pickle(itemvecfile)
         user_vec.to_pickle(uservecfile)
     '''
-    if os.path.exists(depttablefile):
+    if os.path.exists(depttablefile) &os.path.exists(deptsdepttablefile):
         with open(depttablefile, 'rb') as f:
+            dept_dic = pickle.load(f)
+        with open(deptsdepttablefile, 'rb') as f:
             deptsdept_dic = pickle.load(f)
     else:
         dpt = DEPTtable('HITRMD_DEPT')
@@ -100,6 +103,8 @@ class KojitsuPos(object):
             for sk,sv in sdic.items():
                 deptsdept_dic.update({(k,sk):v+' '+sv})
         with open(depttablefile, 'wb') as f:
+            pickle.dump(dept_dic, f)
+        with open(deptsdepttablefile, 'wb') as f:
             pickle.dump(deptsdept_dic, f)
 
     if os.path.exists(itemiddicfile):
@@ -132,6 +137,9 @@ class KojitsuPos(object):
         if item is None:
             return(None)
         return (item)
+    @classmethod
+    def GetDeptName(cls,dept):
+        return(cls.dept_dic[dept])
     @classmethod
     def GetCategory(cls,itemid):
         item = cls.itemid_dic[itemid]
@@ -176,13 +184,48 @@ def PosQueryPriceTrend(term, item, shop=None):
     pricetrend.index = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in pricetrend.index]
     return (pricetrend)
 
-def PosQuerySales(userlist,term):
+def PosQuerySales(userlist,term,res_rows=5):
+    def PivotSumTable(alltable,limittable,target_col,max_count):
+        sumDEPT1 = pd.pivot_table(alltable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
+        sumDEPT2 = pd.pivot_table(limittable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
+        sumDEPT2 = sumDEPT2[(sumDEPT2>0).all(1)]
+        mutualindex = set(sumDEPT1.index) & set(sumDEPT2.index)
+        mutualcolumns = set(sumDEPT1.columns) & set(sumDEPT2.columns)
+        sumDEPT1.drop(index=list(set(sumDEPT1.index)-mutualindex),columns=list(set(sumDEPT1.columns)-mutualcolumns),inplace=True)
+        sumDEPT2.drop(index=list(set(sumDEPT2.index)-mutualindex),columns=list(set(sumDEPT2.columns)-mutualcolumns),inplace=True)
+#        sumDEPT1 = sumDEPT1[sumDEPT1.columns.isin(mutualcolumns)]
+#        sumDEPT2 = sumDEPT2[sumDEPT2.index.isin(mutualindex)]
+#        sumDEPT2 = sumDEPT2[sumDEPT2.columns.isin(mutualcolumns)]
+#        sumDEPT3 = pd.DataFrame(0,index = sumDEPT2.index,columns=sumDEPT2.columns)
+        sumDEPT3 = sumDEPT2/sumDEPT1
+#        endcol = sumDEPT3.columns[-1]
+#        begcol = sumDEPT3.columns[0]
+        sumDEPT3 = sumDEPT3.fillna(0)
+        sumDEPT3.loc[:,'ratio_mean'] = sumDEPT3.mean(axis=1,numeric_only = True)
+        sumDEPT3 = sumDEPT3.sort_values('ratio_mean',ascending = False)
+        sumDEPT3 = sumDEPT3.iloc[:,0:-2]
+        if (sumDEPT3.shape[0]>max_count):
+            sumDEPT3 = sumDEPT3.iloc[0:max_count,:]
+        drp_ind = set(sumDEPT2.index) - set(sumDEPT3.index)
+        sumDEPT2.drop(index = list(drp_ind),inplace=True)
+        sumDEPT2 = sumDEPT2.rename(columns = {'price':'sales'})
+        sumDEPT2.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT2.columns]
+        sumDEPT3.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT3.columns]
+        return(sumDEPT2,sumDEPT3)
+    
     tb = KojitsuPos()
     pos = tb.GetPosTable()
     tpos = pos[pos.purchase_date>=term[0]]
     tpos = tpos[tpos.purchase_date<=term[1]]
-    tpos = tpos[['price','user_id','year_week']]
     tpos2 = tpos[tpos.user_id.isin(userlist)]
+    
+    sumDEPT2,sumDEPT3 = PivotSumTable(tpos,tpos2,'DEPT',res_rows)
+    sumDEPT2.index = [tb.GetDeptName(x) for x in sumDEPT2.index]
+    sumDEPT3.index = [tb.GetDeptName(x) for x in sumDEPT3.index]
+    sumbrand2,sumbrand3 = PivotSumTable(tpos,tpos2,'brand',res_rows)
+
+
+
     tpos = tpos[['price','year_week']]
     tpos2 = tpos2[['price','year_week']]
     sumpos = tpos.groupby('year_week').sum()
@@ -190,7 +233,8 @@ def PosQuerySales(userlist,term):
     sumpos2.loc[:,'ratio'] = sumpos2.price/sumpos.price
     sumpos2 = sumpos2.rename(columns = {'price':'sales'})
     sumpos2.index = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumpos2.index]
-    return(sumpos2)
+
+    return(sumpos2,(sumDEPT2,sumDEPT3),(sumbrand2,sumbrand3))
 
 
 def PosQueryDiscount(term, shop=None):
