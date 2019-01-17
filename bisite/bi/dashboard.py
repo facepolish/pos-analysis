@@ -146,6 +146,10 @@ class KojitsuPos(object):
         deptsdept = item['DEPT_SDEPT']
         ret_str = cls.deptsdept_dic[deptsdept]
         return(ret_str)
+    @classmethod
+    def GetDEPTtup(cls):
+        ret = tuple(list(cls.dept_dic.items()))
+        return(ret)
 
 
 def PrevTerm(term):
@@ -401,12 +405,26 @@ class QueryUsersByTerm(object):
         user2 = user1[user1.age >= low]
         user2 = user2[user2.age <= high]
         return (user2)
+    def dept(self,user,para):
+        dept_id = int(para[0])
+        user_max = int(para[1])
+        ir = ItemRecommend()
+        user2 = ir.getdeptrecommenduserlist(user.index,dept_id)
+        if user2.shape[0] >user_max:
+            user2 = user2.index[:user_max]
+        else:
+            user2 = user2.index
+        user = user[user.index.isin(user2)]
+
+        return(user)
+        
 
     factors = {'UseAgeRange': (('agelower', 'ageupper'), age),
                'UseGender': (('gender',), gender),
                'UseGradeRange': (('gradelower', 'gradeupper'), grade),
                'UseRegion': (('region',), region),
                'UsePurchaseAddup': (('start_addup_date', 'end_addup_date', 'purchase_amount'), Addup),
+               'UseDEPT':(('DEPT_id','DEPT_user_max'),dept),
                'UseBrand': (
                ('brand_name', 'start_brandtest_date', 'end_brandtest_date', 'brand_user_max'), brandvecmetric)
                #    ('UseCategory',('category_id','start_categorytest_date','end_categorytest_date'),self.)

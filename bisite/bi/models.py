@@ -97,7 +97,11 @@ class Campaign (models.Model):
     REGION_CHOICES=[]
     for rg in regionset:
         REGION_CHOICES.append((rg, rg))
-    
+    '''
+    dept_dic={1: '01 登山靴', 2: '02 ザック', 3: '03 シュラフ', 4: '04 テント', 5: '05 コンロ・ランタン', 6: '06 燃料', 7: '07 コッヘル', 8: '08 アイゼン', 9: '09 ステッキ', 11: '11 機能タイツ', 12: '12 山シャツ', 13: '13 登山ズボン', 14: '14 Ｔシャツ', 15: '15 アンダーウェア', 16: '16 雨具', 17: '17 ソックス', 18: '18 その他ウェア', 19: '19 ｳｪｱｱｸｾｻﾘｰ', 20: '20 山その他', 21: '21 ギア特価品', 22: '22 特価商材', 24: '24 Ｒ・Ｃ・Ｇ', 25: '25 スキー', 26: '26 キャンプ', 56: '56 客注品', 57: '57 定番外', 58: '58 加工賃', 59: '59 ダミー', 60: '60 備品', 61: '61 運賃', 62: '62 消耗品費', 63: '63 雑費', 64: '64 事務用品費', 65: '65 修繕費', 66: '66 広告宣伝費', 67: '67 包装費', 68: '68 廃棄', 69: '69 その他経費', 70: '70 特社販', 71: '71 ウェブ運賃', 72: '72 アマゾン運賃', 73: '73 低酸素室', 74: '74 ｳｫｰｷﾝｸﾞ参加料', 75: '75 ＧＲ入金', 76: '76 ＷＥＢ手数料', 77: '77 好日山荘ギフト券', 78: '78 登山学校', 81: '81 キャラバンクラブ', 82: '82 エバニュークラブ', 83: '83 キャラバンBC', 89: '89 不要マスタ', 90: '90 送料', 91: '91 工賃'}
+    '''
+#    DEPT_CHOICES = ((str(k),v) for k,v in dept_dic.items())
+    DEPT_CHOICES = ((str(k),v) for k,v in kp.dept_dic.items())
     campaign_name = models.CharField(max_length=200) 
     campaign_detail_text = models.TextField(max_length=400,null=True,blank=True) 
     campaign_start_date = models.DateField(default=datetime.now, blank=True)
@@ -127,6 +131,10 @@ class Campaign (models.Model):
     start_brandtest_date = models.DateField(null=True,blank=True)
     end_brandtest_date =  models.DateField(null=True,blank=True)
     brand_user_max = models.PositiveIntegerField(default=0,blank=True)
+
+    UseDEPT = models.BooleanField(default=False)
+    DEPT_id =models.CharField(blank=True,max_length=2,choices = DEPT_CHOICES)
+    DEPT_user_max = models.PositiveIntegerField(default=0,blank=True)
     
     target_customers = models.ManyToManyField(Customer)
     def __str__(self):
