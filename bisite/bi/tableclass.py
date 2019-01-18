@@ -533,6 +533,7 @@ class itemsalestable(object):
         datatable.rename(columns = colnamedic, inplace = True)
         datatable.user_id = datatable.user_id.astype(str)
         datatable.purchase_date = pd.to_datetime(datatable.purchase_date,format = '%Y/%m/%d')
+        datatable.purchase_time = pd.to_datetime(datatable.purchase_time,format = '%H%M%S')
         self.table = datatable
 
 class postable(itemsalestable):

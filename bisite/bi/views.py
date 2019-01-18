@@ -1,11 +1,12 @@
-﻿from django.shortcuts import render
+﻿import re
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Avg,Min,Max,Sum,F,FloatField
 from .models import Campaign,Shops,Customer,UpListFile,PosData,Item
 from .forms import DashBoardForm,CampaignCreateForm,SetupDataForm
 import pandas as pd
 from django.template import loader
-from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales
+from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail
 from datetime import datetime,timedelta
 from pytz import timezone
 import logging
@@ -63,7 +64,7 @@ def campaign_create(request):
         campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
         qu = QueryUsersByTerm()
         userlist = qu.ExtractUsers(request.POST)
-        chunksize=100
+        chunksize=400
         lenlist = len(userlist)
         max_count = lenlist//chunksize +1
         for i in range(max_count):
@@ -273,6 +274,8 @@ def GetTerm(request):
         beg = ed - timedelta(weeks = 1)
         term = (beg,ed)
     else:
+        beg = re.sub('[/.:]', '-', beg)
+        ed = re.sub('[/.:]', '-', ed)
         beg = datetime.strptime(beg,'%Y-%m-%d')
         ed = datetime.strptime(ed,'%Y-%m-%d')
         if ed>beg:
@@ -356,6 +359,7 @@ def dashboard_result(request):
             rowlist = {'item':index,'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice}
             tablelist.append(rowlist)
         context['toptable'] = tablelist
+        
     elif theme == '2':
         template = loader.get_template('bi/dashboardpricetrend.html')
         table = PosQueryPriceTrend(term,itemid,shop_code)
@@ -388,6 +392,14 @@ def dashboard_result(request):
             cr.append({'brand':row.brand,'text':row.itemname,'category':row.category,'score':row.score})
         context['weeklyrecommend'] = wr
         context['userrecommend'] = cr
+    elif theme == '3':
+        template = loader.get_template('bi/dashboarditemweek.html')
+        table = PosQueryWeeklyDetail(term,itemid,shop_code)
+        tablelist = []
+        for ind,row in table.iterrows():
+            tablelist.append({'date':row.purchase_date,'time':row.purchase_time,'shop':Shops.objects.get(shop_code=row.shop).shop_name,'price':row.price,'amount':row.amount})
+        context['toptable'] = tablelist
+        
 
     return HttpResponse(template.render(context,request))
 

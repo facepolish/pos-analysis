@@ -56,7 +56,9 @@ def UserItemVec(pos1, user1):
     item_vec = pd.DataFrame(Q.T, index=userbyitem.columns)
     return (user_vec, item_vec)
 
-
+def year_week_id(date):
+    return(str(date.isocalendar()[0]) + ' ' + str(date.isocalendar()[1]).rjust(2))
+    
 class KojitsuPos(object):
     __posupdated = False
     __userupdated = False
@@ -169,7 +171,18 @@ def ActualyMax(list):
         val = s[0]
     return (val)
 
-
+def PosQueryWeeklyDetail(term,item,shop=None):
+    tb = KojitsuPos()
+    pos = tb.GetPosTable()
+    if (shop == '0') or (shop is None) or (shop == 'all'):
+        tpos = pos
+    else:
+        tpos = pos[pos.shop == int(shop)]
+    tpos = tpos[tpos.itemid == item]
+    year_week = year_week_id(term[0])
+    tpos = tpos[tpos.year_week == year_week]
+    return(tpos)
+    
 def PosQueryPriceTrend(term, item, shop=None):
     tb = KojitsuPos()
     pos = tb.GetPosTable()

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<header>
+<h1>{{item}}</h1><br>
+</header>
+
+<table boarder="1" width="1000" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<tr>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">日付<font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">時間</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">店舗</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">売り上げ</font></th>
+<th bgcolor="EE0000" width="200"><font color="#FFFFFF">数量</font></th>
+</tr>
+{% for row in toptable %}
+    <tr>
+        <td>{{row.date|date:"Y-m-d"}}</td>
+        <td>{{ row.time |time:"H:i:s"}}</td>
+        <td>{{ row.shop }}</td>
+        <td>{{ row.price|intcomma}}</td>
+        <td>{{ row.amount|intcomma}}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+{% block footnote %}
+{% endblock %}
+
