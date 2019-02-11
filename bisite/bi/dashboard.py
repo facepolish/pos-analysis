@@ -9,7 +9,7 @@ import datetime as dt
 from django.conf import settings
 from scipy.sparse import csr_matrix
 from pandas.api.types import CategoricalDtype
-from .tableclass import postable, UserTable, DEPTtable
+from .tableclass import postable, UserTable, DEPTtable, getallpos, getallusers
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
 
@@ -59,25 +59,27 @@ def UserItemVec(pos1, user1):
 def year_week_id(date):
     return(str(date.isocalendar()[0]) + ' ' + str(date.isocalendar()[1]).rjust(2))
     
+def posaddcols(postable):
+    postable.loc[:, 'itemid'] = postable.brand + postable.type + postable.item_name
+    postable.loc[:, 'unit_price'] = postable.price / postable.amount
+    weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
+    postable.loc[:, 'year_week'] = weeks
+    return(postable)
+    
 class KojitsuPos(object):
     __posupdated = False
     __userupdated = False
     if os.path.exists(posfile):
         postable = pd.read_pickle(posfile)
     else:
-        postable = postable('unified').table
-        postable.loc[:, 'itemid'] = postable.brand + postable.type + postable.item_name
-        postable.loc[:, 'unit_price'] = postable.price / postable.amount
-        weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
-        lenw = len(weeks)
-        lenpos = postable.shape[0]
-        postable.loc[:, 'year_week'] = weeks
+        postable = getallpos()
+        postable = posaddcols(postable)
         postable.to_pickle(posfile)
         __posupdated = True
     if os.path.exists(userfile):
         usertable = pd.read_pickle(userfile)
     else:
-        usertable = UserTable('cleanutable').usertable
+        usertable = getallusers()
         usertable.user_rank = usertable.user_rank.replace(gradedic)
         usertable.to_pickle(userfile)
         __userupdated = True
@@ -152,6 +154,12 @@ class KojitsuPos(object):
     def GetDEPTtup(cls):
         ret = tuple(list(cls.dept_dic.items()))
         return(ret)
+    @classmethod
+    def UpdatePos(cls,file):
+        updatepos = postable(file).table
+        updatepos = posaddcols(updatepos)
+        cls.postable
+
 
 
 def PrevTerm(term):
