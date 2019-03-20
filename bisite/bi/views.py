@@ -1,4 +1,5 @@
 ﻿import re
+import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Avg,Min,Max,Sum,F,FloatField
@@ -6,6 +7,7 @@ from .models import Campaign,Shops,Customer,UpListFile,PosData,Item
 from .forms import DashBoardForm,CampaignCreateForm,SetupDataForm
 import pandas as pd
 from django.template import loader
+from django.conf import settings
 from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail
 from datetime import datetime,timedelta
 from pytz import timezone
@@ -86,10 +88,13 @@ def campaign_create(request):
         ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
         ax[1].set_title('Sales Share of Selected customers')
         ax[1].legend()
-        fig.savefig('static/bi/chart2.png',format="png")
+        chart_path2=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart2.png')
+        fig.savefig(chart_path2,format="png")
+        chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
         
-        RatioGraph(topratio,'static/bi/chart3.png','指定顧客種別売り上げ','指定顧客種別購入比率')
-        RatioGraph(topbrand,'static/bi/chart4.png','指定顧客ブランド別売り上げ','指定顧客ブランド別購入比率')
+        RatioGraph(topratio,chart_path3,'指定顧客種別売り上げ','指定顧客種別購入比率')
+        chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
+        RatioGraph(topbrand,chart_path4,'指定顧客ブランド別売り上げ','指定顧客ブランド別購入比率')
 
         count =  campaign.target_customers.count()
         context = {'user_count':count}
@@ -356,7 +361,7 @@ def dashboard_result(request):
         table = highshareitems(table,0.5)
         tablelist = []
         for index,row in table.iterrows():
-            rowlist = {'item':index,'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice}
+            rowlist = {'item':index,'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice,'cost':row.cost.maxprice,'margin_ratio':row.margin_ratio}
             tablelist.append(rowlist)
         context['toptable'] = tablelist
         
@@ -378,7 +383,8 @@ def dashboard_result(request):
         ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
         ax[1].set_title('Weekly Sales')
         ax[1].legend()
-        fig.savefig('static/bi/chart.png',format="png")
+        chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart.png')
+        fig.savefig(chart_path,format="png")
         context['toptable'] = tablelist
         iteminfo = ItemRelatedInfo(itemid)
         pricelist = iteminfo.netprices

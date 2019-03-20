@@ -271,10 +271,19 @@ def PosQueryDiscount(term, shop=None):
         tpos = pos[pos.shop == int(shop)]
     tpos = tpos[tpos.purchase_date >= term[0]]
     tpos = tpos[tpos.purchase_date <= term[1]]
-    tpos = tpos[['price', 'itemid', 'unit_price']]
-    sumpos = tpos.groupby('itemid').agg({'price': 'sum', 'unit_price': ['max', 'min', 'mean']})
+    tpos = tpos[['price', 'itemid', 'unit_price','cost']]
+    sumpos = tpos.groupby('itemid').agg({'price': 'sum', 'unit_price': ['max', 'min', 'mean'],'cost':'max'})
     sumpos = sumpos.rename(columns={'sum': 'sumprice', 'max': 'maxprice', 'mean': 'avgprice', 'min': 'minprice'})
     sumpos.loc[:, 'ratio'] = sumpos.unit_price.avgprice / sumpos.unit_price.maxprice
+    templist = []
+    for x,y in zip(sumpos.unit_price.avgprice, sumpos.cost.maxprice):
+        if x== 0:
+            r = 0
+        else:
+            r = (x-y)/x
+        templist.append(r)
+    sumpos.loc[:, 'margin_ratio'] = templist
+#    sumpos.loc[:, 'margin_ratio'] = [(x-float(y))/x for x,y in zip(sumpos.unit_price.avgprice, sumpos.cost)]
     sumpos.loc[:, 'item_category'] = [tb.GetCategory(x) for x in sumpos.index]
     return (sumpos)
 

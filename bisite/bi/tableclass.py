@@ -20,7 +20,7 @@ filepos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/output/'
 fileinputpos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/'
 ext = '.csv'
 col_dtype_new = {'user_id':str,'user_rank':str}
-col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str} 
+col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str,u'原価':int}
 
 colnamedic_pos = {u'会員番号':'user_id'}
 colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
@@ -604,6 +604,8 @@ def getallpos():
     pos2 = postable2()
     pos2 = pos2[pos2.purchase_date>latest_date]
     pos1 = pos1.append(pos2)
+    pos1.cost = pos1.cost.fillna(0)
+    pos1.cost = pos1.cost.astype('int')
     return(pos1)
 
 def usertable2():

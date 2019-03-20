@@ -15,6 +15,8 @@
 			<th>平均価格</th>
 			<th>期間最高値</th>
 			<th>割引率</th>
+			<th>原価</th>
+			<th>マージン率</th>
 			<th>期間売り上げ</th>
 		</tr>
 	</thead>
@@ -24,9 +26,11 @@
             <td bgcolor="#99CC00" align="left" nowrap>
             <li><a href="{% url 'dashboard_result'%}?theme=2&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&item={{row.item}}">{{ row.item }}</a></li></td>
             <td>{{ row.category }}</td>
-            <td>{{ row.unit_avg|floatformat:2|intcomma }}</td>
-            <td>{{ row.unit_max|floatformat:2|intcomma }}</td>
+            <td>{{ row.unit_avg|floatformat:0|intcomma }}</td>
+            <td>{{ row.unit_max|floatformat:0|intcomma }}</td>
             <td>{{ row.discount|floatformat:2|intcomma }}</td>
+            <td>{{ row.cost|floatformat:0|intcomma }}</td>
+            <td>{{ row.margin_ratio|floatformat:2|intcomma }}</td>
             <td>{{ row.sales|floatformat:2|intcomma }}</td>
 	    </tr>
 	{% endfor %}

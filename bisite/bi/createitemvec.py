@@ -5,18 +5,19 @@ from pandas.api.types import CategoricalDtype
 from sklearn.decomposition import NMF
 import numpy as np
 import os
-uservecfile='data/bi/uservec.pkl'
-itemvecfile='data/bi/itemvec.pkl'
+from django.conf import settings
+uservecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/uservec.pkl')
+itemvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/itemvec.pkl')
 
-deptvecfile='data/bi/deptvec.pkl'
-deptuserfile='data/bi/deptuser.pkl'
+deptvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/deptvec.pkl')
+deptuserfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/deptuser.pkl')
 
-sdeptvecfile='data/bi/sdeptvec.pkl'
-sdeptuserfile='data/bi/sdeptuser.pkl'
+sdeptvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/sdeptvec.pkl')
+sdeptuserfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
 
-samecartitemvecfile='data/bi/samecartitemvec.pkl'
-posfile='data/bi/pos.pkl'
-deptfile='data/bi/dept.pkl'
+samecartitemvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
+posfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/pos.pkl')
+deptfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/dept.pkl')
 import numpy as np
 import math
 from sklearn.preprocessing import normalize
