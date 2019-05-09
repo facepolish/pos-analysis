@@ -17,7 +17,7 @@
     {% for cell in row %}
         {% if forloop.first %}
             <td bgcolor="#99CC00" align="left" nowrap>
-            <li><a href="{% url 'dashboard_result'%}?shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&brand={{cell}}">{{ cell }}</a></li></td>
+            <li><a href="{% url 'dashboard_result'%}?theme={{theme}}&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&brand={{cell}}">{{ cell }}</a></li></td>
         {% else %}
             <td bgcolor="#FFFFFF"  align="right" valigh="top" width="150">{{ cell|intcomma }}</td>
         {% endif %}
