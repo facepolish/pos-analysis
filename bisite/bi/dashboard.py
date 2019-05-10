@@ -304,7 +304,7 @@ def PosQueryGen(term, shop=None, brand_id=None):
         tpos = pos[pos.shop == int(shop)]
     if not (brand_id is None):
         tpos = tpos[tpos.brand == brand_id]
-        target_col = 'item_name'
+        target_col = 'itemid'
     else:
         target_col = 'brand'
 
