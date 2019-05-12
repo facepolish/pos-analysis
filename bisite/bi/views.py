@@ -8,7 +8,7 @@ from .forms import DashBoardForm,CampaignCreateForm,SetupDataForm
 import pandas as pd
 from django.template import loader
 from django.conf import settings
-from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail
+from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail,Persona
 from datetime import datetime,timedelta
 from pytz import timezone
 import logging
@@ -405,6 +405,25 @@ def dashboard_result(request):
         for ind,row in table.iterrows():
             tablelist.append({'date':row.purchase_date,'time':row.purchase_time,'shop':Shops.objects.get(shop_code=row.shop).shop_name,'price':row.price,'amount':row.amount})
         context['toptable'] = tablelist
+    elif theme == '4':
+        rev_grade_dic = {1:'1合目登頂中',2:'4合目登頂中',3:'6合目登頂中',4:'8合目登頂中',5:'登頂達成！'}
+
+        template = loader.get_template('bi/dashboardpersona.html')
+        persona = Persona(term=term,item=itemid,brand=brand,shop=shop)
+        maletablelist = []
+        femaletablelist = []
+        ranktablelist = []
+        for ind,row in persona.persona_male.iterrows():
+            maletablelist.append({'age':ind,'ratio':row.ratio})
+        for ind,row in persona.persona_female.iterrows():
+            femaletablelist.append({'age':ind,'ratio':row.ratio})
+        for ind,row in persona.persona_rank.iterrows():
+            ranktablelist.append({'rank':rev_grade_dic[int(ind)],'ratio':row.ratio})
+
+        context['brand'] = brand
+        context['maletable'] =maletablelist
+        context['femaletable'] =femaletablelist
+        context['ranktable'] = ranktablelist
         
 
     return HttpResponse(template.render(context,request))

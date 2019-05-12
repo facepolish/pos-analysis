@@ -6,7 +6,7 @@
 <h2>ブランド:{{brand}}</h2>
 <h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
 </header>
-
+<li><a href="{% url 'dashboard_result'%}?theme=4&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&brand={{ brand }}">ペルソナ</a></li>
 <table id="myTable" boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333"  class="tablesorter">
 <thead>
 <tr>

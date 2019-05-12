@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+<header><h1>{{shop_name}}</h1><br>
+<h2>ブランド:{{brand}}</h2>
+<h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
+</header>
+<table id="myTable" boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333"  class="tablesorter">
+<thead>
+<tr>
+<th>男性　年代</th>
+<th>レシオ</th>
+</tr>
+</thead>
+<tbody>
+{% for row in maletable %}
+    <tr>
+    <td>{{row.age}}</td>
+    <td>{{row.ratio}}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+<table id="myTable" boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333"  class="tablesorter">
+<thead>
+<tr>
+<th>女性　年代</th>
+<th>レシオ</th>
+</tr>
+</thead>
+<tbody>
+{% for row in femaletable %}
+    <tr>
+    <td>{{row.age}}</td>
+    <td>{{row.ratio}}</td>
+    </tr>
+{% endfor %}
+</tbody>
+
+</table>
+<table id="myTable3" boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333"  class="tablesorter">
+<thead>
+<tr>
+<th>会員属性</th>
+<th>レシオ</th>
+</tr>
+</thead>
+<tbody>
+{% for row in ranktable %}
+    <tr>
+    <td>{{row.rank}}</td>
+    <td>{{row.ratio}}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

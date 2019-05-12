@@ -355,6 +355,56 @@ def QueryUsers(terms):
     pos = tb.GetTable()
     return (pos.shape[0])
 
+def QueryPersona(pos):
+     tb = KojitsuPos()
+     user = tb.GetUserTable()
+     pos = pd.merge(pos,user,on='user_id',how='inner')
+     malepos = pos[pos.gender == '男性']
+     malepos = malepos[['price','age_group']]
+     femalepos = pos[pos.gender == '女性']
+     femalepos = femalepos[['price','age_group']]
+     rankpos = pos[['price','user_rank']]
+
+     maletable = malepos.groupby(['age_group']).sum()
+     maletotal = sum(maletable.price)
+     femaletable = femalepos.groupby(['age_group']).sum()
+     femaletotal = sum(femaletable.price)
+     ranktable = rankpos.groupby(['user_rank']).sum()
+     ranktotal = sum(ranktable.price)
+     
+     total = femaletotal+maletotal
+
+     maletable.price = maletable.price/total
+     femaletable.price = femaletable.price/total
+     ranktable.price = ranktable.price/ranktotal
+     
+     maletable = maletable.rename(columns={'price':'ratio'})
+     femaletable = femaletable.rename(columns={'price':'ratio'})
+     ranktable = ranktable.rename(columns={'price':'ratio'})
+     
+     retdic = {'male_age_group_ratio':maletable,'female_age_group_ratio':femaletable,'rank_group_ratio':ranktable}
+     return(retdic)
+
+class Persona(object):
+    tb = KojitsuPos()
+    allpos = tb.GetPosTable()
+    all_persona = QueryPersona(allpos)
+    def __init__(self,term=None,item=None,brand=None,shop=None):
+        pos = Persona.allpos
+        if term is not None:
+            pos = pos[pos.purchase_date>=term[0]]
+            pos = pos[pos.purchase_date<=term[1]]
+        if item is not None and not(item == 0):
+            pos = pos[pos.itemid == item]
+        if brand is not None:
+            pos = pos[pos.brand == brand]
+        if (shop is not None) and not((shop == 0) or(shop == '0') or (shop == 'all')):
+            pos = pos[pos.shop == shop]
+        self.persona = QueryPersona(pos)
+        self.persona_male = self.persona['male_age_group_ratio']/Persona.all_persona['male_age_group_ratio']
+        self.persona_female = self.persona['female_age_group_ratio']/Persona.all_persona['female_age_group_ratio']
+        self.persona_rank = self.persona['rank_group_ratio']/Persona.all_persona['rank_group_ratio']
+
 
 class QueryUsersByTerm(object):
     def grade(self, user, para):
