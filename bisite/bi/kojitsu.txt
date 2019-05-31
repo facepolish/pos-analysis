@@ -1,0 +1,4 @@
+
+管理者アカウントの作成
+https://docs.djangoproject.com/ja/2.2/intro/tutorial02/#creating-an-admin-user
+

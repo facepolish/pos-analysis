@@ -10,14 +10,17 @@ import tqdm
 import os.path
 import matplotlib.pyplot as plt
 from numba import jit
+from pathlib import Path
+from django.conf import settings
 
 
 posfile = 'pos.csv'
 userfile = 'user.csv'
 #filepos = '../../../output/'
 #fileinputpos = '../../../input/'
-filepos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/output/'
-fileinputpos = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/'
+kojitsupath = Path(settings.BASE_DIR).parent.parent
+filepos = os.path.join(kojitsupath,'output/')
+fileinputpos = os.path.join(kojitsupath,'input/')
 ext = '.csv'
 col_dtype_new = {'user_id':str,'user_rank':str}
 col_dtype = {u'会員番号':str,u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str,u'原価':int}
@@ -562,7 +565,7 @@ class postable(itemsalestable):
         self.prefix = 'pos'
 
 def postable2():
-    path1="C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/57期分析用資料/実店舗/"
+    path1= fileinputpos+"57期分析用資料/実店舗/"
     file1="会員購買履歴_57期一四半期.xlsx"
     file2="会員購買履歴_57期二四半期.xlsx"
     file3 = "会員購買履歴_57期三四半期.xlsx"
@@ -572,7 +575,7 @@ def postable2():
     file5 = "商品マスタ.xlsx"
     file6 = "HITRMD_ﾒｰｶｰｺｰﾄﾞ.xlsx"
 
-    path2 = "C:/Users/Hiroshi Sakai/workspace/Kojitsu/input/メーカーコード・商品マスタ/"
+    path2 = fileinputpos+"メーカーコード・商品マスタ/"
     iterm_master = pd.read_excel(path2+file5,dtype=col_dtype)
     iterm_master.rename(columns=colnamedic,inplace=True)
     iterm_master = iterm_master[['jan_code','DEPT','SDEPT','cost']]
@@ -609,7 +612,7 @@ def getallpos():
     return(pos1)
 
 def usertable2():
-    path3 = "C:/Users/Hiroshi Sakai\workspace/Kojitsu/input/57期分析用資料\WebShop\顧客/"
+    path3 = fileinputpos+"57期分析用資料\WebShop\顧客/"
     file7 = "customer190124最新.xlsx"
     customers = pd.read_excel(path3+file7,dtype=col_dtype)
     customers.rename(columns=colnamedic,inplace=True)
