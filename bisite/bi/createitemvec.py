@@ -5,19 +5,10 @@ from pandas.api.types import CategoricalDtype
 from sklearn.decomposition import NMF
 import numpy as np
 import os
-from django.conf import settings
-uservecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/uservec.pkl')
-itemvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/itemvec.pkl')
+from posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile
 
-deptvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/deptvec.pkl')
-deptuserfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/deptuser.pkl')
+deptfile=depttablefile
 
-sdeptvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/sdeptvec.pkl')
-sdeptuserfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
-
-samecartitemvecfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
-posfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/pos.pkl')
-deptfile=os.path.join(settings.BASE_DIR, 'bi/data/bi/dept.pkl')
 import numpy as np
 import math
 from sklearn.preprocessing import normalize

@@ -1,0 +1,78 @@
+﻿import os
+#from django.conf import settings
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+posfile = os.path.join(BASE_DIR, 'bi/data/bi/pos.pkl')
+userfile = os.path.join(BASE_DIR, 'bi/data/bi/user.pkl')
+uservecfile = os.path.join(BASE_DIR, 'bi/data/bi/uservec.pkl')
+itemvecfile = os.path.join(BASE_DIR, 'bi/data/bi/itemvec.pkl')
+itemiddicfile = os.path.join(BASE_DIR, 'bi/data/bi/itemid.pkl')
+depttablefile = os.path.join(BASE_DIR, 'bi/data/bi/dept.pkl')
+sdepttablefile = os.path.join(BASE_DIR, 'bi/data/bi/sdept.pkl')
+deptsdepttablefile = os.path.join(BASE_DIR, 'bi/data/bi/deptsdept.pkl')
+
+deptvecfile=os.path.join(BASE_DIR, 'bi/data/bi/deptvec.pkl')
+deptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/deptuser.pkl')
+sdeptvecfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptvec.pkl')
+sdeptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
+samecartitemvecfile=os.path.join(BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
+
+possource_columns = ['売上日付','店舗ｺｰﾄﾞ','売上時間','会員番号','DEPT','SDEPT','ブランド','型名',
+                     '商品名','売価','数量','売上伝票番号','ﾒｰｶｰｺｰﾄﾞ','原価','JANｺｰﾄﾞ']
+usersource_columns = ['仮登録日','会員番号','都道府県','性別','年齢','年代','来店回数','会員ランク']
+
+colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
+              u'店名':'shop_name',
+              u'売上日付':'purchase_date',
+              u'注文日':'purchase_date',
+              u'受注日':'purchase_date',# genesis order table
+              u'受注番号':'order_code', # genesis order table & AcceptDetail. key for Merge
+              u'売上時間':'purchase_time',
+              u'売上時刻': 'purchase_time',
+              u'会員カード番号':'user_id',
+              u'会員番号':'user_id',
+              u'生年月日':'birth_date',
+              u'顧客コード':'user_code', # genesis customer table & order table
+              u'ブランド':'brand',
+              u'型名':'type',
+              u'商品名':'item_name',
+              u'商品名_漢字':'item_name',
+              u'金額(税込)':'price', # genesis order table
+#              u'商品金額合計':'price',
+              u'注文金額合計':'price',  #ECbeing sales
+              u'売価':'price', # pos table
+              u'数量':'amount',
+              u'都道府県':'address',
+              u'性別':'gender',
+              u'年齢':'age',
+              u'年代':'age_group',
+              u'来店回数':'visit_count',
+              u'仮登録日':'registered_date',
+              u'会員ランク':'user_rank',
+              u'分類名':'category',
+              u'商品コード':'itemcode',
+              u'品番名':'item_code1',
+              u'ショップコード':'shop_code',
+              u'カテゴリーコード':'categorycode',
+              u'カテゴリコード':'categorycode',
+              u'【ecbeing】カテゴリコード':'categorycode',
+              u'【genesis】商品分類1+2+3':'genesis',
+              'S_DEPT':'SDEPT',
+              u'商品分類1コード':'itemcode1',
+              u'商品分類2コード':'itemcode2',
+              u'商品分類3コード':'itemcode3',
+              u'売上額':'price',
+              u'POS販売時刻':'purchase_time',
+              u'売上伝票番号':'slip_id',
+              u'原価':'cost',
+              u'ﾒｰｶｰｺｰﾄﾞ':'maker_code',
+              u'ﾒｰｶｰ名_漢字':'brand',
+              u'生年月':'birth_year_month',
+              'DEPT':'DEPT',
+              u'JANｺｰﾄﾞ':'jan_code'}
+              
+
+col_dtype = {u'会員番号':str,
+u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str,u'原価':int}
+
+

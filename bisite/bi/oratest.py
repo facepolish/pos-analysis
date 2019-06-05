@@ -1,40 +1,53 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import os
-from datetime import timedelta
-posfile = os.path.join('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite', 'bi/data/bi/pos.pkl')
+import sqlalchemy
+from posenv import posfile,userfile
+from sqltodf import db_conn,getposdb,getuserdb,colnamedic,possource_columns,usersource_columns
 
+def gen_rev_dic(list):
+    dic = {}
+    for li in list:
+        item = colnamedic.get(li)
+        dic.update({item:li})
+    return(dic)
+
+    
 if __name__=='__main__':
 
-    Session = sessionmaker()
-    os.environ['NLS_LANG'] = 'JAPANESE_JAPAN.UTF8'
-    engine = create_engine("oracle://SYSTEM:sakaI123@localhost:1521/kojitsu" ,echo=True)
-    connection = engine.connect()
-    result = connection.execute("SELECT name,open_mode FROM v$pdbs")
-#    result = connection.execute("alter pluggable database posdata open")
-    result = connection.execute("alter session set container=posdata")
-    result = connection.execute("SELECT * from all_tables order by owner,table_name")
     postable = pd.read_pickle(posfile)
-    postable = postable[0:10000]
-    maxdate = max(postable.purchase_date)
-    day_before_max = maxdate - timedelta(days=1)
-    day_string = day_before_max.strftime("%Y/%m/%d")
-    print (day_string)
-    sql_string = "select user_id,price from kojitsupos where purchase_date > to_date('{}','yyyy/mm/dd')".format(day_string)
-    print (sql_string)
-    result = connection.execute("drop table kojitsupos")
-    postable.to_sql('kojitsupos',connection,if_exists='append')
-#    sqlpos = pd.read_sql(sql_string,connection)
-    sqlpos = pd.read_sql("select * from kojitsupos",connection)
-    for ind,row in sqlpos.iterrows():
-        print(row)
+    usertable = pd.read_pickle(userfile)
+    print(usertable.columns)
+    postable = postable.sort_values(['purchase_date','purchase_time'])
+    usertable = usertable.sort_values('registered_date')
+    postable1 = postable[0:2000]
+    postable2 = postable[0:1000]
+    postable1 = postable1.reset_index()
+    postable1 = postable1.rename(columns = gen_rev_dic(possource_columns))
+    usertable1 = usertable[0:2000]
+    usertable2 = usertable[0:1000]
+    usertable1 = usertable1.reset_index()
+    usertable1 = usertable1.rename(columns = gen_rev_dic(usersource_columns))
+    print (postable1.columns)
+    print (postable2.columns)
+    print (usertable1.columns)
+    print (postable2.columns)
+    
+    
 
-#    for row in result:
-#        print(row)
-    connection.close()
-    Session.configure(bind=engine)
-    session = Session()
-    session.close()
+
+    with db_conn() as connection:
+#        result = connection.execute("SELECT name,open_mode FROM v$pdbs")
+#        result = connection.execute("alter pluggable database posdata open")
+#        result = connection.execute("SELECT * from all_tables order by owner,table_name")
+        result = connection.execute("drop table kojitsupos")
+        result = connection.execute("drop table kojitsuuser")
+        postable1.to_sql('kojitsupos',connection,if_exists='append')
+        usertable1.to_sql('kojitsuuser',connection,if_exists='append',dtype={'user_id':sqlalchemy.types.String(length=12)})
+    respos = getposdb(postable2)
+    resuser = getuserdb(usertable2)
+
+    print ("sql pos hight = "+str(postable1.shape[0]))
+    print ("result pos hight = "+str(respos.shape[0]))
+    print ("sql user hight = "+str(usertable1.shape[0]))
+    print ("result user hight = "+str(resuser.shape[0]))
 

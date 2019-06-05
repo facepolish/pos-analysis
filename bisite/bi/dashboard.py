@@ -6,22 +6,14 @@ import os
 import pickle
 import numba
 import datetime as dt
-from django.conf import settings
 from scipy.sparse import csr_matrix
 from pandas.api.types import CategoricalDtype
 from .tableclass import postable, UserTable, DEPTtable, getallpos, getallusers
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
+from . import posenv
 
 gradedic = {'1合目登頂中': 1, '4合目登頂中': 2, '6合目登頂中': 3, '8合目登頂中': 4, '登頂達成！': 5}
-posfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/pos.pkl')
-userfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/user.pkl')
-uservecfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/uservec.pkl')
-itemvecfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/itemvec.pkl')
-itemiddicfile = os.path.join(settings.BASE_DIR, 'bi/data/bi/itemid.pkl')
-depttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/dept.pkl')
-sdepttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/sdept.pkl')
-deptsdepttablefile = os.path.join(settings.BASE_DIR, 'bi/data/bi/deptsdept.pkl')
 
 
 def PivotSum(table):
@@ -69,33 +61,33 @@ def posaddcols(postable):
 class KojitsuPos(object):
     __posupdated = False
     __userupdated = False
-    if os.path.exists(posfile):
-        postable = pd.read_pickle(posfile)
+    if os.path.exists(posenv.posfile):
+        postable = pd.read_pickle(posenv.posfile)
     else:
         postable = getallpos()
         postable = posaddcols(postable)
-        postable.to_pickle(posfile)
+        postable.to_pickle(posenv.posfile)
         __posupdated = True
-    if os.path.exists(userfile):
-        usertable = pd.read_pickle(userfile)
+    if os.path.exists(posenv.userfile):
+        usertable = pd.read_pickle(posenv.userfile)
     else:
         usertable = getallusers()
         usertable.user_rank = usertable.user_rank.replace(gradedic)
-        usertable.to_pickle(userfile)
+        usertable.to_pickle(posenv.userfile)
         __userupdated = True
     '''
-    if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(uservecfile)):
-        item_vec=pd.read_pickle(itemvecfile)
-        user_vec=pd.read_pickle(uservecfile)
+    if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(posenv.uservecfile)):
+        item_vec=pd.read_pickle(posenv.itemvecfile)
+        user_vec=pd.read_pickle(posenv.uservecfile)
     else:
         user_vec,item_vec = UserItemVec(postable,usertable)
-        item_vec.to_pickle(itemvecfile)
-        user_vec.to_pickle(uservecfile)
+        item_vec.to_pickle(posenv.itemvecfile)
+        user_vec.to_pickle(posenv.uservecfile)
     '''
-    if os.path.exists(depttablefile) &os.path.exists(deptsdepttablefile):
-        with open(depttablefile, 'rb') as f:
+    if os.path.exists(posenv.depttablefile) &os.path.exists(posenv.deptsdepttablefile):
+        with open(posenv.depttablefile, 'rb') as f:
             dept_dic = pickle.load(f)
-        with open(deptsdepttablefile, 'rb') as f:
+        with open(posenv.deptsdepttablefile, 'rb') as f:
             deptsdept_dic = pickle.load(f)
     else:
         dpt = DEPTtable('HITRMD_DEPT')
@@ -106,19 +98,19 @@ class KojitsuPos(object):
             sdic = sdept_dic[k]
             for sk,sv in sdic.items():
                 deptsdept_dic.update({(k,sk):v+' '+sv})
-        with open(depttablefile, 'wb') as f:
+        with open(posenv.depttablefile, 'wb') as f:
             pickle.dump(dept_dic, f)
-        with open(deptsdepttablefile, 'wb') as f:
+        with open(posenv.deptsdepttablefile, 'wb') as f:
             pickle.dump(deptsdept_dic, f)
 
-    if os.path.exists(itemiddicfile):
-        with open(itemiddicfile, 'rb') as f:
+    if os.path.exists(posenv.itemiddicfile):
+        with open(posenv.itemiddicfile, 'rb') as f:
             itemid_dic = pickle.load(f)
     else:
         itemid_dic = {id: {'brand':b,'type': t,'name': n,'DEPT_SDEPT':(d, s)} for id, b, t, n, d, s in
                       zip(postable.itemid, postable.brand, postable.type, postable.item_name, postable.DEPT,
                           postable.SDEPT)}
-        with open(itemiddicfile, 'wb') as f:
+        with open(posenv.itemiddicfile, 'wb') as f:
             pickle.dump(itemid_dic, f)
 
     #    def __init__(self):

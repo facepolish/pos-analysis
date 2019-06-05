@@ -3,12 +3,13 @@ import pandas as pd
 import datetime
 import numpy
 from mpl_toolkits.mplot3d.axes3d import Axes3D
+from posenv import posfile,depttablefile,deptsdepttablefile,userfile,itemvecfile
 if __name__ == "__main__":
-    postable = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/pos.pkl')
-    depdic = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/dept.pkl')
-    d_sdeptdic = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/deptsdept.pkl')
-    user = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/user.pkl')
-    itemvecall = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/itemvec.pkl')
+    postable = pd.read_pickle(posfile)
+    depdic = pd.read_pickle(depttablefile)
+    d_sdeptdic = pd.read_pickle(deptsdepttablefile)
+    user = pd.read_pickle(userfile)
+    itemvecall = pd.read_pickle(itemvecfile)
 
     shoe_pos = postable[postable.DEPT==1]
 #    shoe_pos = postable[postable.DEPT==11]
