@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +142,22 @@ else:
         filemode = 'a'
     )
 LOGIN_REDIRECT_URL = '/bi/dashboard/'
+
+CELERY_BROKER_URL = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_TIMEZONE = 'Asia/Tokyo'
+CELERY_BEAT_SCHEDULE = {
+ 'fetch_data_from_DB': {
+       'task': 'fetch_latest_data',
+        # There are 4 ways we can handle time, read further 
+       'schedule': 300.0,
+        # If you're using any arguments
+#       'args': (ÅeWe donÅft need anyÅf,),
+    },
+    # Executes every Friday at 4pm
+#    'send-notification-on-friday-afternoon': { 
+#         'task': 'bisite.tasks.send_notification', 
+#         'schedule': crontab(hour=16, day_of_week=5),
+#        },
+}
+

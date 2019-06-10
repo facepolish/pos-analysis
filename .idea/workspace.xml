@@ -6,10 +6,13 @@
       <change beforePath="$PROJECT_DIR$/bisite/bi/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/createitemvec.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/createitemvec.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/dashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/loadexcel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/loadexcel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/oratest.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/oratest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/posenv.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/posenv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/sqltodf.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/sqltodf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/tableclass.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/tableclass.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bisite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bisite/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,33 +24,33 @@
     <session id="1635376012">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="53" />
+          <entry key="project.closed" value="56" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.4" value="5" />
-          <entry key="project.open.time.5" value="38" />
-          <entry key="project.open.time.6" value="22" />
+          <entry key="project.open.time.5" value="41" />
+          <entry key="project.open.time.6" value="23" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="67" />
+          <entry key="project.opened" value="71" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="67" />
+          <entry key="py" value="69" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="67" />
+          <entry key="Python" value="69" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="24254" />
+          <entry key="py" value="24505" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="24254" />
+          <entry key="Python" value="24505" />
         </counts>
       </usages-collector>
     </session>
@@ -57,8 +60,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/tableclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="103" selection-start-line="103" selection-end-line="103" />
+            <state relative-caret-position="221">
+              <caret line="13" column="5" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -72,11 +75,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/oratest.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="302">
-              <caret line="42" column="1" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
+            <state relative-caret-position="17">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -84,28 +87,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bisite/bi/sqltodf.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="25" column="30" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="170">
+              <caret line="10" column="157" selection-start-line="10" selection-start-column="157" selection-end-line="10" selection-end-column="157" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bisite/bi/__init__.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bisite/bi/posenv.py">
+        <entry file="file://$PROJECT_DIR$/bisite/bi/sqltodf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+            <state relative-caret-position="1343">
+              <caret line="85" selection-start-line="85" selection-end-line="85" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -115,6 +113,18 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="374">
               <caret line="36" selection-start-line="36" selection-end-line="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bisite/bi/posenv.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1615">
+              <caret line="96" column="34" selection-start-line="96" selection-start-column="34" selection-end-line="96" selection-end-column="34" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -131,7 +141,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/dashboard.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
+            <state relative-caret-position="221">
               <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
             </state>
           </provider>
@@ -141,10 +151,7 @@
         <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="119">
-              <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+              <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -182,6 +189,7 @@
       <find>brandbuyers</find>
       <find>GetItemData</find>
       <find>static</find>
+      <find>dept</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -206,18 +214,19 @@
         <option value="$PROJECT_DIR$/dashboard.py" />
         <option value="$PROJECT_DIR$/bisite/bi/forms.py" />
         <option value="$PROJECT_DIR$/bisite/bi/kakakucom.py" />
-        <option value="$PROJECT_DIR$/bisite/bi/tableclass.py" />
         <option value="$PROJECT_DIR$/bisite/bi/loadexcel.py" />
-        <option value="$PROJECT_DIR$/bisite/bi/views.py" />
         <option value="$PROJECT_DIR$/bisite/bi/test2.py" />
         <option value="$PROJECT_DIR$/bisite/bi/dashboard.py" />
         <option value="$PROJECT_DIR$/bisite/bi/createitemvec.py" />
+        <option value="$PROJECT_DIR$/bisite/bi/sqltodf.py" />
         <option value="$PROJECT_DIR$/bisite/bi/posenv.py" />
+        <option value="$PROJECT_DIR$/bisite/bi/tableclass.py" />
         <option value="$PROJECT_DIR$/bisite/bi/oratest.py" />
+        <option value="$PROJECT_DIR$/bisite/bi/views.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="35" />
     <option name="y" value="-12" />
     <option name="width" value="1940" />
@@ -228,6 +237,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -256,7 +266,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -275,7 +284,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.oratest">
+  <component name="RunManager" selected="Python.django kojitsu">
     <configuration name="createitemvec" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Kojitsu" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -390,8 +399,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.oratest" />
         <item itemvalue="Python.django kojitsu" />
+        <item itemvalue="Python.oratest" />
         <item itemvalue="Python.test2" />
         <item itemvalue="Python.loadexcel" />
         <item itemvalue="Python.createitemvec" />
@@ -412,7 +421,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11064278" />
@@ -420,15 +429,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.45679662" visible="true" weight="0.38675624" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.39409906" weight="0.2696737" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4536354" visible="true" weight="0.38675624" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.3930453" weight="0.2696737" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49947312" weight="0.32917467" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.54320335" side_tool="true" visible="true" weight="0.38675624" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5463646" side_tool="true" visible="true" weight="0.38675624" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -587,7 +596,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>295</line>
+          <line>336</line>
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -597,32 +606,32 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>181</line>
+          <line>185</line>
           <option name="timeStamp" value="124" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>239</line>
+          <line>243</line>
           <option name="timeStamp" value="129" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>197</line>
+          <line>201</line>
           <option name="timeStamp" value="130" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>262</line>
+          <line>266</line>
           <option name="timeStamp" value="131" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>191</line>
+          <line>195</line>
           <option name="timeStamp" value="133" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>222</line>
+          <line>226</line>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -642,27 +651,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>38</line>
+          <line>37</line>
           <option name="timeStamp" value="163" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>25</line>
+          <line>24</line>
           <option name="timeStamp" value="166" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>40</line>
+          <line>39</line>
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>41</line>
+          <line>40</line>
           <option name="timeStamp" value="169" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>216</line>
+          <line>257</line>
           <option name="timeStamp" value="201" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -672,7 +681,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>483</line>
+          <line>524</line>
           <option name="timeStamp" value="204" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -681,23 +690,13 @@
           <option name="timeStamp" value="205" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/tableclass.py</url>
-          <line>146</line>
-          <option name="timeStamp" value="206" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/tableclass.py</url>
-          <line>170</line>
-          <option name="timeStamp" value="208" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>180</line>
+          <line>184</line>
           <option name="timeStamp" value="209" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>276</line>
+          <line>317</line>
           <option name="timeStamp" value="213" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -707,27 +706,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>385</line>
+          <line>389</line>
           <option name="timeStamp" value="215" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>367</line>
+          <line>371</line>
           <option name="timeStamp" value="217" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>394</line>
+          <line>435</line>
           <option name="timeStamp" value="218" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
-          <line>384</line>
+          <line>425</line>
           <option name="timeStamp" value="219" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>411</line>
+          <line>415</line>
           <option name="timeStamp" value="220" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -737,18 +736,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/oratest.py</url>
-          <line>14</line>
-          <option name="timeStamp" value="232" />
+          <line>43</line>
+          <option name="timeStamp" value="237" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/oratest.py</url>
-          <line>27</line>
-          <option name="timeStamp" value="233" />
+          <line>24</line>
+          <option name="timeStamp" value="238" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/oratest.py</url>
-          <line>12</line>
-          <option name="timeStamp" value="234" />
+          <line>23</line>
+          <option name="timeStamp" value="239" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/posenv.py</url>
+          <line>96</line>
+          <option name="timeStamp" value="240" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1020,16 +1024,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6681">
-          <caret line="411" selection-start-line="411" selection-end-line="411" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5236">
@@ -1068,17 +1062,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/core/handlers/exception.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="36" selection-start-line="36" selection-end-line="36" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/bisite/bi/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/utils/deprecation.py">
+    <entry file="file://$PROJECT_DIR$/bisite/bi/tableclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1513">
-          <caret line="90" selection-start-line="90" selection-end-line="90" />
+        <state relative-caret-position="221">
+          <caret line="13" column="5" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -1089,12 +1079,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/bisite/bi/sqltodf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1343">
+          <caret line="85" selection-start-line="85" selection-end-line="85" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/core/handlers/exception.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bisite/bi/posenv.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1615">
+          <caret line="96" column="34" selection-start-line="96" selection-start-column="34" selection-end-line="96" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/utils/deprecation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1513">
+          <caret line="90" selection-start-line="90" selection-end-line="90" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bisite/bi/dashboard.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
+        <state relative-caret-position="221">
           <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
         </state>
       </provider>
@@ -1102,44 +1123,24 @@
     <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
-          <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/tableclass.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="103" selection-start-line="103" selection-end-line="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/posenv.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/sqltodf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="25" column="30" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bisite/bi/oratest.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="302">
-          <caret line="42" column="1" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
+        <state relative-caret-position="17">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="157" selection-start-line="10" selection-start-column="157" selection-end-line="10" selection-end-column="157" />
         </state>
       </provider>
     </entry>

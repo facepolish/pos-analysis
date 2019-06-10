@@ -8,12 +8,11 @@ import numba
 import datetime as dt
 from scipy.sparse import csr_matrix
 from pandas.api.types import CategoricalDtype
-from .tableclass import postable, UserTable, DEPTtable, getallpos, getallusers
+from .tableclass import postable, DEPTtable, getallpos, getallusers, posaddcols
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
 from . import posenv
 
-gradedic = {'1合目登頂中': 1, '4合目登頂中': 2, '6合目登頂中': 3, '8合目登頂中': 4, '登頂達成！': 5}
 
 
 def PivotSum(table):
@@ -51,12 +50,6 @@ def UserItemVec(pos1, user1):
 def year_week_id(date):
     return(str(date.isocalendar()[0]) + ' ' + str(date.isocalendar()[1]).rjust(2))
     
-def posaddcols(postable):
-    postable.loc[:, 'itemid'] = postable.brand + postable.type + postable.item_name
-    postable.loc[:, 'unit_price'] = postable.price / postable.amount
-    weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
-    postable.loc[:, 'year_week'] = weeks
-    return(postable)
     
 class KojitsuPos(object):
     __posupdated = False
@@ -65,14 +58,12 @@ class KojitsuPos(object):
         postable = pd.read_pickle(posenv.posfile)
     else:
         postable = getallpos()
-        postable = posaddcols(postable)
         postable.to_pickle(posenv.posfile)
         __posupdated = True
     if os.path.exists(posenv.userfile):
         usertable = pd.read_pickle(posenv.userfile)
     else:
         usertable = getallusers()
-        usertable.user_rank = usertable.user_rank.replace(gradedic)
         usertable.to_pickle(posenv.userfile)
         __userupdated = True
     '''
@@ -115,6 +106,56 @@ class KojitsuPos(object):
 
     #    def __init__(self):
     #        self.postable = self.postable
+    @classmethod
+    def refreshtables(cls):
+        cls.postable = getallpos()
+        cls.postable.to_pickle(posenv.posfile)
+        cls.usertable = getallusers()
+        cls.usertable.to_pickle(posenv.userfile)
+        cls.user_vec,cls.item_vec = UserItemVec(cls.postable,cls.usertable)
+        item_vec.to_pickle(posenv.itemvecfile)
+        user_vec.to_pickle(posenv.uservecfile)
+
+    @classmethod
+    def diffupdatetables(cls):
+        cls.postable = getallpos(cls.postable)
+        cls.postable.to_pickle(posenv.posfile)
+        cls.usertable = getallusers(cls.usertable)
+        cls.usertable.to_pickle(posenv.userfile)
+        cls.user_vec,cls.item_vec = UserItemVec(cls.postable,cls.usertable)
+        item_vec.to_pickle(posenv.itemvecfile)
+        user_vec.to_pickle(posenv.uservecfile)
+        
+        
+    @classmethod
+    def updatetables(cls):
+        __posupdated = False
+        __userupdated = False
+        if os.path.exists(posenv.posfile):
+            cls.postable = pd.read_pickle(posenv.posfile)
+            __posupdated = True
+        if os.path.exists(posenv.userfile):
+            cls.usertable = pd.read_pickle(posenv.userfile)
+            __userupdated = True
+        if os.path.exists(posenv.depttablefile) &os.path.exists(posenv.deptsdepttablefile):
+            with open(posenv.depttablefile, 'rb') as f:
+                cls.dept_dic = pickle.load(f)
+            with open(posenv.deptsdepttablefile, 'rb') as f:
+                cls.deptsdept_dic = pickle.load(f)
+        if os.path.exists(posenv.itemiddicfile):
+            with open(posenv.itemiddicfile, 'rb') as f:
+                cls.itemid_dic = pickle.load(f)
+        '''
+        if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(posenv.uservecfile)):
+            cls.item_vec=pd.read_pickle(posenv.itemvecfile)
+            cls.user_vec=pd.read_pickle(posenv.uservecfile)
+        else:
+            cls.user_vec,cls.item_vec = UserItemVec(postable,usertable)
+            item_vec.to_pickle(posenv.itemvecfile)
+            user_vec.to_pickle(posenv.uservecfile)
+        '''
+    
+    
     @classmethod
     def GetPosTable(cls):
         return (cls.postable)
@@ -401,8 +442,8 @@ class Persona(object):
 class QueryUsersByTerm(object):
     def grade(self, user, para):
         user1 = user
-        low = min(int(para[0]), int(para[1]))
-        high = max(int(para[0]), int(para[1]))
+        low = str(min(int(para[0]), int(para[1])))
+        high = str(max(int(para[0]), int(para[1])))
         user2 = user1[user1.user_rank >= low]
         user2 = user2[user2.user_rank <= high]
         return (user2)

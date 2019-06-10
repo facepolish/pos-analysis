@@ -1,4 +1,6 @@
 ﻿import os
+from pathlib import Path
+
 #from django.conf import settings
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,6 +18,7 @@ deptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/deptuser.pkl')
 sdeptvecfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptvec.pkl')
 sdeptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
 samecartitemvecfile=os.path.join(BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
+kojitsupath = Path(BASE_DIR).parent.parent
 
 possource_columns = ['売上日付','店舗ｺｰﾄﾞ','売上時間','会員番号','DEPT','SDEPT','ブランド','型名',
                      '商品名','売価','数量','売上伝票番号','ﾒｰｶｰｺｰﾄﾞ','原価','JANｺｰﾄﾞ']
@@ -57,7 +60,6 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'カテゴリコード':'categorycode',
               u'【ecbeing】カテゴリコード':'categorycode',
               u'【genesis】商品分類1+2+3':'genesis',
-              'S_DEPT':'SDEPT',
               u'商品分類1コード':'itemcode1',
               u'商品分類2コード':'itemcode2',
               u'商品分類3コード':'itemcode3',
@@ -68,11 +70,33 @@ colnamedic = {u'店舗ｺｰﾄﾞ':'shop',
               u'ﾒｰｶｰｺｰﾄﾞ':'maker_code',
               u'ﾒｰｶｰ名_漢字':'brand',
               u'生年月':'birth_year_month',
-              'DEPT':'DEPT',
+              'dept':'DEPT',
+              'S_DEPT':'SDEPT',
+              'sdept':'SDEPT',
               u'JANｺｰﾄﾞ':'jan_code'}
               
 
-col_dtype = {u'会員番号':str,
-u'会員カード番号':str,'user_id':str,'user_rank':str,u'商品コード':str,u'カテゴリコード':str,u'カテゴリーコード':str,u'ショップコード':str, u'商品分類1コード':str,u'商品分類2コード':str,u'商品分類3コード':str,'user_id':str,'user_rank':str,u'原価':int}
+col_dtype = {
+    'user_id':str,
+    'user_rank':str,
+    'shop_code':str,
+    'categorycode':str,
+    'itemcode1':str,
+    'itemcode2':str,
+    'itemcode3':str,
+    'itemcode':str,
+    'cost':int,
+    'price':int,
+   'maker_code':str,
+   'jan_code':str }
+
+_col_dtype_temp = {}
+for k,v in colnamedic.items():
+    type = col_dtype.get(v,0)
+    if not(type == 0):
+        _col_dtype_temp.update({k:type})
+col_dtype.update(_col_dtype_temp)
+
+gradedic = {'1合目登頂中': '1', '4合目登頂中': '2', '6合目登頂中': '3', '8合目登頂中': '4', '登頂達成！': '5'}
 
 

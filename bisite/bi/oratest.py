@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+﻿import matplotlib.pyplot as plt
 import pandas as pd
 import sqlalchemy
 from posenv import posfile,userfile
@@ -41,8 +41,13 @@ if __name__=='__main__':
 #        result = connection.execute("SELECT * from all_tables order by owner,table_name")
         result = connection.execute("drop table kojitsupos")
         result = connection.execute("drop table kojitsuuser")
-        postable1.to_sql('kojitsupos',connection,if_exists='append')
-        usertable1.to_sql('kojitsuuser',connection,if_exists='append',dtype={'user_id':sqlalchemy.types.String(length=12)})
+        postable1.to_sql('kojitsupos',connection,if_exists='append',
+            dtype={'会員番号':sqlalchemy.types.String(length=12)
+                   ,'売上日付':sqlalchemy.types.Date()
+#                   ,'売上時間': sqlalchemy.types.Time()
+                   })
+        usertable1.to_sql('kojitsuuser',connection,if_exists='append',
+            dtype={'会員番号':sqlalchemy.types.String(length=12)})
     respos = getposdb(postable2)
     resuser = getuserdb(usertable2)
 
@@ -51,3 +56,16 @@ if __name__=='__main__':
     print ("sql user hight = "+str(usertable1.shape[0]))
     print ("result user hight = "+str(resuser.shape[0]))
 
+    for col in respos.columns:
+        if not (respos[col].dtype == postable2[col].dtype):
+            print ("datatype mismatch")
+            print ("columns = "+str(col))
+            print ("respos dtype = "+str(respos[col].dtype))
+            print ("postable2 dtype = "+str(postable2[col].dtype))
+    usertable2 = usertable2.reset_index()
+    for col in resuser.columns:
+        if not (resuser[col].dtype == usertable2[col].dtype):
+            print ("datatype mismatch")
+            print ("columns = "+str(col))
+            print ("resuser dtype = "+str(resuser[col].dtype))
+            print ("usertable2 dtype = "+str(usertable2[col].dtype))

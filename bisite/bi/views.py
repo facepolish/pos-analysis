@@ -8,7 +8,7 @@ from .forms import DashBoardForm,CampaignCreateForm,SetupDataForm
 import pandas as pd
 from django.template import loader
 from django.conf import settings
-from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail,Persona
+from .dashboard import PosQueryGen,QueryUsersByTerm,PosQueryDiscount,PosQueryPriceTrend,ItemRelatedInfo,PosQuerySales,PosQueryWeeklyDetail,Persona,KojitsuPos
 from datetime import datetime,timedelta
 from pytz import timezone
 import logging
@@ -158,6 +158,10 @@ class progresscount(object):
             logging.debug(self.basic_mess+'in progress '+str(self.counter)+' max = '+str(self.max))
             self.accu+=self.leg
             
+def setup_loadfiles(request):
+    KojitsuPos.updatetables()
+    return HttpResponse('completed!')
+    
 @login_required        
 @permission_required("bi.access_pos_data")
 def setup(request):

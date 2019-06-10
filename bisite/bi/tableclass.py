@@ -10,19 +10,13 @@ import tqdm
 import os.path
 import matplotlib.pyplot as plt
 from numba import jit
-from pathlib import Path
 from django.conf import settings
-from posenv import colnamedic,col_dtype
+from .posenv import colnamedic,col_dtype,kojitsupath,gradedic
 
 
-kojitsupath = Path(settings.BASE_DIR).parent.parent
 filepos = os.path.join(kojitsupath,'output/')
 fileinputpos = os.path.join(kojitsupath,'input/')
 ext = '.csv'
-col_dtype_new = {'user_id':str,'user_rank':str}
-colnamedic_pos = {u'会員番号':'user_id'}
-
-
 
 
 
@@ -60,7 +54,7 @@ class UserTable(object):
         absfile=filename
         if not(os.path.exists(absfile)):
             absfile = fileinputpos+filename+ext
-        self.usertable = pd.read_csv(absfile,encoding = 'CP932',dtype = col_dtype_new)
+        self.usertable = pd.read_csv(absfile,encoding = 'CP932',dtype = col_dtype)
         self.usertable = self.usertable.set_index('user_id')
         self.usertable.age = self.usertable.age.fillna(0)
         self.usertable.registered_date = pd.to_datetime( self.usertable.registered_date,format = '%Y%m')
@@ -100,6 +94,13 @@ class itemsalestable(object):
         datatable.purchase_time = pd.to_datetime(datatable.purchase_time,format = '%H%M%S')
 
         self.table = datatable
+        
+def posaddcols(postable):
+    postable.loc[:, 'itemid'] = postable.brand + postable.type + postable.item_name
+    postable.loc[:, 'unit_price'] = postable.price / postable.amount
+    weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
+    postable.loc[:, 'year_week'] = weeks
+    return(postable)
 
 class postable(itemsalestable):
     def __init__(self,filename):
@@ -130,7 +131,7 @@ def postable2():
         pos1 = pd.read_excel(path1 + fil, dtype=col_dtype)
         pos = pos.append(pos1)
     pos.rename(columns=colnamedic,inplace=True)
-    pos.rename(columns=colnamedic_pos,inplace=True)
+#    pos.rename(columns=colnamedic_pos,inplace=True)
 
 
     pos = pd.merge(pos,iterm_master , on ='jan_code')
@@ -143,7 +144,7 @@ def postable2():
     return(pos)
     
 
-def getallpos():
+def getallpos(pos=None):
     pos1 = postable('unified').table
     latest_date = max(pos1.purchase_date)
     pos2 = postable2()
@@ -151,6 +152,8 @@ def getallpos():
     pos1 = pos1.append(pos2)
     pos1.cost = pos1.cost.fillna(0)
     pos1.cost = pos1.cost.astype('int')
+    pos1 = posaddcols(pos1)
+
     return(pos1)
 
 def usertable2():
@@ -167,7 +170,7 @@ def usertable2():
     customers = customers.set_index('user_id')
     return(customers)
 
-def getallusers():
+def getallusers(user=None):
     user1 = UserTable('cleanutable').usertable
     user2 = usertable2()
     setuser1 = set(user1.index)
@@ -176,5 +179,6 @@ def getallusers():
     user1only = setuser1 - intersec
     user1 = user1[user1.index.isin(user1only)]
     user1 = user1.append(user2)
+    user1.user_rank = user1.user_rank.replace(gradedic)
     return(user1)
 
