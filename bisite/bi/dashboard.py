@@ -6,46 +6,12 @@ import os
 import pickle
 import numba
 import datetime as dt
-from scipy.sparse import csr_matrix
-from pandas.api.types import CategoricalDtype
 from .tableclass import postable, DEPTtable, getallpos, getallusers, posaddcols
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
 from . import posenv
 
 
-
-def PivotSum(table):
-    table.loc[:, 'count'] = 1
-    try:
-        userbyitem = pd.pivot_table(table, index='user_id', columns='itemid', values='count', aggfunc='sum')
-        userbyitem = userbyitem.fillna(0)
-        return (userbyitem)
-    except:
-        person_c = CategoricalDtype(sorted(table.user_id.unique()), ordered=True)
-        thing_c = CategoricalDtype(sorted(table.itemid.unique()), ordered=True)
-        row = table.user_id.astype(person_c).cat.codes
-        col = table.itemid.astype(thing_c).cat.codes
-        sparse_matrix = csr_matrix((table['count'], (row, col)),
-                                   shape=(person_c.categories.size, thing_c.categories.size))
-        dfs = pd.SparseDataFrame(sparse_matrix, index=person_c.categories, columns=thing_c.categories,
-                                 default_fill_value=0)
-        return (dfs)
-
-
-def UserItemVec(pos1, user1):
-    userbyitem = PivotSum(pos1)
-    #    userbyitem[userbyitem<0]=0
-    model = NMF(n_components=10, init='random', random_state=0, solver='mu')
-    #    testframe = userbyitem.iloc[0:userbyitem.shape[0]//2,:]
-    #    P = model.fit_transform(testframe)
-
-    P = model.fit_transform(userbyitem)
-    Q = model.components_
-    user_vec = pd.DataFrame(P, index=userbybrand.index)
-    user_vec = user_vec[user_vec.index.isin(user1.index)]
-    item_vec = pd.DataFrame(Q.T, index=userbyitem.columns)
-    return (user_vec, item_vec)
 
 def year_week_id(date):
     return(str(date.isocalendar()[0]) + ' ' + str(date.isocalendar()[1]).rjust(2))
@@ -66,15 +32,6 @@ class KojitsuPos(object):
         usertable = getallusers()
         usertable.to_pickle(posenv.userfile)
         __userupdated = True
-    '''
-    if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(posenv.uservecfile)):
-        item_vec=pd.read_pickle(posenv.itemvecfile)
-        user_vec=pd.read_pickle(posenv.uservecfile)
-    else:
-        user_vec,item_vec = UserItemVec(postable,usertable)
-        item_vec.to_pickle(posenv.itemvecfile)
-        user_vec.to_pickle(posenv.uservecfile)
-    '''
     if os.path.exists(posenv.depttablefile) &os.path.exists(posenv.deptsdepttablefile):
         with open(posenv.depttablefile, 'rb') as f:
             dept_dic = pickle.load(f)
@@ -103,6 +60,7 @@ class KojitsuPos(object):
                           postable.SDEPT)}
         with open(posenv.itemiddicfile, 'wb') as f:
             pickle.dump(itemid_dic, f)
+    rec_vecs = ItemRecommend()
 
     #    def __init__(self):
     #        self.postable = self.postable
@@ -112,9 +70,7 @@ class KojitsuPos(object):
         cls.postable.to_pickle(posenv.posfile)
         cls.usertable = getallusers()
         cls.usertable.to_pickle(posenv.userfile)
-        cls.user_vec,cls.item_vec = UserItemVec(cls.postable,cls.usertable)
-        item_vec.to_pickle(posenv.itemvecfile)
-        user_vec.to_pickle(posenv.uservecfile)
+        cls.rec_vecs.vec_update(cls.postable)
 
     @classmethod
     def diffupdatetables(cls):
@@ -122,9 +78,7 @@ class KojitsuPos(object):
         cls.postable.to_pickle(posenv.posfile)
         cls.usertable = getallusers(cls.usertable)
         cls.usertable.to_pickle(posenv.userfile)
-        cls.user_vec,cls.item_vec = UserItemVec(cls.postable,cls.usertable)
-        item_vec.to_pickle(posenv.itemvecfile)
-        user_vec.to_pickle(posenv.uservecfile)
+        cls.rec_vecs.vec_update(cls.postable)
         
         
     @classmethod
@@ -145,15 +99,8 @@ class KojitsuPos(object):
         if os.path.exists(posenv.itemiddicfile):
             with open(posenv.itemiddicfile, 'rb') as f:
                 cls.itemid_dic = pickle.load(f)
-        '''
-        if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(posenv.uservecfile)):
-            cls.item_vec=pd.read_pickle(posenv.itemvecfile)
-            cls.user_vec=pd.read_pickle(posenv.uservecfile)
-        else:
-            cls.user_vec,cls.item_vec = UserItemVec(postable,usertable)
-            item_vec.to_pickle(posenv.itemvecfile)
-            user_vec.to_pickle(posenv.uservecfile)
-        '''
+        cls.rec_vecs = ItemRecommend()
+
     
     
     @classmethod
@@ -440,6 +387,12 @@ class Persona(object):
 
 
 class QueryUsersByTerm(object):
+    def __init__(self):
+        kp = KojitsuPos()
+        self.pos = kp.GetPosTable()
+        self.user = kp.GetUserTable()
+        self.rec_vecs = ItemRecommend()
+
     def grade(self, user, para):
         user1 = user
         low = str(min(int(para[0]), int(para[1])))
@@ -521,7 +474,7 @@ class QueryUsersByTerm(object):
     def dept(self,user,para):
         dept_id = int(para[0])
         user_max = int(para[1])
-        ir = ItemRecommend()
+        ir = self.rec_vecs
         user2 = ir.getdeptrecommenduserlist(user.index,dept_id)
         if user2.shape[0] >user_max:
             user2 = user2.index[:user_max]
@@ -543,10 +496,6 @@ class QueryUsersByTerm(object):
                #    ('UseCategory',('category_id','start_categorytest_date','end_categorytest_date'),self.)
                }
 
-    def __init__(self):
-        kp = KojitsuPos()
-        self.pos = kp.GetPosTable()
-        self.user = kp.GetUserTable()
 
     def formlist(self):
         nulist = []
@@ -617,7 +566,7 @@ class ItemRelatedInfo(object):
         self.brand = item['brand']
         self.itemname = item['name']
         self.netprices = GetPricefromKakaku(self.brand, self.itemname)
-        itemrec = ItemRecommend()
+        itemrec = tp.rec_vecs
         cartrec = itemrec.getsamecartrecommendlist(itemid)
         self.cartrecommend = cartrec.iloc[1:11, :]
         self.cartrecommend.loc[:, 'brand'] = [tp.GetItemData(x)['brand'] for x in self.cartrecommend.index]

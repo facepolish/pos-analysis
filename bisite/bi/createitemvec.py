@@ -78,6 +78,7 @@ def PivotAndNMF(table, ind, col, how):
 
 def DEPTSDEPTcode (dept,sdept):
     return(str(dept).zfill(2)+str(sdept).zfill(3))
+
     
 def vec_update(table):
     table.loc[:, 'count'] = 1
@@ -133,14 +134,35 @@ class ItemRecommend(object):
     def getsdeptrecommenduserlist(self,dept,sdept):
         id = DEPTSDEPTcode(dept,sdept)
         return self.__getrecommend(self.sdept_vec,self.sdeptuser_vec,id)
+    def vec_update(self,table):
+        table.loc[:, 'count'] = 1
+        table.loc[:, 'cartid'] = table.user_id + table.year_week
+        table.loc[:, 'DEPTSDEPT'] = [DEPTSDEPTcode(x,y) for x, y in zip(table.DEPT, table.SDEPT)]
+
+        self.user_vec, self.item_vec = PivotAndNMF(table, 'user_id', 'itemid', 'price')
+        self.item_vec.to_pickle(itemvecfile)
+        self.user_vec.to_pickle(uservecfile)
+
+        _, self.samecartitem_vec = PivotAndNMF(table, 'cartid', 'itemid', 'count')
+        self.samecartitem_vec.to_pickle(samecartitemvecfile)
+
+        self.deptuser_vec, self.dept_vec = PivotAndNMF(table, 'user_id', 'DEPT', 'price')
+        self.dept_vec.to_pickle(deptvecfile)
+        self.deptuser_vec.to_pickle(deptuserfile)
+        self.sdeptuser_vec, sdept_vec = PivotAndNMF(table, 'user_id', 'DEPTSDEPT', 'price')
+        self.sdept_vec.to_pickle(sdeptvecfile)
+        self.sdeptuser_vec.to_pickle(sdeptuserfile)
+
+
 
 if __name__=='__main__':
     f=open(deptfile,'rb')
     lis=pickle.load(f)
     print(lis)
     table = pd.read_pickle(posfile)
-    vec_update(table)
+#    vec_update(table)
     it_rec = ItemRecommend()
+    it_rec.vec_update(table)
 
     sampleitem = table.loc[table.index[10],'itemid']
     print ('sample item is '+sampleitem)
