@@ -37,7 +37,7 @@ class SetupForm(forms.Form):
 class DashBoardForm(forms.Form):
     shopobj = Shops.objects.all()
     shop_choices = [('0','全店舗')]
-    theme_choices = [(0,'ブランド分析'),(1,'商品売り上げ順')]
+    theme_choices = [(0,'ブランド分析'),(1,'商品売り上げ順'),(10,'直近来店')]
     for shop in shopobj:
         shop_choices.append((shop.shop_code,shop.shop_name))
     shops = forms.ChoiceField(

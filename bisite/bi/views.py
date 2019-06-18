@@ -15,7 +15,7 @@ import logging
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 import matplotlib
-
+from .recency import PosQueryRecency,recency_intervals,get_stack
 from django.contrib.auth.decorators import login_required,permission_required
 
 @login_required
@@ -428,6 +428,41 @@ def dashboard_result(request):
         context['maletable'] =maletablelist
         context['femaletable'] =femaletablelist
         context['ranktable'] = ranktablelist
+    elif theme == '10':
+        template = loader.get_template('bi/behavior_recency.html')
+        table = PosQueryRecency(term,int(shop_code))
+        re_sales,re_ratio = get_stack(table)
+        colors = ['tab:blue','tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
+        labels = ['初来店／過去購買記録なし','３０日以内購買','３０日以降－９０日以内購買','dummy','dummy','dummy','dummy','dummy']
+
+        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+        ax[0].set_title(shop_name+' 週次　最終購買日別購買金額比率')
+        ax[1].set_title(shop_name+' 週次　最終購買日別購買金額')
+        ax[0].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+        ax[1].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+        '''
+        for i in range(0,len(recency_intervals)):
+            ax[0].plot(table.date,table.loc[:,('ratio',recency_intervals[i])],label=labels[i],
+                    color=colors[i])
+            ax[1].plot(table.date,table.loc[:,('sales',recency_intervals[i])],label=labels[i],
+                    color=colors[i])
+        '''
+        ax[0].fill_between(table.date,0,
+                re_ratio.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
+        ax[1].fill_between(table.date,0,
+                re_sales.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
+        for i in range(1,len(recency_intervals)):
+            ax[0].fill_between(table.date,re_ratio.loc[:,recency_intervals[i-1]],
+                    re_ratio.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
+            ax[1].fill_between(table.date,re_sales.loc[:,recency_intervals[i-1]],
+                    re_sales.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
+
+            
+        ax[0].legend()
+        ax[1].legend()
+        chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/recencychart.png')
+        fig.savefig(chart_path,format="png")
+        
         
 
     return HttpResponse(template.render(context,request))

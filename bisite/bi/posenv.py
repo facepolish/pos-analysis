@@ -20,6 +20,9 @@ sdeptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
 samecartitemvecfile=os.path.join(BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
 kojitsupath = Path(BASE_DIR).parent.parent
 
+recencyfile=os.path.join(BASE_DIR, 'bi/data/bi/recency.pkl')
+
+
 possource_columns = ['売上日付','店舗ｺｰﾄﾞ','売上時間','会員番号','DEPT','SDEPT','ブランド','型名',
                      '商品名','売価','数量','売上伝票番号','ﾒｰｶｰｺｰﾄﾞ','原価','JANｺｰﾄﾞ']
 usersource_columns = ['仮登録日','会員番号','都道府県','性別','年齢','年代','来店回数','会員ランク']

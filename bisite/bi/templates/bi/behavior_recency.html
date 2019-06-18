@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block mainbody %}
+
+<header><h1>{{shop_name}}</h1><br>
+<h2>{{item}}</h2><br>
+<h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
+</header>
+<img src="{% static "bi/recencychart.png" %}" alt="customer behavior based on recency"/>
+{% endblock %}
+{% block footnote %}
+simitemprice
+[shop,image_text,image,price,link]
+{% endblock %}
