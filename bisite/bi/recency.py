@@ -1,7 +1,8 @@
 import pandas as pd
-from .posenv import recencyfile
-from  .dashboard import KojitsuPos
+from posenv import recencyfile
+from  dashboard import KojitsuPos
 import datetime as dt
+import os
 
 recency_intervals = [0, 30, 90, 180, 365, 730, 1095]
 category = ['sales', 'ratio']
@@ -22,20 +23,25 @@ def PosQueryRecency(term,shop):
     idx = pd.IndexSlice
     kp = KojitsuPos()
     table = kp.postable
+    cache = cache_recency()
+    cache_table = cache.table
     if not(shop==0):
         table = table[table.shop==shop]
+    max_week = max(table.year_week)
     targetpos = table[table.purchase_date>=term[0]]
     targetpos = targetpos[targetpos.purchase_date<=term[1]]
-    weeklist = set(targetpos.year_week)
+    weeklist = set(targetpos.year_week) - set([max_week])
 
     res_table = pd.DataFrame(0,index = weeklist,columns=cols)
 
     for this_week in weeklist:
-        this_week_table = table[table.year_week == this_week]
-        this_week_min = min(this_week_table.purchase_date)
-        this_week_max = max(this_week_table.purchase_date)
-        outf = recency_calc(table,this_week_min,this_week_max,this_week)
+        if chche.availability(this_week,shop):
+            res_table.loc[this_week,:] = cache_table.loc[this_week,idx[shop,:,:]]
+            continue
+        outf = recency_calc(table,this_week)
         res_table.loc[this_week,:] = outf.loc[this_week,:]
+        cache_table.loc[this_week,idx[shop,:,:]] = outf.loc[this_week,:]
+    cache.update()
     res_table = res_table.sort_index()
     dates = [ dt.datetime.strptime(d+'-1','%Y %W-%w').strftime('%Y-%m-%d') for d in res_table.index]
     res_table.loc[:,'date'] = dates
@@ -44,11 +50,15 @@ def PosQueryRecency(term,shop):
 
 
     
-def recency_calc(table,beg_date,end_date,index_label):
+def recency_calc(table,index_label):
     len_intervals = len(recency_intervals)
     out_frame = pd.DataFrame(0,index=[index_label],columns = cols)
 
-    targetterm = table[table.purchase_date<end_date]
+    this_week_table = table[table.year_week == index_label]
+    beg_date = min(this_week_table.purchase_date)
+    end_date = max(this_week_table.purchase_date)
+
+    targetterm = table[table.purchase_date<=end_date]
     targetterm = targetterm[targetterm.purchase_date>=beg_date]
     oldterm = table[table.purchase_date<beg_date]
     oldterm = oldterm[['user_id','purchase_date']]
@@ -86,44 +96,46 @@ def recency_calc(table,beg_date,end_date,index_label):
         out_frame.loc[index_label, ('sales',recency_intervals[i])] = sales[i]
     return(out_frame)
 
-def create_year_week_table(table,intervals,lastresult=None):
-    max_week = max(table.year_week)
-    tablelastday = min(table.purchase_date)+dt.timedelta(days=intervals[len(intervals)-1])
+def get_weeklist(table,beg_date=None,last_date=None):
+    max_week = max(table.year_week)          # prepare data for minimal 3 years operation history
+    tablelastday = min(table.purchase_date)+dt.timedelta(days=recency_intervals[len(recency_intervals)-1])
     temp_table = table[table.purchase_date>tablelastday]
     last_week = min(temp_table.year_week)
     weeklist = set(temp_table.year_week) - set([max_week,last_week])
-    if not(lastresult == None):
-        pre_exist_weeks = set(lastresult.index)
-        weeklist = weeklist - pre_exist_weeks
+    return(weeklist)
+    
+def create_year_week_table(shop=0):
+    kp = KojitsuPos()
+    table = kp.postable
+    idx = pd.IndexSlice
 
-    cache_table_ratio = pd.DataFrame(0,index = weeklist,columns = intervals)
-    cache_table_sales = pd.DataFrame(0,index = weeklist,columns = intervals)
+    all_shops_set = set(table.shop)|set([0]) # assume table include all pos data. 0 means 'all shops'
+    if not(shop == 0):                       # if shop is not 0, prepare for a specific shop
+        table = table[table.shop == shop]
+    weeklist = get_weeklist(table)
+    top_names = ['shop']
+    top_names = top_names.extend(names)
+    top_cols = pd.MultiIndex.from_product([all_shops_set,category, recency_intervals], names=top_names)
+    cache_table = pd.DataFrame(0,index = weeklist,columns = top_cols)
 
     for this_week in weeklist:
-        this_week_table = table[table.year_week == this_week]
-        this_week_min = min(this_week_table.purchase_date)
-        this_week_max = max(this_week_table.purchase_date)
-        sales,ratio = recency_calc(table,this_week_min,this_week_max,intervals,this_week)
-        cache_table_ratio.loc[this_week,:] = ratio.loc[this_week,:]
-        cache_table_sales.loc[this_week,:] = sales.loc[this_week,:]
+        out_frame = recency_calc(table,this_week)
+        cache_table.loc[this_week,idx[shop,:,:]] = out_frame.loc[this_week,idx[:,:]]
             
-    return(cache_table_sales,cache_table_ratio)
-'''
-class recency(KojitsuPos):
-    def convert_sales_to_ratio(sales):
-        ratio = pd.DataFrame(0,index = sales.index,columns = sales.columns)
-        for ind,row in sales.iterrows():
-            total = sum(row.loc[ind,:])
-            ratio.loc[ind,:] = sales.loc[ind,:]/total
-    postable = super().GetPosTable()
+    return(cache_table)
+
+class cache_recency(object):
     if os.path.exists(recencyfile):
-        recency_sales = pd.read_pickle(recencyfile)
-        recency_sales_extra,recency_ratio = create_year_week_table(postable,recency_intervals,recency_sales)
-        recency_sales = recency_sales_extra.append(recency_sales)
-        recency_sales.to_pickle(recencyfile)
-        recency_ratio = convert_sales_to_ratio(recency_sales)
+        table = pd.read_pickle(recencyfile)
     else:
-        recency_sales,recency_ratio = create_year_week_table(postable,recency_intervals)
-    def __init__(self):
-        
-'''
+        table = create_year_week_table()
+    @classmethod
+    def availability(cls,week,shop):
+        if week in cls.table.index:
+            if cls.table.loc[week,(shop,'ratio',recency_intervals[0])]:
+                return(True)
+        else:
+            return(False)
+    @classmethod
+    def update(cls):
+        cls.table.to_pickle(recencyfile)

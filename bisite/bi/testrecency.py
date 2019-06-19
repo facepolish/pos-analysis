@@ -3,9 +3,7 @@ import pandas as pd
 from posenv import posfile
 #from  dashboard import KojitsuPos
 from datetime import timedelta,datetime,date
-from recency import create_year_week_table,PosQueryRecency,get_stack
-
-datediff = [0, 30, 90, 180, 365, 730, 1095]
+from recency import PosQueryRecency,get_stack
 
 
 def recency_table(postable,title):

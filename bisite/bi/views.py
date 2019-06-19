@@ -433,36 +433,59 @@ def dashboard_result(request):
         table = PosQueryRecency(term,int(shop_code))
         re_sales,re_ratio = get_stack(table)
         colors = ['tab:blue','tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
-        labels = ['初来店／過去購買記録なし','３０日以内購買','３０日以降－９０日以内購買','dummy','dummy','dummy','dummy','dummy']
+        labels = ['初来店／過去購買記録なし','今回の前に３０日以内購買',
+               '以前購買　３０日以降－９０日以内購買','９０日以降－１８０日以内購買',
+               '１８０日－３６５日','３６５日－７３０日','３年以前','dummy']
+        ratio_title = ' 週次　最終購買日別購買金額比率'
+        sales_title = ' 週次　最終購買日別購買金額'
 
-        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
-        ax[0].set_title(shop_name+' 週次　最終購買日別購買金額比率')
-        ax[1].set_title(shop_name+' 週次　最終購買日別購買金額')
-        ax[0].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
-        ax[1].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
-        '''
-        for i in range(0,len(recency_intervals)):
-            ax[0].plot(table.date,table.loc[:,('ratio',recency_intervals[i])],label=labels[i],
-                    color=colors[i])
-            ax[1].plot(table.date,table.loc[:,('sales',recency_intervals[i])],label=labels[i],
-                    color=colors[i])
-        '''
-        ax[0].fill_between(table.date,0,
-                re_ratio.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
-        ax[1].fill_between(table.date,0,
-                re_sales.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
-        for i in range(1,len(recency_intervals)):
-            ax[0].fill_between(table.date,re_ratio.loc[:,recency_intervals[i-1]],
-                    re_ratio.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
-            ax[1].fill_between(table.date,re_sales.loc[:,recency_intervals[i-1]],
-                    re_sales.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
+        def save_stacked_line_chart(sales,ratio,colors,labels,filname):
+            fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+            ax[0].set_title(shop_name+ratio_title)
+            ax[1].set_title(shop_name+sales_title)
+            ax[0].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+            ax[1].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+            '''
+            for i in range(0,len(recency_intervals)):
+                ax[0].plot(table.date,table.loc[:,('ratio',recency_intervals[i])],label=labels[i],
+                        color=colors[i])
+                ax[1].plot(table.date,table.loc[:,('sales',recency_intervals[i])],label=labels[i],
+                        color=colors[i])
+            '''
+            ax[0].fill_between(table.date,0,
+                    re_ratio.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
+            ax[1].fill_between(table.date,0,
+                    re_sales.loc[:,recency_intervals[0]],label=labels[0],color=colors[0])
+            for i in range(1,len(recency_intervals)):
+                ax[0].fill_between(table.date,re_ratio.loc[:,recency_intervals[i-1]],
+                        re_ratio.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
+                ax[1].fill_between(table.date,re_sales.loc[:,recency_intervals[i-1]],
+                        re_sales.loc[:,recency_intervals[i]],label=labels[i],color=colors[i])
+            ax[0].legend()
+            ax[1].legend()
+            chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/'+filname+'.png')
+            fig.savefig(chart_path,format="png")
 
-            
-        ax[0].legend()
-        ax[1].legend()
-        chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/recencychart.png')
-        fig.savefig(chart_path,format="png")
+        def save_line_chart(sales,ratio,colors,labels,filname,i):
+            fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+            ax[0].set_title(shop_name+ratio_title+' '+labels[i])
+            ax[1].set_title(shop_name+sales_title+' '+labels[i])
+            ax[0].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+            ax[1].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
+            ax[0].plot(table.date,table.loc[:,('ratio',recency_intervals[i])],
+                    color=colors[i])
+            ax[1].plot(table.date,table.loc[:,('sales',recency_intervals[i])],
+                    color=colors[i])
+            ax[0].legend()
+            ax[1].legend()
+            chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/'+filname+str(i)+'.png')
+            fig.savefig(chart_path,format="png")
+
+        save_stacked_line_chart(re_sales,re_ratio,colors,labels,'recencychart')
+        for i in range(len(recency_intervals)):
+            save_line_chart(re_sales,re_ratio,colors,labels,'recencychart',i)
         
+
         
 
     return HttpResponse(template.render(context,request))

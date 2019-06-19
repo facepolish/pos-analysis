@@ -6,10 +6,11 @@ import os
 import pickle
 import numba
 import datetime as dt
-from .tableclass import postable, DEPTtable, getallpos, getallusers, posaddcols
-from .kakakucom import GetPricefromKakaku
-from .createitemvec import ItemRecommend
-from . import posenv
+from tableclass import postable, DEPTtable, getallpos, getallusers, posaddcols
+from kakakucom import GetPricefromKakaku
+from createitemvec import ItemRecommend
+#from . import posenv
+import posenv
 
 
 
