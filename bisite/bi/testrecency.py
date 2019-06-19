@@ -3,7 +3,7 @@ import pandas as pd
 from posenv import posfile
 #from  dashboard import KojitsuPos
 from datetime import timedelta,datetime,date
-from recency import PosQueryRecency,get_stack
+from recency import PosQueryRecency,get_stack,recency_intervals
 
 
 def recency_table(postable,title):
@@ -19,11 +19,11 @@ def recency_table(postable,title):
     fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
     ax[0].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
     ax[1].set_xticklabels(table.date,rotation='vertical',fontsize = 'small')
-    ax[0].fill_between(table.date,0,ratio.loc[:,datediff[0]],color=colors[0],label='sample')
-    ax[1].fill_between(table.date,0,sales.loc[:,datediff[0]],color=colors[0],label='sample')
-    for i in range(1,len(datediff)):
-        ax[0].fill_between(table.date,ratio.loc[:,datediff[i-1]],ratio.loc[:,datediff[i]],color=colors[i])
-        ax[1].fill_between(table.date,sales.loc[:,datediff[i-1]],sales.loc[:,datediff[i]],color=colors[i])
+    ax[0].fill_between(table.date,0,ratio.loc[:,recency_intervals[0]],color=colors[0],label='sample')
+    ax[1].fill_between(table.date,0,sales.loc[:,recency_intervals[0]],color=colors[0],label='sample')
+    for i in range(1,len(recency_intervals)):
+        ax[0].fill_between(table.date,ratio.loc[:,recency_intervals[i-1]],ratio.loc[:,recency_intervals[i]],color=colors[i])
+        ax[1].fill_between(table.date,sales.loc[:,recency_intervals[i-1]],sales.loc[:,recency_intervals[i]],color=colors[i])
     plt.show()
 
 

@@ -3,6 +3,7 @@ from posenv import recencyfile
 from  dashboard import KojitsuPos
 import datetime as dt
 import os
+import numpy as np
 
 recency_intervals = [0, 30, 90, 180, 365, 730, 1095]
 category = ['sales', 'ratio']
@@ -35,12 +36,13 @@ def PosQueryRecency(term,shop):
     res_table = pd.DataFrame(0,index = weeklist,columns=cols)
 
     for this_week in weeklist:
-        if chche.availability(this_week,shop):
-            res_table.loc[this_week,:] = cache_table.loc[this_week,idx[shop,:,:]]
+        if cache.availability(this_week,shop) == True:
+            res_table.loc[this_week] = cache_table.loc[this_week,shop]
             continue
         outf = recency_calc(table,this_week)
-        res_table.loc[this_week,:] = outf.loc[this_week,:]
-        cache_table.loc[this_week,idx[shop,:,:]] = outf.loc[this_week,:]
+        res_table.loc[this_week] = outf.loc[this_week]
+        cache_table.loc[this_week,shop] = outf.loc[this_week]
+        val = cache.availability(this_week,shop)
     cache.update()
     res_table = res_table.sort_index()
     dates = [ dt.datetime.strptime(d+'-1','%Y %W-%w').strftime('%Y-%m-%d') for d in res_table.index]
@@ -116,12 +118,10 @@ def create_year_week_table(shop=0):
     top_names = ['shop']
     top_names = top_names.extend(names)
     top_cols = pd.MultiIndex.from_product([all_shops_set,category, recency_intervals], names=top_names)
-    cache_table = pd.DataFrame(0,index = weeklist,columns = top_cols)
-
-    for this_week in weeklist:
-        out_frame = recency_calc(table,this_week)
-        cache_table.loc[this_week,idx[shop,:,:]] = out_frame.loc[this_week,idx[:,:]]
-            
+    cache_table = pd.DataFrame(np.nan,index = weeklist,columns = top_cols)
+#    for this_week in weeklist:
+#        out_frame = recency_calc(table,this_week)
+#        cache_table.loc[this_week,shop] = out_frame.loc[this_week]
     return(cache_table)
 
 class cache_recency(object):
@@ -129,10 +129,13 @@ class cache_recency(object):
         table = pd.read_pickle(recencyfile)
     else:
         table = create_year_week_table()
+        table.to_pickle(recencyfile)
+
     @classmethod
     def availability(cls,week,shop):
         if week in cls.table.index:
-            if cls.table.loc[week,(shop,'ratio',recency_intervals[0])]:
+            val = cls.table.loc[week,(shop,'ratio',recency_intervals[0])]
+            if ( val == val ):
                 return(True)
         else:
             return(False)
