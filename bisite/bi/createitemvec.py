@@ -5,7 +5,7 @@ from pandas.api.types import CategoricalDtype
 from sklearn.decomposition import NMF
 import numpy as np
 import os
-from posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile
+from .posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile
 
 deptfile=depttablefile
 

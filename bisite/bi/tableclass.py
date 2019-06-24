@@ -11,7 +11,7 @@ import os.path
 import matplotlib.pyplot as plt
 from numba import jit
 from django.conf import settings
-from posenv import colnamedic,col_dtype,kojitsupath,gradedic
+from .posenv import colnamedic,col_dtype,kojitsupath,gradedic
 
 
 filepos = os.path.join(kojitsupath,'output/')

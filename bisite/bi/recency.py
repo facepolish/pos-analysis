@@ -1,14 +1,20 @@
 import pandas as pd
-from posenv import recencyfile
-from  dashboard import KojitsuPos
+from .posenv import recencyfile
+from  .dashboard import KojitsuPos
 import datetime as dt
 import os
 import numpy as np
+from numba import jit
 
 recency_intervals = [0, 30, 90, 180, 365, 730, 1095]
 category = ['sales', 'ratio']
 names = ['category', 'intervals']
 cols = pd.MultiIndex.from_product([category, recency_intervals], names=names)
+@jit
+def item_subs(cache,items,ind,shop):
+    for cat in category:
+        for inter in recency_intervals:
+            cache.loc[ind,(shop,cat,inter)] = items.loc[ind,(cat,inter)]
 
 def get_stack(table):
     ratio = pd.DataFrame(0,index=table.index,columns = recency_intervals)
@@ -41,8 +47,8 @@ def PosQueryRecency(term,shop):
             continue
         outf = recency_calc(table,this_week)
         res_table.loc[this_week] = outf.loc[this_week]
-        cache_table.loc[this_week,shop] = outf.loc[this_week]
-        val = cache.availability(this_week,shop)
+#        cache_table.loc[this_week,shop] = outf#.loc[this_week]
+        item_subs(cache_table,outf,this_week,shop)
     cache.update()
     res_table = res_table.sort_index()
     dates = [ dt.datetime.strptime(d+'-1','%Y %W-%w').strftime('%Y-%m-%d') for d in res_table.index]
