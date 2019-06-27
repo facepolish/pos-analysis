@@ -10,7 +10,7 @@ if __name__ == "__main__":
     d_sdeptdic = pd.read_pickle(deptsdepttablefile)
     user = pd.read_pickle(userfile)
     itemvecall = pd.read_pickle(itemvecfile)
-
+    
     shoe_pos = postable[postable.DEPT==1]
 #    shoe_pos = postable[postable.DEPT==11]
     '''
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     mut12 = set(user1) & set(user2)
     mut13 = set(user1) & set(user3)
     mut23 = set(user2) & set(user3)
-    
+
     checkusers = mut12 | mut13 | mut23
 #    ref_pos = ref_pos[['user_id','price']]
 #    sum_sales = ref_pos.groupby('user_id').sum()
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 #    women = user[user.gender=='女性']
 #    shoe_pos = shoe_pos[shoe_pos.user_id.isin(women.index)]
     shoe_pos = shoe_pos[shoe_pos.user_id.isin(checkusers)]
-    
+
 
 #    women = user[user.gender=='女性']
 #    shoe_pos = shoe_pos[shoe_pos.user_id.isin(women.index)]
@@ -53,9 +53,9 @@ if __name__ == "__main__":
 
     for sd in sdlist:
         sd_pos = shoe_pos[shoe_pos.SDEPT==sd]
-        mean_prices = pd.pivot_table(sd_pos,index='year_week',columns='itemid',values='unit_price',aggfunc='mean').fillna(0)
-        cost_prices = pd.pivot_table(sd_pos,index='year_week',columns='itemid',values='cost',aggfunc='max')
-        sum_prices = pd.pivot_table(sd_pos,index='year_week',columns='itemid',values='price',aggfunc='sum').fillna(0)
+        mean_prices = pd.pivot_table(sd_pos,index='year_week',columns='jan_code',values='unit_price',aggfunc='mean').fillna(0)
+        cost_prices = pd.pivot_table(sd_pos,index='year_week',columns='jan_code',values='cost',aggfunc='max')
+        sum_prices = pd.pivot_table(sd_pos,index='year_week',columns='jan_code',values='price',aggfunc='sum').fillna(0)
         item_share = pd.DataFrame(0,index=sum_prices.index,columns=sum_prices.columns)
         for ind in item_share.index:
             total = sum(sum_prices.loc[ind,:])
@@ -117,4 +117,3 @@ if __name__ == "__main__":
 #            plt.show()
         margin_ratio = pd.DataFrame(0,index=sum_prices.index,columns=sum_prices.columns)
         margin_ratio = (mean_prices-cost_prices)/mean_prices
-            

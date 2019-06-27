@@ -4,7 +4,7 @@
 {% block mainbody %}
 
 <header><h1>{{shop_name}}</h1><br>
-<h2>{{item}}</h2><br>
+<h2>{{item_name}}</h2><br>
 <h3>{{begin_date|date:"Y-m-d"}}から{{end_date|date:"Y-m-d"}}まで</h3>
 </header>
 <img src="{% static "bi/chart.png" %}" alt="price trend chart"/><br>
@@ -25,7 +25,7 @@
     </tr>
 {% endfor %}
 </table>
-同じ週に買われやすい商品<br>
+同時に買われやすい商品<br>
 <table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
@@ -75,7 +75,7 @@
     {% for cell in row %}
         {% if forloop.first %}
             <td bgcolor="#99CC00" align="left" nowrap>
-            <li><a href="{% url 'dashboard_result'%}?theme=3&shops={{shops|urlencode}}&begin_date={{cell}}&end_date={{cell}}&item={{item}}">{{ cell }}</a></li></td>
+            <li><a href="{% url 'dashboard_result'%}?theme=3&shops={{shops|urlencode}}&begin_date={{cell}}&end_date={{cell}}&jan_code={{jan_code}}">{{ cell }}</a></li></td>
         {% else %}
             <td bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ cell|floatformat:2|intcomma }}</td>
         {% endif %}

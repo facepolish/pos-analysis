@@ -10,6 +10,7 @@
 <table id="myTable"  boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333" class="tablesorter">
 	<thead>
 		<tr>
+			<th>JAN code </th>
 			<th>商品 </th>
 			<th>カテゴリー</th>
 			<th>平均価格</th>
@@ -24,7 +25,8 @@
 	{% for row in toptable %}
 	    <tr>
             <td bgcolor="#99CC00" align="left" nowrap>
-            <li><a href="{% url 'dashboard_result'%}?theme=2&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}&item={{row.item}}">{{ row.item }}</a></li></td>
+            <li><a href="{% url 'dashboard_result'%}?theme=2&jan_code={{ row.jan_code }}&shops={{shops|urlencode}}&begin_date={{begin_date|date:"Y-m-d"}}&end_date={{end_date|date:"Y-m-d"}}">{{ row.jan_code }}</a></li></td>
+            <td>{{ row.item_name }}</td>
             <td>{{ row.category }}</td>
             <td>{{ row.unit_avg|floatformat:0|intcomma }}</td>
             <td>{{ row.unit_max|floatformat:0|intcomma }}</td>

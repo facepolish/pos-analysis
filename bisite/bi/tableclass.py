@@ -8,24 +8,125 @@ import gc
 import math
 import tqdm
 import os.path
-import matplotlib.pyplot as plt
 from numba import jit
 from django.conf import settings
-from .posenv import colnamedic,col_dtype,kojitsupath,gradedic
+from sqlalchemy import create_engine
+from datetime import timedelta
+import contextlib
+from .posenv import col_dtype,colnamedic,possource_columns,usersource_columns,possource_dbname,possource_datecolmns,usersource_dbname,kojitsupath,gradedic,db_settings,DB_OFFLINE,itemdbfile
 
 
 filepos = os.path.join(kojitsupath,'output/')
 fileinputpos = os.path.join(kojitsupath,'input/')
 ext = '.csv'
 
+from_sql=True
 
+def col_str (lis):
+    st = ''
+    for i in range(0,len(lis)-1):
+        st = st+lis[i]+','
+    st=st+lis[len(lis)-1]
+    return (st)
+
+@contextlib.contextmanager
+def db_conn():
+    try:
+        os.environ['NLS_LANG'] = 'JAPANESE_JAPAN.UTF8'
+        engine = create_engine("oracle://{user}:{password}@{host}:{port}/{database}".format(**db_settings) ,echo=True)
+        connection = engine.connect()
+#        result = connection.execute("ALTER SESSION SET CURRENT_SCHEMA=HITRMD")
+#        result = connection.execute("alter session set container=posdata")
+        yield connection
+    finally:
+        connection.close()
+
+def prev_dat(d):
+    day_before_max = d - timedelta(days=1)
+    day_string = day_before_max.strftime("%Y/%m/%d")
+    return(day_string)
+
+def convert_table(table):
+    for col in table.columns:
+        ty = col_dtype.get(col,0)
+        if not (ty == 0):
+            table.loc[:,col] = table.loc[:,col].astype(ty)
+    return(table)
+
+class itemdb():
+    if DB_OFFLINE:
+        if os.path.exists(itemdbfile):
+            item_table = pd.read_pickle(itemdbfile)
+    else:
+        with db_conn() as connection:
+            item_master_cols = ['JANｺｰﾄﾞ','DEPT','S_DEPT','ﾒｰｶｰｺｰﾄﾞ','商品名_漢字','原価']
+            item_sql_string = "SELECT {item_cols} FROM HITRMD.商品マスタ".format(item_cols=col_str(item_master_cols))
+            item_table = pd.read_sql(item_sql_string,connection)
+            item_table = item_table.rename(columns = colnamedic)
+            maker_code_cols = ['ﾒｰｶｰｺｰﾄﾞ','ﾒｰｶｰ名_漢字']
+            maker_code_sql_string = "SELECT  {maker_code_cols} FROM HITRMD.ﾒｰｶｰｺｰﾄﾞ".format(maker_code_cols=col_str(maker_code_cols))
+            maker_code_table = pd.read_sql(maker_code_sql_string,connection)
+            maker_code_table = maker_code_table.rename(columns = colnamedic)
+            item_table = pd.merge(item_table,maker_code_table,on='maker_code',how='left')
+        item_table = convert_table(item_table)
+        item_table = item_table.set_index('jan_code')
+        item_table.to_pickle(itemdbfile)
+    @classmethod
+    def getitemdb(cls):
+        return(cls.item_table)
+
+def getposdb(posdb=None,max_rep=10,update = False):
+    base_string = "select {pos_col} from {table_name} ".format(pos_col=col_str(possource_columns),table_name = possource_dbname) #
+    order_by = " ORDER BY 売上伝票番号 "
+    row_limit = "ROWNUM<=100000 "
+
+    outframe = pd.DataFrame(columns  = possource_columns)
+    outframe = outframe.rename(columns = colnamedic)
+
+    if update==False:
+        last_receit = 0
+    else:
+        last_receit = max(posdb.slip_id)
+        print ("last slit_id is "+posdb.slip_id)
+    item_table = itemdb.getitemdb()
+    with db_conn() as connection:
+        for i in range(max_rep):
+            if not(last_receit == 0):
+                limit_items =  " WHERE 売上伝票番号 > {lastreceit_id} AND ".format (lastreceit_id = str(last_receit))
+            else:
+                limit_items = "WHERE "
+            pos_sql_string = base_string+limit_items+row_limit
+            sqlpos = pd.read_sql(pos_sql_string,connection,parse_dates = possource_datecolmns)
+            sqlpos = sqlpos.rename(columns = colnamedic)
+            print (sqlpos.head())
+            if sqlpos.shape[0]==0:
+                break
+            else:
+                outframe = outframe.append(sqlpos)
+                last_receit = max(outframe.slip_id)
+        item_table_merge = item_table.reset_index()
+        outframe = pd.merge(outframe,item_table_merge,on='jan_code',how='left')
+
+        print (item_table.head())
+#    outframe = posaddcols(outframe)
+    outframe = convert_table(outframe)
+
+    return(outframe)
+
+def getuserdb():# user database always should be downloaded
+    user_sql_string = "select {user_col} from {table_name}".format(user_col=col_str(usersource_columns),table_name=usersource_dbname)
+    with db_conn() as connection:
+        sqluser = pd.read_sql(user_sql_string,connection)
+    sqluser = sqluser.rename(columns = colnamedic)
+    sqluser = convert_table(sqluser)
+    return(sqluser)
 
 class DEPTtable (object):
     def __init__(self,filename):
         absfile=filename
         if not(os.path.exists(absfile)):
             absfile = fileinputpos+filename+ext
-        
+
         self.depttable = pd.read_csv(absfile,encoding = 'CP932')
         self.uniqdept = pd.Series.unique(self.depttable.DEPT)
         self.depttable.rename(columns=colnamedic, inplace=True)
@@ -44,7 +145,7 @@ class DEPTtable (object):
             for j in range(maxj):
                 subdic[thisdept.SDEPT.iloc[j]] = thisdept.item_code1.iloc[j]
             self.subdic[dept] = subdic
-        
+
     def DEPT_NO_to_string(self,deptid):
         return(self.namedic[deptid])
 
@@ -61,7 +162,7 @@ class UserTable(object):
 #        self.ranklist = pd.Series.unique(self.usertable.rank)
         self.regyearlist = pd.Series.unique(self.usertable.registered_date.dt.year)
         print(self.usertable.head(5))
-        
+
     def CheckRegistration(self,user):
         if (user in self.usertable.index):
             self.currentuser = self.usertable.loc[user]
@@ -80,7 +181,7 @@ class UserTable(object):
             regyear = regdate[:4]
             return(int(regyear))
         return(0)
-            
+
 
 class itemsalestable(object):
     def __init__(self,filename):
@@ -94,12 +195,15 @@ class itemsalestable(object):
         datatable.purchase_time = pd.to_datetime(datatable.purchase_time,format = '%H%M%S')
 
         self.table = datatable
-        
+
+
 def posaddcols(postable):
-    postable.loc[:, 'itemid'] = postable.brand + postable.type + postable.item_name
+#    postable.loc[:, 'itemid'] = postable.brand + str(postable.type) + postable.item_name
+    postable.amount = postable.amount.replace(0,1) #avoid inf error
     postable.loc[:, 'unit_price'] = postable.price / postable.amount
     weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
     postable.loc[:, 'year_week'] = weeks
+    postable.loc[:,'user_id'] = [x[0:12] for x in postable.loc[:,'user_id']]
     return(postable)
 
 class postable(itemsalestable):
@@ -142,16 +246,21 @@ def postable2():
     col_list = list(set(pos.columns) & set(colnamedic.values()))
     pos = pos[col_list]
     return(pos)
-    
 
-def getallpos(pos=None):
-    pos1 = postable('unified').table
-    latest_date = max(pos1.purchase_date)
-    pos2 = postable2()
-    pos2 = pos2[pos2.purchase_date>latest_date]
-    pos1 = pos1.append(pos2)
+
+def getallpos(pos=None,update=False):
+    if from_sql == True:
+        pos1 = getposdb(posdb=pos,update=update)
+    else:
+        pos1 = postable('unified').table
+        latest_date = max(pos1.purchase_date)
+        pos2 = postable2()
+        pos2 = pos2[pos2.purchase_date>latest_date]
+        pos1 = pos1.append(pos2)
     pos1.cost = pos1.cost.fillna(0)
-    pos1.cost = pos1.cost.astype('int')
+#    pos1.price = pos1.price.fillna(0)
+#    pos1.cost = pos1.cost.astype('int')
+#    pos1.price = pos1.price.astype('int')
     pos1 = posaddcols(pos1)
 
     return(pos1)
@@ -171,6 +280,14 @@ def usertable2():
     return(customers)
 
 def getallusers(user=None):
+    if from_sql == True:
+        user = getuserdb()
+        user.loc[:,'user_id'] = [x[0:12] for x in user.loc[:,'user_id']]
+        user.user_rank = user.user_rank.replace(gradedic)
+        user = user.set_index('user_id')
+
+        return(user)
+    getuserdb,getposdb
     user1 = UserTable('cleanutable').usertable
     user2 = usertable2()
     setuser1 = set(user1.index)
@@ -181,4 +298,3 @@ def getallusers(user=None):
     user1 = user1.append(user2)
     user1.user_rank = user1.user_rank.replace(gradedic)
     return(user1)
-

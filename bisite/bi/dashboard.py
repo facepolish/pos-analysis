@@ -1,42 +1,100 @@
-﻿import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
+﻿import pandas as pd
 from sklearn.decomposition import NMF
 import os
 import pickle
-import numba
 import datetime as dt
-from .tableclass import postable, DEPTtable, getallpos, getallusers, posaddcols
+from django.conf import settings
+from scipy.sparse import csr_matrix
+from pandas.api.types import CategoricalDtype
+from .tableclass import postable, DEPTtable, getallpos, getallusers,itemdb,posaddcols,convert_table
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
-from . import posenv
-#import posenv
+from .posenv import itemdbfile,posfile,userfile,depttablefile,deptsdepttablefile,gradedic,DB_OFFLINE
+
+def PivotSum(table):
+    table.loc[:, 'count'] = 1
+    try:
+        userbyitem = pd.pivot_table(table, index='user_id', columns='jan_code', values='count', aggfunc='sum')
+        userbyitem = userbyitem.fillna(0)
+        return (userbyitem)
+    except:
+        person_c = CategoricalDtype(sorted(table.user_id.unique()), ordered=True)
+        thing_c = CategoricalDtype(sorted(table.jan_code.unique()), ordered=True)
+        row = table.user_id.astype(person_c).cat.codes
+        col = table.jan_code.astype(thing_c).cat.codes
+        sparse_matrix = csr_matrix((table['count'], (row, col)),
+                                   shape=(person_c.categories.size, thing_c.categories.size))
+        dfs = pd.SparseDataFrame(sparse_matrix, index=person_c.categories, columns=thing_c.categories,
+                                 default_fill_value=0)
+        return (dfs)
 
 
+def UserItemVec(pos1, user1):
+    userbyitem = PivotSum(pos1)
+    #    userbyitem[userbyitem<0]=0
+    model = NMF(n_components=10, init='random', random_state=0, solver='mu')
+    #    testframe = userbyitem.iloc[0:userbyitem.shape[0]//2,:]
+    #    P = model.fit_transform(testframe)
+
+    P = model.fit_transform(userbyitem)
+    Q = model.components_
+    user_vec = pd.DataFrame(P, index=userbybrand.index)
+    user_vec = user_vec[user_vec.index.isin(user1.index)]
+    item_vec = pd.DataFrame(Q.T, index=userbyitem.columns)
+    return (user_vec, item_vec)
 
 def year_week_id(date):
     return(str(date.isocalendar()[0]) + ' ' + str(date.isocalendar()[1]).rjust(2))
-    
-    
+
+
 class KojitsuPos(object):
     __posupdated = False
     __userupdated = False
-    if os.path.exists(posenv.posfile):
-        postable = pd.read_pickle(posenv.posfile)
+
+    item_table = itemdb.getitemdb()
+    if os.path.exists(posfile):
+        postable = pd.read_pickle(posfile)
+#        postable.loc[:,'user_id'] = [x[0:12] for x in postable.loc[:,'user_id']] #temporary fix
+#        postable.to_pickle(posfile)
+        if not (DB_OFFLINE == True):
+            _pos =  getallpos(pos = postable,update=True)
+            if _pos.shape[0]>0:
+                postable = postable.append(_pos)
+                __posupdated = True
     else:
-        postable = getallpos()
-        postable.to_pickle(posenv.posfile)
+        postable = getallpos(update=False)
+        postable = posaddcols(postable)
         __posupdated = True
-    if os.path.exists(posenv.userfile):
-        usertable = pd.read_pickle(posenv.userfile)
+    if __posupdated == True:
+        postable.to_pickle(posfile)
+    if not(DB_OFFLINE == True):
+        usertable = getallusers()
+        usertable.to_pickle(userfile)
+        __userupdated = True
+    elif os.path.exists(userfile):
+        usertable = pd.read_pickle(userfile)
+        
+#        usertable = convert_table(usertable) #temporary fix
+#        usertable = usertable.set_index('user_id')
+#        usertable.to_pickle(userfile)
+        
     else:
         usertable = getallusers()
-        usertable.to_pickle(posenv.userfile)
+        usertable.to_pickle(userfile)
         __userupdated = True
-    if os.path.exists(posenv.depttablefile) &os.path.exists(posenv.deptsdepttablefile):
-        with open(posenv.depttablefile, 'rb') as f:
+    '''
+    if (not (__posupdated or __userupdated)) and (os.path.exists(itemvecfile) and os.path.exists(uservecfile)):
+        item_vec=pd.read_pickle(itemvecfile)
+        user_vec=pd.read_pickle(uservecfile)
+    else:
+        user_vec,item_vec = UserItemVec(postable,usertable)
+        item_vec.to_pickle(itemvecfile)
+        user_vec.to_pickle(uservecfile)
+    '''
+    if os.path.exists(depttablefile) &os.path.exists(deptsdepttablefile):
+        with open(depttablefile, 'rb') as f:
             dept_dic = pickle.load(f)
-        with open(posenv.deptsdepttablefile, 'rb') as f:
+        with open(deptsdepttablefile, 'rb') as f:
             deptsdept_dic = pickle.load(f)
     else:
         dpt = DEPTtable('HITRMD_DEPT')
@@ -47,22 +105,22 @@ class KojitsuPos(object):
             sdic = sdept_dic[k]
             for sk,sv in sdic.items():
                 deptsdept_dic.update({(k,sk):v+' '+sv})
-        with open(posenv.depttablefile, 'wb') as f:
+        with open(depttablefile, 'wb') as f:
             pickle.dump(dept_dic, f)
-        with open(posenv.deptsdepttablefile, 'wb') as f:
+        with open(deptsdepttablefile, 'wb') as f:
             pickle.dump(deptsdept_dic, f)
-
-    if os.path.exists(posenv.itemiddicfile):
-        with open(posenv.itemiddicfile, 'rb') as f:
+    '''
+    if os.path.exists(itemiddicfile):
+        with open(itemiddicfile, 'rb') as f:
             itemid_dic = pickle.load(f)
     else:
         itemid_dic = {id: {'brand':b,'type': t,'name': n,'DEPT_SDEPT':(d, s)} for id, b, t, n, d, s in
                       zip(postable.itemid, postable.brand, postable.type, postable.item_name, postable.DEPT,
                           postable.SDEPT)}
-        with open(posenv.itemiddicfile, 'wb') as f:
+        with open(itemiddicfile, 'wb') as f:
             pickle.dump(itemid_dic, f)
+    '''
     rec_vecs = ItemRecommend()
-
     #    def __init__(self):
     #        self.postable = self.postable
     @classmethod
@@ -103,7 +161,6 @@ class KojitsuPos(object):
         cls.rec_vecs = ItemRecommend()
 
     
-    
     @classmethod
     def GetPosTable(cls):
         return (cls.postable)
@@ -118,13 +175,33 @@ class KojitsuPos(object):
 
     @classmethod
     def GetItemData(cls, id):
-        item = cls.itemid_dic.get(id, None)
-        if item is None:
-            return(None)
-        return (item)
+#        item = cls.itemid_dic.get(id, None)
+        if not(id in cls.item_table.index):
+            nondata = {'brand':'No Data','name':'No Data'}
+            return(nondata)
+        idic = {'brand':cls.item_table.loc[id,'brand'],
+#            'DEPT':cls.item_table.loc[id,'DEPT'],
+#            'SDEPT':cls.item_table.loc[id,'SDEPT'],
+            'name':cls.item_table.loc[id,'item_name'],}
+        return (idic)
     @classmethod
     def GetDeptName(cls,dept):
-        return(cls.dept_dic[dept])
+        return(cls.dept_dic[int(dept)])
+    @classmethod
+    def GetItemName(cls,jancode):
+        name = str(cls.item_table.loc[jancode,'brand'])+' '+str(cls.item_table.loc[jancode,'item_name'])
+        return(name)
+    @classmethod
+    def GetCategory2(cls,jancode):
+        de = cls.item_table.loc[jancode,'DEPT']
+        sd = cls.item_table.loc[jancode,'SDEPT']
+#        deptsdept = item['DEPT_SDEPT']
+        try:
+            ret_str = cls.deptsdept_dic[(int(de),int(sd))]
+        except:
+            ret_str=''
+        return(ret_str)
+#        return(str(de)+' '+str(sd))
     @classmethod
     def GetCategory(cls,itemid):
         item = cls.itemid_dic[itemid]
@@ -160,19 +237,19 @@ def ActualyMax(list):
         val = s[0]
     return (val)
 
-def PosQueryWeeklyDetail(term,item,shop=None):
+def PosQueryWeeklyDetail(term,jan_code,shop=None):
     tb = KojitsuPos()
     pos = tb.GetPosTable()
     if (shop == '0') or (shop is None) or (shop == 'all'):
         tpos = pos
     else:
         tpos = pos[pos.shop == int(shop)]
-    tpos = tpos[tpos.itemid == item]
+    tpos = tpos[tpos.jan_code == jan_code]
     year_week = year_week_id(term[0])
     tpos = tpos[tpos.year_week == year_week]
     return(tpos)
-    
-def PosQueryPriceTrend(term, item, shop=None):
+
+def PosQueryPriceTrend(term, jan_code, shop=None):
     tb = KojitsuPos()
     pos = tb.GetPosTable()
     if (shop == '0') or (shop is None) or (shop == 'all'):
@@ -182,7 +259,7 @@ def PosQueryPriceTrend(term, item, shop=None):
     tpos = tpos[tpos.purchase_date >= term[0]]
     tpos = tpos[tpos.purchase_date <= term[1]]
 
-    tpos = tpos[tpos.itemid == item]
+    tpos = tpos[tpos.jan_code == jan_code]
     tpos = tpos[['price', 'year_week', 'unit_price']]
     pricetrend = tpos.groupby('year_week').agg({'price': 'sum', 'unit_price': ['mean', 'max', 'min']})
     pricetrend = pricetrend.rename(
@@ -218,13 +295,13 @@ def PosQuerySales(userlist,term,res_rows=5):
         sumDEPT2.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT2.columns]
         sumDEPT3.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT3.columns]
         return(sumDEPT2,sumDEPT3)
-    
+
     tb = KojitsuPos()
     pos = tb.GetPosTable()
     tpos = pos[pos.purchase_date>=term[0]]
     tpos = tpos[tpos.purchase_date<=term[1]]
     tpos2 = tpos[tpos.user_id.isin(userlist)]
-    
+
     sumDEPT2,sumDEPT3 = PivotSumTable(tpos,tpos2,'DEPT',res_rows)
     sumDEPT2.index = [tb.GetDeptName(x) for x in sumDEPT2.index]
     sumDEPT3.index = [tb.GetDeptName(x) for x in sumDEPT3.index]
@@ -252,8 +329,8 @@ def PosQueryDiscount(term, shop=None):
         tpos = pos[pos.shop == int(shop)]
     tpos = tpos[tpos.purchase_date >= term[0]]
     tpos = tpos[tpos.purchase_date <= term[1]]
-    tpos = tpos[['price', 'itemid', 'unit_price','cost']]
-    sumpos = tpos.groupby('itemid').agg({'price': 'sum', 'unit_price': ['max', 'min', 'mean'],'cost':'max'})
+    tpos = tpos[['price','jan_code', 'unit_price','cost']]
+    sumpos = tpos.groupby('jan_code').agg({'price': 'sum', 'unit_price': ['max', 'min', 'mean'],'cost':'max'})
     sumpos = sumpos.rename(columns={'sum': 'sumprice', 'max': 'maxprice', 'mean': 'avgprice', 'min': 'minprice'})
     sumpos.loc[:, 'ratio'] = sumpos.unit_price.avgprice / sumpos.unit_price.maxprice
     templist = []
@@ -265,7 +342,9 @@ def PosQueryDiscount(term, shop=None):
         templist.append(r)
     sumpos.loc[:, 'margin_ratio'] = templist
 #    sumpos.loc[:, 'margin_ratio'] = [(x-float(y))/x for x,y in zip(sumpos.unit_price.avgprice, sumpos.cost)]
-    sumpos.loc[:, 'item_category'] = [tb.GetCategory(x) for x in sumpos.index]
+    sumpos.loc[:, 'item_category'] = [tb.GetCategory2(x) for x in sumpos.index]
+#    sumpos.loc[:, 'item_name'] = [tb.GetItemName(x) for x in sumpos.index]
+
     return (sumpos)
 
     minpos = tpos.groupby
@@ -285,7 +364,7 @@ def PosQueryGen(term, shop=None, brand_id=None):
         tpos = pos[pos.shop == int(shop)]
     if not (brand_id is None):
         tpos = tpos[tpos.brand == brand_id]
-        target_col = 'itemid'
+        target_col = 'jan_code'
     else:
         target_col = 'brand'
 
@@ -352,17 +431,17 @@ def QueryPersona(pos):
      femaletotal = sum(femaletable.price)
      ranktable = rankpos.groupby(['user_rank']).sum()
      ranktotal = sum(ranktable.price)
-     
+
      total = femaletotal+maletotal
 
      maletable.price = maletable.price/total
      femaletable.price = femaletable.price/total
      ranktable.price = ranktable.price/ranktotal
-     
+
      maletable = maletable.rename(columns={'price':'ratio'})
      femaletable = femaletable.rename(columns={'price':'ratio'})
      ranktable = ranktable.rename(columns={'price':'ratio'})
-     
+
      retdic = {'male_age_group_ratio':maletable,'female_age_group_ratio':femaletable,'rank_group_ratio':ranktable}
      return(retdic)
 
@@ -370,13 +449,13 @@ class Persona(object):
     tb = KojitsuPos()
     allpos = tb.GetPosTable()
     all_persona = QueryPersona(allpos)
-    def __init__(self,term=None,item=None,brand=None,shop=None):
+    def __init__(self,term=None,jan_code=None,brand=None,shop=None):
         pos = Persona.allpos
         if term is not None:
             pos = pos[pos.purchase_date>=term[0]]
             pos = pos[pos.purchase_date<=term[1]]
-        if item is not None and not(item == 0):
-            pos = pos[pos.itemid == item]
+        if jan_code is not None and not(jan_code == 0):
+            pos = pos[pos.jan_code == jan_code]
         if brand is not None:
             pos = pos[pos.brand == brand]
         if (shop is not None) and not((shop == 0) or(shop == '0') or (shop == 'all')):
@@ -388,16 +467,10 @@ class Persona(object):
 
 
 class QueryUsersByTerm(object):
-    def __init__(self):
-        kp = KojitsuPos()
-        self.pos = kp.GetPosTable()
-        self.user = kp.GetUserTable()
-        self.rec_vecs = ItemRecommend()
-
     def grade(self, user, para):
         user1 = user
-        low = str(min(int(para[0]), int(para[1])))
-        high = str(max(int(para[0]), int(para[1])))
+        low = min(int(para[0]), int(para[1]))
+        high = max(int(para[0]), int(para[1]))
         user2 = user1[user1.user_rank >= low]
         user2 = user2[user2.user_rank <= high]
         return (user2)
@@ -473,9 +546,10 @@ class QueryUsersByTerm(object):
         user2 = user2[user2.age <= high]
         return (user2)
     def dept(self,user,para):
-        dept_id = int(para[0])
+        dept_id = para[0]
+        dept_id = dept_id.zfill(2)
         user_max = int(para[1])
-        ir = self.rec_vecs
+        ir = self.kp.rec_vecs
         user2 = ir.getdeptrecommenduserlist(user.index,dept_id)
         if user2.shape[0] >user_max:
             user2 = user2.index[:user_max]
@@ -484,7 +558,7 @@ class QueryUsersByTerm(object):
         user = user[user.index.isin(user2)]
 
         return(user)
-        
+
 
     factors = {'UseAgeRange': (('agelower', 'ageupper'), age),
                'UseGender': (('gender',), gender),
@@ -497,6 +571,10 @@ class QueryUsersByTerm(object):
                #    ('UseCategory',('category_id','start_categorytest_date','end_categorytest_date'),self.)
                }
 
+    def __init__(self):
+        self.kp = KojitsuPos()
+        self.pos = self.kp.GetPosTable()
+        self.user = self.kp.GetUserTable()
 
     def formlist(self):
         nulist = []
@@ -560,22 +638,22 @@ def TendencyAna(pos1, pos2):
 
 
 class ItemRelatedInfo(object):
-    def __init__(self, itemid):
-        self.itemid = itemid
+    def __init__(self, jan_code):
+        self.jan_code = jan_code
         tp = KojitsuPos()
-        item = tp.GetItemData(itemid)
+        item = tp.GetItemData(jan_code)
         self.brand = item['brand']
         self.itemname = item['name']
-        self.netprices = GetPricefromKakaku(self.brand, self.itemname)
+        self.netprices = GetPricefromKakaku(self.brand, str(jan_code))
         itemrec = tp.rec_vecs
-        cartrec = itemrec.getsamecartrecommendlist(itemid)
+        cartrec = itemrec.getsamecartrecommendlist(jan_code)
         self.cartrecommend = cartrec.iloc[1:11, :]
         self.cartrecommend.loc[:, 'brand'] = [tp.GetItemData(x)['brand'] for x in self.cartrecommend.index]
         self.cartrecommend.loc[:, 'itemname'] = [tp.GetItemData(x)['name'] for x in self.cartrecommend.index]
-        self.cartrecommend.loc[:, 'category'] = [tp.GetCategory(x) for x in self.cartrecommend.index]
+        self.cartrecommend.loc[:, 'category'] = [tp.GetCategory2(x) for x in self.cartrecommend.index]
 
-        csrec = itemrec.getsamecustomerrecommendlist(itemid)
+        csrec = itemrec.getsamecustomerrecommendlist(jan_code)
         self.csrecommend = csrec.iloc[1:11, :]
         self.csrecommend.loc[:, 'brand'] = [tp.GetItemData(x)['brand'] for x in self.csrecommend.index]
         self.csrecommend.loc[:, 'itemname'] = [tp.GetItemData(x)['name'] for x in self.csrecommend.index]
-        self.csrecommend.loc[:, 'category'] = [tp.GetCategory(x) for x in self.csrecommend.index]
+        self.csrecommend.loc[:, 'category'] = [tp.GetCategory2(x) for x in self.csrecommend.index]

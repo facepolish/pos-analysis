@@ -59,7 +59,7 @@ def SparseNMF(sparse_matrix):
     U = normalize(U,axis=1)
     V = normalize(V,axis=1)
     return(U,V)
-    
+
 def SparsePivot(table,index_label,col_label,val_label):
     person_c = CategoricalDtype(sorted(table.loc[:,index_label].unique()),ordered=True)
     thing_c = CategoricalDtype(sorted(table.loc[:,col_label].unique()),ordered=True)
@@ -79,19 +79,18 @@ def PivotAndNMF(table, ind, col, how):
 def DEPTSDEPTcode (dept,sdept):
     return(str(dept).zfill(2)+str(sdept).zfill(3))
 
-    
+
 def vec_update(table):
     table.loc[:, 'count'] = 1
-    table.loc[:, 'cartid'] = table.user_id + table.year_week
     table.loc[:, 'DEPTSDEPT'] = [DEPTSDEPTcode(x,y) for x, y in zip(table.DEPT, table.SDEPT)]
 
     if not (os.path.exists(uservecfile)) or not (os.path.exists(itemvecfile)):
-        user_vec, item_vec = PivotAndNMF(table, 'user_id', 'itemid', 'price')
+        user_vec, item_vec = PivotAndNMF(table, 'user_id', 'jan_code', 'price')
         item_vec.to_pickle(itemvecfile)
         user_vec.to_pickle(uservecfile)
 
     if not (os.path.exists(samecartitemvecfile)):
-        _, samecartitem_vec = PivotAndNMF(table, 'cartid', 'itemid', 'count')
+        _, samecartitem_vec = PivotAndNMF(table, 'receit_id', 'jan_code', 'count')
         samecartitem_vec.to_pickle(samecartitemvecfile)
 
     if not (os.path.exists(deptvecfile)) or not (os.path.exists(deptuserfile)):
@@ -105,14 +104,15 @@ def vec_update(table):
 
 class ItemRecommend(object):
 
-    def __init__(self):
-        self.item_vec = pd.read_pickle(itemvecfile)
-        self.user_vec = pd.read_pickle(uservecfile)
-        self.samecartitem_vec = pd.read_pickle(samecartitemvecfile)
-        self.sdept_vec = pd.read_pickle(sdeptvecfile)
-        self.sdeptuser_vec = pd.read_pickle(sdeptuserfile)
-        self.dept_vec = pd.read_pickle(deptvecfile)
-        self.deptuser_vec = pd.read_pickle(deptuserfile)
+    def __init__(self,newfile=False):
+        if not(newfile == True):
+            self.item_vec = pd.read_pickle(itemvecfile)
+            self.user_vec = pd.read_pickle(uservecfile)
+            self.samecartitem_vec = pd.read_pickle(samecartitemvecfile)
+            self.sdept_vec = pd.read_pickle(sdeptvecfile)
+            self.sdeptuser_vec = pd.read_pickle(sdeptuserfile)
+            self.dept_vec = pd.read_pickle(deptvecfile)
+            self.deptuser_vec = pd.read_pickle(deptuserfile)
 
     def __getrecommend(self,vecs1,vecs2,item):
         item_vec = vecs1.loc[item,:]
@@ -120,13 +120,13 @@ class ItemRecommend(object):
         table = pd.DataFrame(metrics,index=vecs2.index,columns=['score'])
         table = table.sort_values('score',ascending=False)
         return table
-    
+
     def getsamecartrecommendlist(self,item):
         return self.__getrecommend(self.samecartitem_vec,self.samecartitem_vec,item)
 
     def getsamecustomerrecommendlist(self,item):
         return self.__getrecommend(self.item_vec,self.item_vec,item)
-    
+
     def getdeptrecommenduserlist(self,userlist,dept):
         user_vec = self.deptuser_vec[self.deptuser_vec.index.isin(userlist)]
         return self.__getrecommend(self.dept_vec,user_vec,dept)
@@ -139,17 +139,17 @@ class ItemRecommend(object):
         table.loc[:, 'cartid'] = table.user_id + table.year_week
         table.loc[:, 'DEPTSDEPT'] = [DEPTSDEPTcode(x,y) for x, y in zip(table.DEPT, table.SDEPT)]
 
-        self.user_vec, self.item_vec = PivotAndNMF(table, 'user_id', 'itemid', 'price')
+        self.user_vec, self.item_vec = PivotAndNMF(table, 'user_id', 'jan_code', 'price')
         self.item_vec.to_pickle(itemvecfile)
         self.user_vec.to_pickle(uservecfile)
 
-        _, self.samecartitem_vec = PivotAndNMF(table, 'cartid', 'itemid', 'count')
+        _, self.samecartitem_vec = PivotAndNMF(table, 'cartid', 'jan_code', 'count')
         self.samecartitem_vec.to_pickle(samecartitemvecfile)
 
         self.deptuser_vec, self.dept_vec = PivotAndNMF(table, 'user_id', 'DEPT', 'price')
         self.dept_vec.to_pickle(deptvecfile)
         self.deptuser_vec.to_pickle(deptuserfile)
-        self.sdeptuser_vec, sdept_vec = PivotAndNMF(table, 'user_id', 'DEPTSDEPT', 'price')
+        self.sdeptuser_vec, self.sdept_vec = PivotAndNMF(table, 'user_id', 'DEPTSDEPT', 'price')
         self.sdept_vec.to_pickle(sdeptvecfile)
         self.sdeptuser_vec.to_pickle(sdeptuserfile)
 
@@ -159,12 +159,13 @@ if __name__=='__main__':
     f=open(deptfile,'rb')
     lis=pickle.load(f)
     print(lis)
+#    posfile = "c:/Users/ttmuyn/workspace/Kojitsu/src/bisite/bi/data/bi/pos.pkl"
     table = pd.read_pickle(posfile)
 #    vec_update(table)
     it_rec = ItemRecommend()
     it_rec.vec_update(table)
 
-    sampleitem = table.loc[table.index[10],'itemid']
+    sampleitem = table.loc[table.index[10],'jan_code']
     print ('sample item is '+sampleitem)
     list = it_rec.getsamecartrecommendlist(sampleitem)
     print ('same cart recommends are')
@@ -173,4 +174,3 @@ if __name__=='__main__':
     list = it_rec.getsamecustomerrecommendlist(sampleitem)
     print ('Customer based recommends are')
     print (list[1:11])
-    

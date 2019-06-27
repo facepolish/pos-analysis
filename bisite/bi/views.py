@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 import matplotlib
 from .recency import PosQueryRecency,recency_intervals,get_stack
+
 from django.contrib.auth.decorators import login_required,permission_required
 
 @login_required
@@ -50,7 +51,7 @@ def campaign_create(request):
         ax[0].legend(prop=fontp)
         ax[1].legend(prop=fontp)
         fig.savefig(outputfile,format="png")
-    
+
     if request.method == 'GET':
         template = loader.get_template('bi/campaign_create.html')
         context = {'form':CampaignCreateForm}
@@ -91,7 +92,7 @@ def campaign_create(request):
         chart_path2=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart2.png')
         fig.savefig(chart_path2,format="png")
         chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
-        
+
         RatioGraph(topratio,chart_path3,'指定顧客種別売り上げ','指定顧客種別購入比率')
         chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
         RatioGraph(topbrand,chart_path4,'指定顧客ブランド別売り上げ','指定顧客ブランド別購入比率')
@@ -100,8 +101,8 @@ def campaign_create(request):
         context = {'user_count':count}
         template = loader.get_template('bi/campaign_check.html')
         return HttpResponse(template.render(context,request))
-        
-@login_required    
+
+@login_required
 @permission_required("bi.access_pos_data")
 def campaign(request):
     if request.method=='POST':
@@ -115,7 +116,7 @@ def campaign(request):
         'latest_campaign_list': latest_campaign_list,
     }
     return HttpResponse(template.render(context,request))
-    
+
 @login_required
 @permission_required("bi.access_pos_data")
 def campaigndetail(request, campaign_id):
@@ -157,12 +158,12 @@ class progresscount(object):
         if self.counter > self.accu:
             logging.debug(self.basic_mess+'in progress '+str(self.counter)+' max = '+str(self.max))
             self.accu+=self.leg
-            
+
 def setup_loadfiles(request):
     KojitsuPos.updatetables()
     return HttpResponse('completed!')
-    
-@login_required        
+
+@login_required
 @permission_required("bi.access_pos_data")
 def setup(request):
     rename_dic = {'店舗ｺｰﾄﾞ':'shop_code','店名':'shop_name'}
@@ -214,11 +215,11 @@ def setup(request):
                            gender=rw.gender,age=rw.age,age_group=rw.age_group,visit_count=rw.visit_count,
                            registered_date=rw.registered_date,user_rank=grade_dic[rw.user_rank])
                        bulk.append(cs)
-                    
+
                    except Customer.ValidationError:
                        logging.debug('Customer DATA has a validation error user_id = '+rw.user_id+' is ignored')
                        continue
-                    
+
                Customer.objects.bulk_create(bulk)
                tablehttp = table.to_html()
                return HttpResponse(tablehttp)
@@ -311,15 +312,19 @@ def dashboard_result(request):
     brand = request.GET.get('brand',None)
     shop_code = request.GET.get('shops',str(0))
     theme = request.GET.get('theme',0)
-    itemid = request.GET.get('item',0)
+#    itemid = request.GET.get('item',0)
+    jan_code = request.GET.get('jan_code',0)
+    item_name = request.GET.get('item_name',0)
     term = GetTerm(request)
     context = {}
     context['begin_date']=term[0]
     context['end_date']=term[1]
     context['shops'] = shop_code
     context['theme'] = theme
-    context['item'] = itemid
+    context['jan_code'] = jan_code
+    context['item_name'] = item_name
     shop = int(shop_code)
+    kp = KojitsuPos()
     if shop == 0:
         shop_name = "全店舗"
     else:
@@ -333,9 +338,14 @@ def dashboard_result(request):
             template = loader.get_template('bi/dashboardbrand.html')
         toptable = PosQueryGen(term,shop_code,brand)
         tablelist = []
-        for index,row in toptable.iterrows():
-            rowlist = [index,row.ratio,int(row.previos_term),int(row.this_term)]
-            tablelist.append(rowlist)
+        if brand is None:
+            for index,row in toptable.iterrows():
+                rowlist = [index,row.ratio,int(row.previos_term),int(row.this_term)]
+                tablelist.append(rowlist)
+        else:
+            for index,row in toptable.iterrows():
+                rowlist = [index,kp.GetItemName(index),row.ratio,int(row.previos_term),int(row.this_term)]
+                tablelist.append(rowlist)
         context['toptable'] = tablelist
     elif theme == '1':
         template = loader.get_template('bi/dashboarddiscount.html')
@@ -352,7 +362,7 @@ def dashboard_result(request):
 #            discount_rate = Sum(F('posdata__price')/F('posdata__price'),output_field=FloatField()))
 #        agg = agg.order_by('discount_rate')[:10]
         agg = agg[:10]
-        
+
         tablelist = []
         for row in agg:
             rowlist = [row.item_name,row.avg_price,row.max_price
@@ -365,13 +375,15 @@ def dashboard_result(request):
         table = highshareitems(table,0.5)
         tablelist = []
         for index,row in table.iterrows():
-            rowlist = {'item':index,'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice,'cost':row.cost.maxprice,'margin_ratio':row.margin_ratio}
+            rowlist = {'jan_code':index,'item_name':kp.GetItemName(index),'category':row.item_category[0],'unit_avg':row.unit_price.avgprice,'unit_max':row.unit_price.maxprice,'discount':row.ratio,'sales':row.price.sumprice,'cost':row.cost.maxprice,'margin_ratio':row.margin_ratio}
             tablelist.append(rowlist)
         context['toptable'] = tablelist
-        
+
     elif theme == '2':
         template = loader.get_template('bi/dashboardpricetrend.html')
-        table = PosQueryPriceTrend(term,itemid,shop_code)
+        context['item_name'] = kp.GetItemName(jan_code)
+
+        table = PosQueryPriceTrend(term,jan_code,shop_code)
         tablelist = []
         for index,row in table.iterrows():
             rowlist = [index,row.unit_price.avgprice,row.price.sumprice,row.unit_price.maxprice,row.unit_price.minprice]
@@ -390,7 +402,7 @@ def dashboard_result(request):
         chart_path=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart.png')
         fig.savefig(chart_path,format="png")
         context['toptable'] = tablelist
-        iteminfo = ItemRelatedInfo(itemid)
+        iteminfo = ItemRelatedInfo(jan_code)
         pricelist = iteminfo.netprices
         if len(pricelist)>0:
             context['netitem'] = pricelist
@@ -404,7 +416,7 @@ def dashboard_result(request):
         context['userrecommend'] = cr
     elif theme == '3':
         template = loader.get_template('bi/dashboarditemweek.html')
-        table = PosQueryWeeklyDetail(term,itemid,shop_code)
+        table = PosQueryWeeklyDetail(term,jan_code,shop_code)
         tablelist = []
         for ind,row in table.iterrows():
             tablelist.append({'date':row.purchase_date,'time':row.purchase_time,'shop':Shops.objects.get(shop_code=row.shop).shop_name,'price':row.price,'amount':row.amount})
@@ -413,7 +425,7 @@ def dashboard_result(request):
         rev_grade_dic = {1:'1合目登頂中',2:'4合目登頂中',3:'6合目登頂中',4:'8合目登頂中',5:'登頂達成！'}
 
         template = loader.get_template('bi/dashboardpersona.html')
-        persona = Persona(term=term,item=itemid,brand=brand,shop=shop)
+        persona = Persona(term=term,jan_code=jan_code,brand=brand,shop=shop)
         maletablelist = []
         femaletablelist = []
         ranktablelist = []
@@ -484,9 +496,6 @@ def dashboard_result(request):
         save_stacked_line_chart(re_sales,re_ratio,colors,labels,'recencychart')
         for i in range(len(recency_intervals)):
             save_line_chart(re_sales,re_ratio,colors,labels,'recencychart',i)
-        
-
-        
 
     return HttpResponse(template.render(context,request))
 

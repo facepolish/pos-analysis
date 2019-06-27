@@ -29,13 +29,14 @@ def HaveAllNum(target,numlist):
             return False
     return(True)
 def GetPricefromKakaku(brand,itemid,exclude=None):
-    kakaku_query = 'http://kakaku.com/search_results/'
+    kakaku_query = 'https://kakaku.com/search_results/'
     brand_code = UtfSafe(brand)
     item_code = UtfSafe(itemid)
     brand_code = urllib.parse.quote(brand_code.encode('shift-jis'))
     item_code = urllib.parse.quote(item_code.encode('shift-jis'))
     space = '%20'
-    commandstr = kakaku_query+brand_code+space+item_code
+    commandstr = kakaku_query+str(itemid)+'/'
+#    commandstr = kakaku_query+brand_code+space+item_code
     print (commandstr)
     res = requests.get(commandstr)
     
@@ -61,8 +62,8 @@ def GetPricefromKakaku(brand,itemid,exclude=None):
         link = image['href']
         image = image.find('img',class_ ='p-item_visual_entity' )
         image_text = image['alt']
-        if not HaveAllNum(image_text,numlist):
-            continue
+#        if not HaveAllNum(image_text,numlist):
+#            continue
         image = image['data-original']
         item = {'shop':shop,'image':image,'text':image_text,'price':price,'link':link}
         shoplist.append(item)
