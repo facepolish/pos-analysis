@@ -1,4 +1,6 @@
 ﻿import pandas as pd
+import numpy as np
+
 from sklearn.decomposition import NMF
 import os
 import pickle
@@ -9,7 +11,58 @@ from pandas.api.types import CategoricalDtype
 from .tableclass import postable, DEPTtable, getallpos, getallusers,itemdb,posaddcols,convert_table
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
-from .posenv import itemdbfile,posfile,userfile,depttablefile,deptsdepttablefile,gradedic,DB_OFFLINE
+from .posenv import itemdbfile,posfile,userfile,depttablefile,deptsdepttablefile,gradedic,DB_OFFLINE,campaign_target_file
+
+
+
+class Campaign_targets(object):
+    def add_members(self,lis):
+        existing_cols = self.campaign_targets.columns
+        existing_users = self.campaign_targets.index
+        addlist = list(set(lis)-set(existing_users))
+        added_frame = pd.DataFrame(np.nan,index = addlist, columns=existing_cols)
+#        added_frame = added_frame.to_sparse()
+        self.campaign_targets = self.campaign_targets.append(added_frame)
+
+    def add_cols(self,lis):
+        existing_cols = self.campaign_targets.columns
+        existing_users = self.campaign_targets.index
+        addlist = list(set(lis)-set(existing_cols))
+        added_frame = pd.DataFrame(np.nan,index = existing_users, columns=addlist)
+#        added_frame = added_frame.to_sparse()
+        self.campaign_targets = pd.concat([self.campaign_targets,added_frame],axis=1)
+
+    def __init__(self,users=[],campaign_list=['stab']):
+        if os.path.exists(campaign_target_file):
+            self.campaign_targets = pd.read_pickle(campaign_target_file)
+#            self.campaign_targets = self.campaign_targets.to_dense()
+            self.add_members(users)
+            self.add_cols(campaign_list)
+
+        else:
+            self.campaign_targets = pd.DataFrame(np.nan,index = users, columns=campaign_list)
+#            self.campaign_targets = self.campaign_targets.to_sparse()
+        
+
+    def del_col(self,id):
+        if (id in self.campaign_targets.columns):
+            self.campaign_targets = self.campaign_targets.drop(id,axis=1)
+
+    def set_flags_on(self,list,id):
+        self.campaign_targets.loc[self.campaign_targets.index.isin(list),id] = 1
+#        settable = self.campaign_targets[self.campaign_targets.index.isin(list)]
+#        settable.loc[:,id] = 1
+#        self.campaign_targets.loc[list(set(list)),id] = 1
+
+    def userlist (self,id):
+        frame = self.campaign_targets[self.campaign_targets.loc[:,id] == 1]
+        return(frame.index)
+
+    def flush(self):
+#        self.campaign_targets = self.campaign_targets.to_sparse()
+        self.campaign_targets.to_pickle(campaign_target_file)
+    def total_users(self):
+        return(self.campaign_targets.index)
 
 def PivotSum(table):
     table.loc[:, 'count'] = 1
@@ -121,6 +174,7 @@ class KojitsuPos(object):
             pickle.dump(itemid_dic, f)
     '''
     rec_vecs = ItemRecommend()
+    campaign_targets=Campaign_targets(users=postable.user_id)
     #    def __init__(self):
     #        self.postable = self.postable
     @classmethod

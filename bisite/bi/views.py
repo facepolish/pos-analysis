@@ -67,17 +67,19 @@ def campaign_create(request):
         campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
         qu = QueryUsersByTerm()
         userlist = qu.ExtractUsers(request.POST)
-        chunksize=400
-        lenlist = len(userlist)
-        max_count = lenlist//chunksize +1
-        for i in range(max_count):
-            beg = chunksize*i
-            upper = chunksize*(i+1)
-            if upper>lenlist:
-                upper = lenlist
-            chunklist=userlist[beg:upper]
-            cs = Customer.objects.filter(user_id__in=chunklist)
-            campaign.target_customers.add(*cs)
+        KojitsuPos().campaign_targets.set_flags_on(userlist,campaign.id)
+        KojitsuPos().campaign_targets.flush()
+#        chunksize=400
+#        lenlist = len(userlist)
+#        max_count = lenlist//chunksize +1
+#        for i in range(max_count):
+#            beg = chunksize*i
+#            upper = chunksize*(i+1)
+#            if upper>lenlist:
+#                upper = lenlist
+#            chunklist=userlist[beg:upper]
+#            cs = Customer.objects.filter(user_id__in=chunklist)
+#            campaign.target_customers.add(*cs)
         campaign.save()
         table,topratio,topbrand = PosQuerySales(userlist,(s-timedelta(days=365),s))
         fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
@@ -107,8 +109,12 @@ def campaign_create(request):
 def campaign(request):
     if request.method=='POST':
         dellist = request.POST.getlist("delcampaign")
+        kp = KojitsuPos()
         for ob in dellist:
             Campaign.objects.filter(pk=ob).delete()
+            kp.campaign_targets.del_col(ob)
+        kp.campaign_targets.flush()
+        
     latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:5]
 #    latest_campaign_list = Campaign.objects.order_by('-pk')[:5]
     template = loader.get_template('bi/campaign.html')
@@ -122,7 +128,8 @@ def campaign(request):
 def campaigndetail(request, campaign_id):
     try:
         campaign = Campaign.objects.get(pk=campaign_id)
-        userlist = campaign.customerlist
+        userlist = KojitsuPos().campaign_targets.userlist(campaign_id)
+#        userlist = campaign.customerlist
         qt = QueryUsersByTerm()
     except Campaign.DoesNotExist:
         raise Http404("Campaign does not exist")
