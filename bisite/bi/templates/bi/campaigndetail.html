@@ -8,14 +8,20 @@
 <h2>{{campaign.campaign_detail_text}}</h2>
 <h3>{{campaign.campaign_start_date|date:"Y-m-d"}}から{{campaign.campaign_end_date|date:"Y-m-d"}}まで</h3>
 </header>
-<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+選択対象顧客数　{{user_count}}　人<br>
+<br>
+キャンペーン期間中ブランド別販売集計<br>
+<table boarder="1"  cellspacing="0" cellpadding="5" bordercolor="#333333" id="myTable"  class="tablesorter-stickyHeader">
 {% for row in table %}
     {% if forloop.first %}
+    	<thead class = "scrollHead">
         <tr>
 	    {% for cell in row %}
             <th bgcolor="EE0000" width="200"><font color="#FFFFFF">{{ cell }}<font></th>
 	    {% endfor %}
         </tr>
+        </thead>
+        <tbody class = "scrollBody">
     {% else %}
 	    <tr>
 	    {% for cell in row %}
@@ -28,5 +34,22 @@
 	    </tr>
 	{% endif %}
 {% endfor %}
+</tbody>
 </table>
+<br>
+<br>
+その後の顧客購買行動<br>
+集計対象期間　{{start_date}} から {{end_date}}まで<br>
+<br>
+対象顧客週次販売金額<br>
+<img src="{% static "bi/chart2.png" %}" alt="price trend chart"/><br>
+<br>
+
+対象顧客購買　品目上位５　比率は全顧客に対する選択属性顧客<br>
+<img src="{% static "bi/chart3.png" %}" alt="price trend chart"/><br>
+<br>
+
+対象顧客購買　ブランド上位５　比率は全顧客に対する選択属性顧客<br>
+<img src="{% static "bi/chart4.png" %}" alt="price trend chart"/><br>
+
 {% endblock %}

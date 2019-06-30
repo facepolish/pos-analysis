@@ -107,6 +107,8 @@ class KojitsuPos(object):
     item_table = itemdb.getitemdb()
     if os.path.exists(posfile):
         postable = pd.read_pickle(posfile)
+        
+#        postable.purchase_time = pd.to_datetime(postable.purchase_time,format = '%H%M%S')
 #        postable.loc[:,'user_id'] = [x[0:12] for x in postable.loc[:,'user_id']] #temporary fix
 #        postable.to_pickle(posfile)
         if not (DB_OFFLINE == True):
@@ -339,12 +341,18 @@ def PosQuerySales(userlist,term,res_rows=5):
 #        begcol = sumDEPT3.columns[0]
         sumDEPT3 = sumDEPT3.fillna(0)
         sumDEPT3.loc[:,'ratio_mean'] = sumDEPT3.mean(axis=1,numeric_only = True)
+        sumDEPT2.loc[:,'sales_mean'] = sumDEPT2.mean(axis=1,numeric_only = True)
         sumDEPT3 = sumDEPT3.sort_values('ratio_mean',ascending = False)
-        sumDEPT3 = sumDEPT3.iloc[:,0:-2]
+        sumDEPT2 = sumDEPT2.sort_values('sales_mean',ascending = False)
+#        sumDEPT3 = sumDEPT3.iloc[:,0:-2]
+        sumDEPT3 = sumDEPT3.iloc[:,0:-1]
+        sumDEPT2 = sumDEPT2.iloc[:,0:-1]
         if (sumDEPT3.shape[0]>max_count):
             sumDEPT3 = sumDEPT3.iloc[0:max_count,:]
-        drp_ind = set(sumDEPT2.index) - set(sumDEPT3.index)
-        sumDEPT2.drop(index = list(drp_ind),inplace=True)
+        if (sumDEPT2.shape[0]>max_count):
+            sumDEPT2 = sumDEPT2.iloc[0:max_count,:]
+#        drp_ind = set(sumDEPT2.index) - set(sumDEPT3.index)
+#        sumDEPT2.drop(index = list(drp_ind),inplace=True)
         sumDEPT2 = sumDEPT2.rename(columns = {'price':'sales'})
         sumDEPT2.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT2.columns]
         sumDEPT3.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT3.columns]
@@ -533,7 +541,8 @@ class QueryUsersByTerm(object):
         user1 = user
         reg = para[0]
         leng = len(reg)
-        user2 = user1[user1.address[:leng] == reg]
+#        user2 = user1[user1.address[:leng] == reg]
+        user2 = user1[user1.address == reg]
         return (user2)
 
     def Addup(self, user, param):

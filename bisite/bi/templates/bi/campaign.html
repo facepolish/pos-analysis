@@ -6,6 +6,7 @@
 {% if latest_campaign_list %}
 <form action="{% url 'campaign' %}" method="post">
 {% csrf_token %}
+	<div style="height:500px; overflow-y:scroll;">
     <ul>
     {% for campaign in latest_campaign_list %}
         <li><a href="{% url 'campaign' %}{{ campaign.id }}/">{{ campaign.campaign_name }}</a></li>
@@ -14,6 +15,7 @@
         {{campaign.campaign_detail_text}}
     {% endfor %}
     </ul>
+    </div>
 	<input type="submit" value="選択したキャンペーンを削除">
 </form>
 {% else %}

@@ -204,6 +204,7 @@ def posaddcols(postable):
     weeks = [str(x.isocalendar()[0]) + ' ' + str(x.isocalendar()[1]).rjust(2) for x in postable.purchase_date]
     postable.loc[:, 'year_week'] = weeks
     postable.loc[:,'user_id'] = [x[0:12] for x in postable.loc[:,'user_id']]
+    postable.purchase_time = pd.to_datetime(postable.purchase_time,format = '%H%M%S')
     return(postable)
 
 class postable(itemsalestable):

@@ -6,14 +6,17 @@
 <h1>{{item}}</h1><br>
 </header>
 
-<table boarder="1" width="1000" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<table id="myTable" class="tablesorter">
+<thead>
 <tr>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">日付<font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">時間</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">店舗</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">売り上げ</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">数量</font></th>
+<th>日付</th>
+<th>時間</th>
+<th>店舗</th>
+<th>売り上げ</th>
+<th>数量</th>
 </tr>
+</thead>
+<tbody>
 {% for row in toptable %}
     <tr>
         <td>{{row.date|date:"Y-m-d"}}</td>
@@ -23,6 +26,7 @@
         <td>{{ row.amount|intcomma}}</td>
     </tr>
 {% endfor %}
+</tbody>
 </table>
 
 {% endblock %}

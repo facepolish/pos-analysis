@@ -19,38 +19,63 @@ from .recency import PosQueryRecency,recency_intervals,get_stack
 
 from django.contrib.auth.decorators import login_required,permission_required
 
+def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
+    def RatioGraph(tabletpl, outputfile, title1, title2):
+        font = {'family': 'IPAexGothic'}
+
+        class numcol(object):
+            #            colors = list(matplotlib.colors.cnames.keys())
+            colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink',
+                      'tab:gray', 'tab:olive', 'tab:cyan']
+            c_count = len(colors)
+
+            def __init__(self):
+                self.count = 0
+
+            def color(self):
+                cn = self.count
+                self.count = (cn + 1) % numcol.c_count
+                col = numcol.colors[cn]
+                return (col)
+
+        fig, ax = plt.subplots(2, 1, figsize=(12, 8), constrained_layout=True)
+        fontp = font_manager.FontProperties(**font)
+        plt.rcParams['font.family'] = 'IPAexGothic'
+        ax[0].set_title(title1, **font)
+        ax[0].set_xticklabels(tabletpl[0].columns, rotation='vertical', fontsize='small', **font)
+        ax[1].set_xticklabels(tabletpl[1].columns, rotation='vertical', fontsize='small', **font)
+        ax[1].set_title(title2, **font)
+        nc = numcol()
+        for ind, row in tabletpl[0].iterrows():
+            ax[0].plot(tabletpl[0].columns, row, label=str(ind), color=nc.color())
+        nc = numcol()
+        for ind, row in tabletpl[1].iterrows():
+            ax[1].plot(tabletpl[1].columns, row, label=str(ind), color=nc.color())
+        ax[0].legend(prop=fontp)
+        ax[1].legend(prop=fontp)
+        fig.savefig(outputfile, format="png")
+
+    table,topratio,topbrand = PosQuerySales(userlist,(check_start_date,check_end_date))
+    fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
+    ax[0].plot(table.index,table.sales,label='Weekly Sales',color='b')
+    ax[0].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
+    ax[0].set_title('Weekly sales of Selected customers')
+    ax[0].legend()
+    ax[1].plot(table.index,table.ratio,label='Ratio',color='g')
+    ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
+    ax[1].set_title('Sales Share of Selected customers')
+    ax[1].legend()
+    chart_path2=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart2.png')
+    fig.savefig(chart_path2,format="png")
+    chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
+
+    RatioGraph(topratio,chart_path3,'指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移')
+    chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
+    RatioGraph(topbrand,chart_path4,'指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移')
+
 @login_required
 @permission_required("bi.access_pos_data")
 def campaign_create(request):
-    def RatioGraph(tabletpl,outputfile,title1,title2):
-        font = {'family': 'IPAexGothic'}
-        class numcol(object):
-#            colors = list(matplotlib.colors.cnames.keys())
-            colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
-            c_count = len(colors)
-            def __init__(self):
-                self.count = 0
-            def color(self):
-                cn = self.count
-                self.count = (cn+1)%numcol.c_count
-                col = numcol.colors[cn]
-                return(col)
-        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
-        fontp = font_manager.FontProperties(**font)
-        plt.rcParams['font.family'] = 'IPAexGothic'
-        ax[0].set_title(title1,**font)
-        ax[0].set_xticklabels(tabletpl[0].columns,rotation='vertical',fontsize = 'small',**font)
-        ax[1].set_xticklabels(tabletpl[1].columns,rotation='vertical',fontsize = 'small',**font)
-        ax[1].set_title(title2,**font)
-        nc = numcol()
-        for ind,row in tabletpl[0].iterrows():
-            ax[0].plot(tabletpl[0].columns,row,label=str(ind),color=nc.color())
-        nc = numcol()
-        for ind,row in tabletpl[1].iterrows():
-            ax[1].plot(tabletpl[1].columns,row,label=str(ind),color=nc.color())
-        ax[0].legend(prop=fontp)
-        ax[1].legend(prop=fontp)
-        fig.savefig(outputfile,format="png")
 
     if request.method == 'GET':
         template = loader.get_template('bi/campaign_create.html')
@@ -67,6 +92,7 @@ def campaign_create(request):
         campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
         qu = QueryUsersByTerm()
         userlist = qu.ExtractUsers(request.POST)
+        count = len(userlist)
         KojitsuPos().campaign_targets.set_flags_on(userlist,campaign.id)
         KojitsuPos().campaign_targets.flush()
 #        chunksize=400
@@ -81,26 +107,13 @@ def campaign_create(request):
 #            cs = Customer.objects.filter(user_id__in=chunklist)
 #            campaign.target_customers.add(*cs)
         campaign.save()
-        table,topratio,topbrand = PosQuerySales(userlist,(s-timedelta(days=365),s))
-        fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
-        ax[0].plot(table.index,table.sales,label='Weekly Sales',color='b')
-        ax[0].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
-        ax[0].set_title('Weekly sales of Selected customers')
-        ax[0].legend()
-        ax[1].plot(table.index,table.ratio,label='Ratio',color='g')
-        ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
-        ax[1].set_title('Sales Share of Selected customers')
-        ax[1].legend()
-        chart_path2=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart2.png')
-        fig.savefig(chart_path2,format="png")
-        chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
-
-        RatioGraph(topratio,chart_path3,'指定顧客種別売り上げ','指定顧客種別購入比率')
-        chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
-        RatioGraph(topbrand,chart_path4,'指定顧客ブランド別売り上げ','指定顧客ブランド別購入比率')
-
-        count =  campaign.target_customers.count()
+        check_start_date = s-timedelta(days=365)
+        check_end_date = s
+        SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date)
+#        count =  campaign.target_customers.count()
         context = {'user_count':count}
+        context['start_date'] = check_start_date
+        context['end_date'] = check_end_date
         template = loader.get_template('bi/campaign_check.html')
         return HttpResponse(template.render(context,request))
 
@@ -115,7 +128,7 @@ def campaign(request):
             kp.campaign_targets.del_col(ob)
         kp.campaign_targets.flush()
         
-    latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:5]
+    latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:]
 #    latest_campaign_list = Campaign.objects.order_by('-pk')[:5]
     template = loader.get_template('bi/campaign.html')
     context = {
@@ -126,14 +139,19 @@ def campaign(request):
 @login_required
 @permission_required("bi.access_pos_data")
 def campaigndetail(request, campaign_id):
+    kp = KojitsuPos()
     try:
         campaign = Campaign.objects.get(pk=campaign_id)
-        userlist = KojitsuPos().campaign_targets.userlist(campaign_id)
+        userlist = kp.campaign_targets.userlist(campaign_id)
 #        userlist = campaign.customerlist
         qt = QueryUsersByTerm()
     except Campaign.DoesNotExist:
         raise Http404("Campaign does not exist")
     if request.method == 'GET':
+        table = kp.GetPosTable()
+        maxdate=max(table.purchase_date)
+        SaveCustomerBehaviorGraph(userlist,campaign.campaign_start_date,maxdate)
+
         table,per_cs,per_cs2 = qt.GenerateSummary(campaign.campaign_start_date,campaign.campaign_end_date,userlist)
         rowlisttop=['ブランド']
         rowlisttop.extend(table.columns)
@@ -144,6 +162,10 @@ def campaigndetail(request, campaign_id):
             tablelist.append(rowlist)
         summary_sheet = table.to_html()
         content = {'campaign': campaign,'table':tablelist}
+        content['start_date'] = campaign.campaign_start_date
+        content['end_date'] = maxdate
+        content['user_count'] = len(userlist)
+        SaveCustomerBehaviorGraph
         return render(request, 'bi/campaigndetail.html', content)
     elif request.method == 'POST':
         return render(request, 'bi/campaigndetail.html', {'campaign': campaign})
@@ -426,7 +448,11 @@ def dashboard_result(request):
         table = PosQueryWeeklyDetail(term,jan_code,shop_code)
         tablelist = []
         for ind,row in table.iterrows():
-            tablelist.append({'date':row.purchase_date,'time':row.purchase_time,'shop':Shops.objects.get(shop_code=row.shop).shop_name,'price':row.price,'amount':row.amount})
+            try:
+                sp_name = Shops.objects.get(shop_code=int(row.shop)).shop_name
+            except Shops.DoesNotExist:
+                sp_name = "unkown code="+str(row.shop)
+            tablelist.append({'date':row.purchase_date,'time':row.purchase_time,'shop':sp_name,'price':row.price,'amount':row.amount})
         context['toptable'] = tablelist
     elif theme == '4':
         rev_grade_dic = {1:'1合目登頂中',2:'4合目登頂中',3:'6合目登頂中',4:'8合目登頂中',5:'登頂達成！'}

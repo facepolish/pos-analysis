@@ -67,6 +67,7 @@ def GetPricefromKakaku(brand,itemid,exclude=None):
         image = image['data-original']
         item = {'shop':shop,'image':image,'text':image_text,'price':price,'link':link}
         shoplist.append(item)
+    shoplist = sorted(shoplist, key=lambda x:x['price'])
     return(shoplist)
 
 if __name__=='__main__':

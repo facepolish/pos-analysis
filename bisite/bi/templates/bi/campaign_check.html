@@ -1,11 +1,22 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load humanize %}
 {% load static %}
 {% block mainbody %}
 
-{{user_count}}
+選択対象顧客数　{{user_count}}　人<br>
+<br>
+過去の顧客購買行動<br>
+集計対象期間　{{start_date}} から {{end_date}}まで<br>
+<br>
+対象顧客週次販売金額<br>
 <img src="{% static "bi/chart2.png" %}" alt="price trend chart"/><br>
+<br>
+
+対象顧客購買　品目上位５　比率は全顧客に対する選択属性顧客<br>
 <img src="{% static "bi/chart3.png" %}" alt="price trend chart"/><br>
+<br>
+
+対象顧客購買　ブランド上位５　比率は全顧客に対する選択属性顧客<br>
 <img src="{% static "bi/chart4.png" %}" alt="price trend chart"/><br>
 
 {% endblock %}

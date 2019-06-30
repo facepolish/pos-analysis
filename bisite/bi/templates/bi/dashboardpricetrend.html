@@ -9,13 +9,16 @@
 </header>
 <img src="{% static "bi/chart.png" %}" alt="price trend chart"/><br>
 類似商品ネット価格<br>
-<table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<table id="myTable"  class="tablesorter-stickyHeader">
+<thead class="scrollHead">
 <tr>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">イメージ<font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">ショップ</font></th>
-<th bgcolor="EE0000" width="400"><font color="#FFFFFF">商品</font></th>
-<th bgcolor="EE0000" width="200"><font color="#FFFFFF">価格</font></th>
+<th width="200">イメージ</th>
+<th width="200">ショップ</th>
+<th width="400">商品</th>
+<th width="200">価格</th>
 </tr>
+</thead>
+<tbody class="scrollBody">
 {% for row in netitem %}
    <tr>
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200"><img width="200" src={{ row.image}} alt="similar item from net"/></th>
@@ -24,15 +27,19 @@
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.price }}</th>
     </tr>
 {% endfor %}
+</tbody>
 </table>
 同時に買われやすい商品<br>
 <table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<thead class = "scrollHead">
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">分類<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
 </tr>
+</thead>
+<tbody class="scrollBody">
 {% for row in weeklyrecommend %}
 <tr>
     <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
@@ -41,16 +48,20 @@
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
 </tr>
 {% endfor %}
+</tbody>
 </table>
 
 同じ人に買われやすい商品<br>
 <table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<thead class = "scrollHead">
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">ブランド<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">アイテム<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">分類<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">類似スコア</font></th>
 </tr>
+</thead>
+<tbody class="scrollBody">
 {% for row in userrecommend %}
 <tr>
     <th bgcolor="#99CC00" align="left" nowrap  align="right" valigh="top" width="200">{{ row.brand }}</th>
@@ -59,10 +70,12 @@
     <th bgcolor="#FFFFFF"  align="right" valigh="top" width="200">{{ row.score|floatformat:3|intcomma }}</th>
 </tr>
 {% endfor %}
+</tbody>
 </table>
 
 
 <table boarder="1" width="500" cellspacing="0" cellpadding="5" bordercolor="#333333">
+<thead>
 <tr>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">週<font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間平均価格</font></th>
@@ -70,6 +83,9 @@
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間最高値</font></th>
 <th bgcolor="EE0000" width="200"><font color="#FFFFFF">週間最低値</font></th>
 </tr>
+</thead>
+
+<tbody>
 {% for row in toptable %}
     <tr>
     {% for cell in row %}
@@ -82,6 +98,7 @@
     {% endfor %}
     </tr>
 {% endfor %}
+</tbody>
 </table>
 {% endblock %}
 {% block footnote %}
