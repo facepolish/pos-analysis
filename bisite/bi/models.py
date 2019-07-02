@@ -1,6 +1,7 @@
 ﻿from django.db import models
 from datetime import timedelta,datetime
 from .dashboard import KojitsuPos
+#from django.contrib.auth.models import User
 
 
 class ItemCategoryList (models.Model):
@@ -85,7 +86,7 @@ class Campaign (models.Model):
     GENDER_CHOICE = (('男性','男性'),('女性','女性'))
     kp = KojitsuPos()
     pos = kp.GetPosTable()
-    brandset = set(pos.brand)
+    brandset = sorted(list(set(pos.brand)))
     BRAND_CHOICES = []
     for brand in brandset:
         BRAND_CHOICES.append((brand, brand))
@@ -102,6 +103,7 @@ class Campaign (models.Model):
     campaign_detail_text = models.TextField(max_length=400,null=True,blank=True) 
     campaign_start_date = models.DateField(default=datetime.now, blank=True)
     campaign_end_date = models.DateField(default=datetime.now, blank=True)
+#    owner = models.ForeignKey(User, verbose_name=u'オーナー', on_delete=models.CASCADE)
 
     UseAgeRange = models.BooleanField(default=False)
     agelower=models.PositiveSmallIntegerField(default=1)
@@ -124,15 +126,11 @@ class Campaign (models.Model):
 
     UseBrand = models.BooleanField(default=False)
     brand_name =models.CharField(blank=True,max_length=100,choices = BRAND_CHOICES)
-    start_brandtest_date = models.DateField(null=True,blank=True)
-    end_brandtest_date =  models.DateField(null=True,blank=True)
-    brand_user_max = models.PositiveIntegerField(default=0,blank=True)
 
     UseDEPT = models.BooleanField(default=False)
     DEPT_id =models.CharField(blank=True,max_length=2,choices = DEPT_CHOICES)
-    DEPT_user_max = models.PositiveIntegerField(default=0,blank=True)
     
-    target_customers = models.ManyToManyField(Customer)
+#    target_customers = models.ManyToManyField(Customer)
     def __str__(self):
         return self.campaign_name
     @property

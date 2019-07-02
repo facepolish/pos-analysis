@@ -84,11 +84,16 @@ def campaign_create(request):
     elif request.method=='POST':
         form = CampaignCreateForm(request.POST)
         if not form.is_valid():
-            raise ValueError('invalid form')
+            template = loader.get_template('bi/campaign_create.html')
+            context = {'form': CampaignCreateForm}
+            return HttpResponse(template.render(context, request))
+
+#            raise ValueError('invalid form')
         name = form.cleaned_data['campaign_name']
         detail = form.cleaned_data['campaign_detail_text']
         s = form.cleaned_data['campaign_start_date']
         e = form.cleaned_data['campaign_end_date']
+#        campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e,owner=request.user)
         campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
         qu = QueryUsersByTerm()
         userlist = qu.ExtractUsers(request.POST)
@@ -128,6 +133,7 @@ def campaign(request):
             kp.campaign_targets.del_col(ob)
         kp.campaign_targets.flush()
         
+#    latest_campaign_list = Campaign.objects.filter(owner=request.user).order_by('-campaign_start_date')[:]
     latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:]
 #    latest_campaign_list = Campaign.objects.order_by('-pk')[:5]
     template = loader.get_template('bi/campaign.html')
@@ -150,7 +156,8 @@ def campaigndetail(request, campaign_id):
     if request.method == 'GET':
         table = kp.GetPosTable()
         maxdate=max(table.purchase_date)
-        SaveCustomerBehaviorGraph(userlist,campaign.campaign_start_date,maxdate)
+        year_before = maxdate - timedelta(days=365)
+        SaveCustomerBehaviorGraph(userlist,year_before,maxdate)
 
         table,per_cs,per_cs2 = qt.GenerateSummary(campaign.campaign_start_date,campaign.campaign_end_date,userlist)
         rowlisttop=['ブランド']
@@ -162,7 +169,7 @@ def campaigndetail(request, campaign_id):
             tablelist.append(rowlist)
         summary_sheet = table.to_html()
         content = {'campaign': campaign,'table':tablelist}
-        content['start_date'] = campaign.campaign_start_date
+        content['start_date'] = year_before
         content['end_date'] = maxdate
         content['user_count'] = len(userlist)
         SaveCustomerBehaviorGraph

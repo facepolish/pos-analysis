@@ -40,7 +40,7 @@ class Campaign_targets(object):
             self.add_cols(campaign_list)
 
         else:
-            self.campaign_targets = pd.DataFrame(np.nan,index = users, columns=campaign_list)
+            self.campaign_targets = pd.DataFrame(np.nan,index = list(set(users)), columns=campaign_list)
 #            self.campaign_targets = self.campaign_targets.to_sparse()
         
 
@@ -50,12 +50,11 @@ class Campaign_targets(object):
 
     def set_flags_on(self,list,id):
         self.campaign_targets.loc[self.campaign_targets.index.isin(list),id] = 1
-#        settable = self.campaign_targets[self.campaign_targets.index.isin(list)]
-#        settable.loc[:,id] = 1
-#        self.campaign_targets.loc[list(set(list)),id] = 1
 
     def userlist (self,id):
-        frame = self.campaign_targets[self.campaign_targets.loc[:,id] == 1]
+        frame = self.campaign_targets.loc[:,id]
+        frame = frame[frame.loc[:]==1]
+#        print ("shape of frame is "+str(frame.shape[0]))
         return(frame.index)
 
     def flush(self):
@@ -562,6 +561,15 @@ class QueryUsersByTerm(object):
         return (user2)
 
     def brandvecmetric(self, user, param):
+        brand_id = param[0]
+#        user_max = int(param[1])
+        ir = self.kp.rec_vecs
+        user2 = ir.getbrandrecommenduserlist(user.index,brand_id)
+        user2 = user2.index
+        user = user[user.index.isin(user2)]
+
+        return(user)
+        '''
         user1 = user
         pos = self.pos
         brand = param[0]
@@ -590,6 +598,8 @@ class QueryUsersByTerm(object):
             tpos = user_metric.index
         user2 = user1[user1.index.isin(tpos)]
         return (user2)
+        '''
+
 
     def gender(self, user, para):
         user1 = user
@@ -611,13 +621,10 @@ class QueryUsersByTerm(object):
     def dept(self,user,para):
         dept_id = para[0]
         dept_id = dept_id.zfill(2)
-        user_max = int(para[1])
+#        user_max = int(para[1])
         ir = self.kp.rec_vecs
         user2 = ir.getdeptrecommenduserlist(user.index,dept_id)
-        if user2.shape[0] >user_max:
-            user2 = user2.index[:user_max]
-        else:
-            user2 = user2.index
+        user2 = user2.index
         user = user[user.index.isin(user2)]
 
         return(user)
@@ -628,9 +635,10 @@ class QueryUsersByTerm(object):
                'UseGradeRange': (('gradelower', 'gradeupper'), grade),
                'UseRegion': (('region',), region),
                'UsePurchaseAddup': (('start_addup_date', 'end_addup_date', 'purchase_amount'), Addup),
-               'UseDEPT':(('DEPT_id','DEPT_user_max'),dept),
+               'UseDEPT':(('DEPT_id',),dept),
                'UseBrand': (
-               ('brand_name', 'start_brandtest_date', 'end_brandtest_date', 'brand_user_max'), brandvecmetric)
+#               ('brand_name', 'start_brandtest_date', 'end_brandtest_date', 'brand_user_max'), brandvecmetric)
+               ('brand_name',), brandvecmetric)
                #    ('UseCategory',('category_id','start_categorytest_date','end_categorytest_date'),self.)
                }
 

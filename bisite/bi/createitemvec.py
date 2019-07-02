@@ -5,7 +5,7 @@ from pandas.api.types import CategoricalDtype
 from sklearn.decomposition import NMF
 import numpy as np
 import os
-from .posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile
+from .posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile,brandvecfile,branduservecfile
 
 deptfile=depttablefile
 
@@ -113,12 +113,17 @@ class ItemRecommend(object):
             self.sdeptuser_vec = pd.read_pickle(sdeptuserfile)
             self.dept_vec = pd.read_pickle(deptvecfile)
             self.deptuser_vec = pd.read_pickle(deptuserfile)
+            self.brand_vec = pd.read_pickle(brandvecfile)
+            self.branduser_vec = pd.read_pickle(branduservecfile)
 
     def __getrecommend(self,vecs1,vecs2,item):
         item_vec = vecs1.loc[item,:]
         metrics = item_vec.dot(vecs2.values.T)
         table = pd.DataFrame(metrics,index=vecs2.index,columns=['score'])
+        avg = table.score.mean()
+        table = table[table.score>=avg]
         table = table.sort_values('score',ascending=False)
+#        table = table.reset_index()
         return table
 
     def getsamecartrecommendlist(self,item):
@@ -134,6 +139,12 @@ class ItemRecommend(object):
     def getsdeptrecommenduserlist(self,dept,sdept):
         id = DEPTSDEPTcode(dept,sdept)
         return self.__getrecommend(self.sdept_vec,self.sdeptuser_vec,id)
+
+    def getbrandrecommenduserlist(self,userlist,brand):
+        user_vec = self.branduser_vec[self.branduser_vec.index.isin(userlist)]
+        return self.__getrecommend(self.brand_vec,user_vec,brand)
+
+        
     def vec_update(self,table):
         table.loc[:, 'count'] = 1
         table.loc[:, 'cartid'] = table.user_id + table.year_week
@@ -152,6 +163,10 @@ class ItemRecommend(object):
         self.sdeptuser_vec, self.sdept_vec = PivotAndNMF(table, 'user_id', 'DEPTSDEPT', 'price')
         self.sdept_vec.to_pickle(sdeptvecfile)
         self.sdeptuser_vec.to_pickle(sdeptuserfile)
+
+        self.branduser_vec, self.brand_vec = PivotAndNMF(table, 'user_id', 'brand', 'count')
+        self.brand_vec.to_pickle(brandvecfile)
+        self.branduser_vec.to_pickle(branduservecfile)
 
 
 

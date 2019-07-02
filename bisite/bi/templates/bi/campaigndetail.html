@@ -6,9 +6,9 @@
 <header>
 <h1>{{ campaign.campaign_name }}</h1>
 <h2>{{campaign.campaign_detail_text}}</h2>
-<h3>{{campaign.campaign_start_date|date:"Y-m-d"}}から{{campaign.campaign_end_date|date:"Y-m-d"}}まで</h3>
+<h3>キャンペーン設定期間：{{campaign.campaign_start_date|date:"Y-m-d"}}から{{campaign.campaign_end_date|date:"Y-m-d"}}まで</h3>
 </header>
-選択対象顧客数　{{user_count}}　人<br>
+条件抽出該当顧客数　{{user_count}}　人<br>
 <br>
 キャンペーン期間中ブランド別販売集計<br>
 <table boarder="1"  cellspacing="0" cellpadding="5" bordercolor="#333333" id="myTable"  class="tablesorter-stickyHeader">
@@ -39,7 +39,7 @@
 <br>
 <br>
 その後の顧客購買行動<br>
-集計対象期間　{{start_date}} から {{end_date}}まで<br>
+集計対象期間　{{start_date|date:"Y-m-d"}} から {{end_date|date:"Y-m-d"}}まで<br>
 <br>
 対象顧客週次販売金額<br>
 <img src="{% static "bi/chart2.png" %}" alt="price trend chart"/><br>

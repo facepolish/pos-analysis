@@ -12,6 +12,7 @@ if __name__=='__main__':
     it_rec = ItemRecommend(newfile=True)
     it_rec.vec_update(table)
 
+    '''
     sampleitem = table.loc[table.index[10],'jan_code']
     print ('sample item is '+sampleitem)
     list = it_rec.getsamecartrecommendlist(sampleitem)
@@ -21,3 +22,5 @@ if __name__=='__main__':
     list = it_rec.getsamecustomerrecommendlist(sampleitem)
     print ('Customer based recommends are')
     print (list[1:11])
+    '''
+

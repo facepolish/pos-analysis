@@ -20,6 +20,9 @@ deptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/deptuser.pkl')
 sdeptvecfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptvec.pkl')
 sdeptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/sdeptuser.pkl')
 samecartitemvecfile=os.path.join(BASE_DIR, 'bi/data/bi/samecartitemvec.pkl')
+brandvecfile=os.path.join(BASE_DIR, 'bi/data/bi/brandvec.pkl')
+branduservecfile=os.path.join(BASE_DIR, 'bi/data/bi/branduservec.pkl')
+
 kojitsupath = Path(BASE_DIR).parent.parent
 
 recencyfile=os.path.join(BASE_DIR, 'bi/data/bi/recency.pkl')
