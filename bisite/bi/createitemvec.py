@@ -117,7 +117,13 @@ class ItemRecommend(object):
             self.branduser_vec = pd.read_pickle(branduservecfile)
 
     def __getrecommend(self,vecs1,vecs2,item):
+        if not(item in vecs1.index):
+            nulind = []
+            table = pd.DataFrame(0, index=nulind, columns=['score'])
+            return(table)
+
         item_vec = vecs1.loc[item,:]
+
         metrics = item_vec.dot(vecs2.values.T)
         table = pd.DataFrame(metrics,index=vecs2.index,columns=['score'])
         avg = table.score.mean()
