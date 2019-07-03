@@ -1,7 +1,7 @@
 ﻿from django.db import models
 from datetime import timedelta,datetime
 from .dashboard import KojitsuPos
-#from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 
 class ItemCategoryList (models.Model):
@@ -103,7 +103,7 @@ class Campaign (models.Model):
     campaign_detail_text = models.TextField(max_length=400,null=True,blank=True) 
     campaign_start_date = models.DateField(default=datetime.now, blank=True)
     campaign_end_date = models.DateField(default=datetime.now, blank=True)
-#    owner = models.ForeignKey(User, verbose_name=u'オーナー', on_delete=models.CASCADE)
+    owner = models.ForeignKey(get_user_model(), verbose_name=u'オーナー', on_delete=models.CASCADE)
 
     UseAgeRange = models.BooleanField(default=False)
     agelower=models.PositiveSmallIntegerField(default=1)

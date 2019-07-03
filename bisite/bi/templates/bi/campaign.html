@@ -3,6 +3,7 @@
 {% load static %}
 {% block mainbody %}
 <h1>キャンペーン</h1>
+<h2>自分の登録したキャンペーン一覧です。</h2>
 {% if latest_campaign_list %}
 <form action="{% url 'campaign' %}" method="post">
 {% csrf_token %}

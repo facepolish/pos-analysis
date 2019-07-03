@@ -83,6 +83,7 @@ def campaign_create(request):
         return HttpResponse(template.render(context,request))
     elif request.method=='POST':
         form = CampaignCreateForm(request.POST)
+        form.owner = request.user
         if not form.is_valid():
             template = loader.get_template('bi/campaign_create.html')
             context = {'form': CampaignCreateForm}
@@ -93,8 +94,8 @@ def campaign_create(request):
         detail = form.cleaned_data['campaign_detail_text']
         s = form.cleaned_data['campaign_start_date']
         e = form.cleaned_data['campaign_end_date']
-#        campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e,owner=request.user)
-        campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
+        campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e,owner=request.user)
+#        campaign= Campaign.objects.create(campaign_name = name,campaign_detail_text=detail,campaign_start_date = s,campaign_end_date = e)
         qu = QueryUsersByTerm()
         userlist = qu.ExtractUsers(request.POST)
         count = len(userlist)
@@ -133,9 +134,8 @@ def campaign(request):
             kp.campaign_targets.del_col(ob)
         kp.campaign_targets.flush()
         
-#    latest_campaign_list = Campaign.objects.filter(owner=request.user).order_by('-campaign_start_date')[:]
-    latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:]
-#    latest_campaign_list = Campaign.objects.order_by('-pk')[:5]
+    latest_campaign_list = Campaign.objects.filter(owner=request.user).order_by('-campaign_start_date')[:]
+#    latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:]
     template = loader.get_template('bi/campaign.html')
     context = {
         'latest_campaign_list': latest_campaign_list,

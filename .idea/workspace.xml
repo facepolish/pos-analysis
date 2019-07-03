@@ -3,7 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="151208f3-b6c2-4ab8-a84c-8e78c05f2b37" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/createitemvec.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/createitemvec.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0058_auto_20190701_2133.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0059_auto_20190701_2140.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0060_auto_20190701_2358.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0061_auto_20190702_0010.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0062_auto_20190702_0033.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0063_auto_20190702_1536.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0064_auto_20190702_1704.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/templates/bi/campaign_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/templates/bi/campaign_create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -36,12 +45,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="29130" />
+          <entry key="py" value="29158" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="29130" />
+          <entry key="Python" value="29158" />
         </counts>
       </usages-collector>
     </session>
@@ -60,10 +69,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
+            <state relative-caret-position="339">
               <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
             </state>
           </provider>
@@ -81,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
-              <caret line="98" selection-start-line="98" selection-end-line="98" />
+            <state relative-caret-position="162">
+              <caret line="85" column="33" selection-start-line="85" selection-start-column="33" selection-end-line="85" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -206,13 +215,13 @@
         <option value="$PROJECT_DIR$/bisite/bi/tableclass.py" />
         <option value="$PROJECT_DIR$/bisite/campaigntest.py" />
         <option value="$PROJECT_DIR$/bisite/testfreq.py" />
-        <option value="$PROJECT_DIR$/bisite/bi/views.py" />
         <option value="$PROJECT_DIR$/bisite/bi/dashboard.py" />
         <option value="$PROJECT_DIR$/bisite/bi/createitemvec.py" />
+        <option value="$PROJECT_DIR$/bisite/bi/views.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="-19" />
     <option name="width" value="1940" />
     <option name="height" value="1116" />
@@ -402,15 +411,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49947312" weight="0.32917467" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.41798106" visible="true" weight="0.43482688" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.36487907" weight="0.26680243" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.41745532" visible="true" weight="0.43482688" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.3643533" weight="0.26680243" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49947312" weight="0.32917467" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5820189" side_tool="true" visible="true" weight="0.43482688" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5825447" side_tool="true" visible="true" weight="0.43482688" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -753,19 +762,9 @@
           <option name="timeStamp" value="310" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>116</line>
-          <option name="timeStamp" value="311" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/testfreq.py</url>
           <line>55</line>
           <option name="timeStamp" value="312" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>131</line>
-          <option name="timeStamp" value="321" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
@@ -778,19 +777,24 @@
           <option name="timeStamp" value="323" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>98</line>
-          <option name="timeStamp" value="325" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>99</line>
-          <option name="timeStamp" value="326" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
           <line>557</line>
           <option name="timeStamp" value="327" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="328" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
+          <line>96</line>
+          <option name="timeStamp" value="329" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
+          <line>84</line>
+          <option name="timeStamp" value="330" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1169,17 +1173,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
+    <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="98" selection-start-line="98" selection-end-line="98" />
+        <state relative-caret-position="339">
+          <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
+    <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
+        <state relative-caret-position="162">
+          <caret line="85" column="33" selection-start-line="85" selection-start-column="33" selection-end-line="85" selection-end-column="33" />
         </state>
       </provider>
     </entry>

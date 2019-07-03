@@ -26,6 +26,7 @@
     <hr>
     {{form.UseBrand.label}}{{form.UseBrand}}{{form.brand_name}} ここまでの条件で絞り込まれた顧客から平均以上の親和性を持つ顧客を選択します。半数以下の場合もあります<br>
     <hr>
+    <input type="hidden" name="owner" value="{{ request.user.id }}">
     <input type="submit" value="決定">
 </form>
 {% endblock %}
