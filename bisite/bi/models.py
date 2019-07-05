@@ -90,6 +90,9 @@ class Campaign (models.Model):
     BRAND_CHOICES = []
     for brand in brandset:
         BRAND_CHOICES.append((brand, brand))
+    count_choice = [(i,i) for i in range(20)]
+    count_term = [(0,'回以上'),(1,'回以下'),(3,'回ちょうど')]
+    checkdateterms = [(1,'以降に購買あり'),(0,'以降に購買なし')]
     regionset = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県',
                 '群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県',
             '山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県',
@@ -118,6 +121,14 @@ class Campaign (models.Model):
 
     UseRegion = models.BooleanField(default=False)
     region=models.CharField(blank=True,max_length=20,choices=REGION_CHOICES)
+    
+    UseVisitCount = models.BooleanField(default=False)
+    visitcount=models.PositiveSmallIntegerField(default=1,choices=count_choice,blank=True)
+    visitcountterm=models.PositiveSmallIntegerField(default=1,choices=count_term,blank=True)
+    
+    UseLastPurchase = models.BooleanField(default=False)
+    checkpointdate = models.DateField(default=datetime.now,blank=True)
+    checkpointdateterm = models.PositiveSmallIntegerField(default=1,choices=checkdateterms,blank=True)
 
     UsePurchaseAddup = models.BooleanField(default=False)
     start_addup_date = models.DateField(null=True,blank=True)

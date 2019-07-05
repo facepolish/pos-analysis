@@ -628,12 +628,47 @@ class QueryUsersByTerm(object):
         user = user[user.index.isin(user2)]
 
         return(user)
+    def purchasedatecheck(self,user,para):
+        pdate = para[0]
+        term = int(para[1]) # 0 no purchase after pdate 1 some purchase after pdate
+        pos = self.pos
+        user1 = user
+        pos1 = pos[pos.user_id.isin(user1.index)]
+        day1 = dt.datetime.strptime(pdate, '%Y-%m-%d')
+        pos1 = pos1[pos1.purchase_date>=day1]
+        purchase_users = set(pos1.user_id)
+        if term == 0:
+            rest_users = set(user.index) - purchase_users
+            user1 = user[user.index.isin(rest_users)]
+        elif term == 1:
+            user1 = user[user.index.isin(purchase_users)]
+        else:
+            user1 = user
+        return(user1)
+            
+            
+        
+        
+    def visitcount(self,user,para):
+        count = int(para[0])
+        term = int(para[1]) # 0 -> greater than, 1 -> smaller than, 3 -> equal
+        if term == 3:
+            user2 = user[user.visit_count == count]
+        elif term == 0:
+            user2 = user[user.visit_count <= count]
+        elif term == 2:
+            user2 = user[user.visit_count >= count]
+        else:
+            user2 = user
+        return(user2)
 
 
     factors = {'UseAgeRange': (('agelower', 'ageupper'), age),
                'UseGender': (('gender',), gender),
                'UseGradeRange': (('gradelower', 'gradeupper'), grade),
                'UseRegion': (('region',), region),
+               'UseVisitCount':(('visitcount','visitcountterm'),visitcount),
+               'UseLastPurchase':(('checkpointdate','checkpointdateterm'),purchasedatecheck),
                'UsePurchaseAddup': (('start_addup_date', 'end_addup_date', 'purchase_amount'), Addup),
                'UseDEPT':(('DEPT_id',),dept),
                'UseBrand': (

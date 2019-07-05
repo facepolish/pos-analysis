@@ -8,6 +8,7 @@ userfile = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/user.
 outfile = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/out.xlsx'
 outpath = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/'
 freqfile = outpath+'freq.pkl'
+fixfreqfile = outpath+'fixfreq.pkl'
 
 def sumnonzero(lis):
     s = sum(lis)
@@ -76,6 +77,76 @@ def freq_put (table):
             visit_count+=1
             last_visit_day = pdate
 
+def fix_freq_put (table):
+    table = table[['user_id','purchase_date']]
+    out_table = pd.DataFrame(0,index = dayslist,columns=dayslist)
+    table = table.sort_values(by=['user_id','purchase_date'])
+    table = table.reset_index()
+    cur_user = 0
+    user_counter = 0
+    visit_count = 0
+    first_day = 0
+#    items = [(x,y) for x,y in zip( table.user_id,table.purchase_date)]
+#    for item in items:
+#        user = item[0]
+#        pdate = item[1]
+    for ind,row in table.iterrows():
+        user = row.user_id
+        pdate = row.purchase_date
+        if not(cur_user == user):
+            cur_user = user
+            visit_count = 1
+            user_counter+=1
+            first_day = pdate
+            last_visit_day = pdate
+
+            if user_counter%10000 == 0:
+                print ("Now user count is "+str(user_counter))
+                out_table.to_pickle(fixfreqfile)
+        if not (last_visit_day == pdate):
+            days_passed = pdate - first_day
+            out_table.loc[visit_count,days_passed.days] += 1
+            visit_count+=1
+            last_visit_day = pdate
+
+def check_freq (table,usertable):
+    table = table[['user_id','purchase_date']]
+    table = table.sort_values(by=['user_id','purchase_date'])
+    table = table.reset_index()
+    userlist = list(set(table.user_id))
+    userlist2 = ['0']
+    userlist2.extend(userlist)
+    col = ['count']
+    user_count = pd.DataFrame(0, index = userlist2, columns=col)
+    cur_user = '0'
+    user_counter = 0
+    visit_count = 0
+    mis_match_count = 0
+    for ind,row in table.iterrows():
+        user = row.user_id
+        pdate = row.purchase_date
+        if not(cur_user == user):
+            user_count.loc[cur_user,'count'] = visit_count
+            if (cur_user in usertable.index):
+                if not(usertable.loc[cur_user,'visit_count'] == visit_count):
+                    mis_match_count += 1
+                    mis_ratio = mis_match_count/(user_counter+1)
+                    print ("current mismatch ratio is "+str(mis_ratio))
+                    
+                
+            cur_user = user
+            visit_count = 1
+            user_counter+=1
+            last_visit_day = pdate
+
+            if user_counter%10000 == 0:
+                print ("Now user count is "+str(user_counter))
+                out_table.to_pickle(fixfreqfile)
+        if not (last_visit_day == pdate):
+            visit_count+=1
+            last_visit_day = pdate
+
+
 def ana_freq ():
     freq_table = pd.read_pickle(freqfile)
     mean_table = pd.DataFrame(0,index=dayslist,columns=['mean','sdiv'])
@@ -138,7 +209,40 @@ def count_table(lis,name):
 
 if __name__=='__main__':
 
-    ana_freq()
+
+    postable = pd.read_pickle(posfile)
+    user = pd.read_pickle(userfile)
+    check_freq(postable,user)
+
+    '''    
+    fix_freq = pd.read_pickle(fixfreqfile)
+    total_freq = pd.DataFrame(0,index = ['total'],columns=dayslist)
+    daylist2 = dayslist[:500]
+    for i in range(10):
+        title = str(i+1)+" 回目の購買"
+        plt.title(title)
+        plt.plot(dayslist,fix_freq.loc[i,:])
+        plt.show()
+        title = title +" 500日まで"
+        plt.title(title)
+        plt.plot(daylist2,fix_freq.loc[i,:499])
+        plt.show()
+        total_freq.loc['total',:] += fix_freq.loc[i,:]
+
+    title = str(i+1)+"合算"
+    plt.title(title)
+    plt.plot(dayslist,fix_freq.loc[i,:])
+    plt.show()
+    title = str(i+1)+"合算　５００日まで"
+
+    plt.plot(daylist2,fix_freq.loc[i,:499])
+    plt.show()
+    '''
+
+    summary = fix_freq.ix[:10,:]
+    summary.to_excel(outpath+'summ.xlsx')
+
+#    ana_freq()
 #    postable = pd.read_pickle(posfile)
 #    freq_put(postable)
     

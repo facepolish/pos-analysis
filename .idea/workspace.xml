@@ -3,16 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="151208f3-b6c2-4ab8-a84c-8e78c05f2b37" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0058_auto_20190701_2133.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0059_auto_20190701_2140.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0060_auto_20190701_2358.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0061_auto_20190702_0010.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0062_auto_20190702_0033.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0063_auto_20190702_1536.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/migrations/0064_auto_20190702_1704.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/bi/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bisite/bi/templates/bi/campaign_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/templates/bi/campaign_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bisite/bi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/bi/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bisite/testfreq.py" beforeDir="false" afterPath="$PROJECT_DIR$/bisite/testfreq.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,13 +19,13 @@
     <session id="1635376012">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="70" />
+          <entry key="project.closed" value="71" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.4" value="5" />
-          <entry key="project.open.time.5" value="54" />
+          <entry key="project.open.time.5" value="55" />
           <entry key="project.open.time.6" value="30" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="91" />
+          <entry key="project.opened" value="92" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -45,23 +40,23 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="29158" />
+          <entry key="py" value="29210" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="29158" />
+          <entry key="Python" value="29210" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bisite/bi/dashboard.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="473">
-              <caret line="72" column="1" selection-start-line="72" selection-start-column="1" selection-end-line="72" selection-end-column="1" />
+            <state relative-caret-position="84">
+              <caret line="652" column="28" selection-start-line="652" selection-start-column="28" selection-end-line="652" selection-end-column="28" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -72,7 +67,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
+            <state relative-caret-position="1904">
               <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
             </state>
           </provider>
@@ -81,8 +76,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/testfreq.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1513">
-              <caret line="92" column="13" selection-start-line="92" selection-start-column="13" selection-end-line="92" selection-end-column="13" />
+            <state relative-caret-position="153">
+              <caret line="119" column="50" selection-start-line="119" selection-start-column="50" selection-end-line="119" selection-end-column="50" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -90,11 +85,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="85" column="33" selection-start-line="85" selection-start-column="33" selection-end-line="85" selection-end-column="33" />
+            <state relative-caret-position="400">
+              <caret line="99" selection-start-line="99" selection-end-line="99" />
             </state>
           </provider>
         </entry>
@@ -138,7 +133,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/core/handlers/wsgi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1683">
+            <state relative-caret-position="224">
               <caret line="110" selection-start-line="110" selection-end-line="110" />
             </state>
           </provider>
@@ -214,14 +209,14 @@
         <option value="$PROJECT_DIR$/bisite/bi/kakakucom.py" />
         <option value="$PROJECT_DIR$/bisite/bi/tableclass.py" />
         <option value="$PROJECT_DIR$/bisite/campaigntest.py" />
-        <option value="$PROJECT_DIR$/bisite/testfreq.py" />
-        <option value="$PROJECT_DIR$/bisite/bi/dashboard.py" />
         <option value="$PROJECT_DIR$/bisite/bi/createitemvec.py" />
         <option value="$PROJECT_DIR$/bisite/bi/views.py" />
+        <option value="$PROJECT_DIR$/bisite/testfreq.py" />
+        <option value="$PROJECT_DIR$/bisite/bi/dashboard.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="-19" />
     <option name="width" value="1940" />
     <option name="height" value="1116" />
@@ -403,7 +398,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-19" y="0" width="1940" height="1116" extended-state="0" />
+    <frame x="-19" y="0" width="1940" height="1116" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.110410094" />
@@ -411,15 +406,15 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49947312" weight="0.32917467" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.41745532" visible="true" weight="0.43482688" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.3643533" weight="0.26680243" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4148265" visible="true" weight="0.43482688" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.3617245" weight="0.26680243" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Python Console" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49947312" weight="0.32917467" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5825447" side_tool="true" visible="true" weight="0.43482688" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5851735" side_tool="true" visible="true" weight="0.43482688" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -718,7 +713,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/testfreq.py</url>
-          <line>126</line>
+          <line>197</line>
           <option name="timeStamp" value="294" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -763,7 +758,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/testfreq.py</url>
-          <line>55</line>
+          <line>56</line>
           <option name="timeStamp" value="312" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -792,9 +787,29 @@
           <option name="timeStamp" value="329" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/testfreq.py</url>
+          <line>122</line>
+          <option name="timeStamp" value="331" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/testfreq.py</url>
+          <line>119</line>
+          <option name="timeStamp" value="332" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
+          <line>631</line>
+          <option name="timeStamp" value="333" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bisite/bi/dashboard.py</url>
+          <line>652</line>
+          <option name="timeStamp" value="334" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bisite/bi/views.py</url>
-          <line>84</line>
-          <option name="timeStamp" value="330" />
+          <line>99</line>
+          <option name="timeStamp" value="335" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1118,23 +1133,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/dashboard.py">
+    <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="473">
-          <caret line="72" column="1" selection-start-line="72" selection-start-column="1" selection-end-line="72" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/testfreq.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1513">
-          <caret line="92" column="13" selection-start-line="92" selection-start-column="13" selection-end-line="92" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1904">
+          <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -1166,24 +1168,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/core/handlers/wsgi.py">
+    <entry file="file://$PROJECT_DIR$/bisite/testfreq.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1683">
-          <caret line="110" selection-start-line="110" selection-end-line="110" />
+        <state relative-caret-position="153">
+          <caret line="119" column="50" selection-start-line="119" selection-start-column="50" selection-end-line="119" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bisite/bi/createitemvec.py">
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/django/core/handlers/wsgi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="119" column="28" selection-start-line="119" selection-start-column="28" selection-end-line="119" selection-end-column="28" />
+        <state relative-caret-position="224">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bisite/bi/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="85" column="33" selection-start-line="85" selection-start-column="33" selection-end-line="85" selection-end-column="33" />
+        <state relative-caret-position="400">
+          <caret line="99" selection-start-line="99" selection-end-line="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bisite/bi/dashboard.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="652" column="28" selection-start-line="652" selection-start-column="28" selection-end-line="652" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
