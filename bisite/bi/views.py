@@ -20,7 +20,7 @@ from .recency import PosQueryRecency,recency_intervals,get_stack
 from django.contrib.auth.decorators import login_required,permission_required
 
 def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
-    def RatioGraph(tabletpl, outputfile, title1, title2):
+    def RatioGraph(tabletpl, outputfile, titles):
         font = {'family': 'IPAexGothic'}
 
         class numcol(object):
@@ -38,23 +38,20 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
                 col = numcol.colors[cn]
                 return (col)
 
-        fig, ax = plt.subplots(2, 1, figsize=(12, 8), constrained_layout=True)
+        tpl_len = len(tabletpl)
+        fig, ax = plt.subplots(tpl_len, 1, figsize=(12, 4*tpl_len), constrained_layout=True)
         fontp = font_manager.FontProperties(**font)
         plt.rcParams['font.family'] = 'IPAexGothic'
-        ax[0].set_title(title1, **font)
-        ax[0].set_xticklabels(tabletpl[0].columns, rotation='vertical', fontsize='small', **font)
-        ax[1].set_xticklabels(tabletpl[1].columns, rotation='vertical', fontsize='small', **font)
-        ax[1].set_title(title2, **font)
         nc = numcol()
-        for ind, row in tabletpl[0].iterrows():
-            ax[0].plot(tabletpl[0].columns, row, label=str(ind), color=nc.color())
-        nc = numcol()
-        for ind, row in tabletpl[1].iterrows():
-            ax[1].plot(tabletpl[1].columns, row, label=str(ind), color=nc.color())
-        ax[0].legend(prop=fontp)
-        ax[1].legend(prop=fontp)
+        for i in range(len(tabletpl)):
+            ax[i].set_title(titles[i], **font)
+            ax[i].set_xticklabels(tabletpl[i].columns, rotation='vertical', fontsize='small', **font)
+            for ind, row in tabletpl[i].iterrows():
+                ax[i].plot(tabletpl[i].columns, row, label=str(ind), color=nc.color())
+            ax[i].legend(prop=fontp)
         fig.savefig(outputfile, format="png")
 
+    
     table,topratio,topbrand = PosQuerySales(userlist,(check_start_date,check_end_date))
     fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
     ax[0].plot(table.index,table.sales,label='Weekly Sales',color='b')
@@ -69,9 +66,9 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
     fig.savefig(chart_path2,format="png")
     chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
 
-    RatioGraph(topratio,chart_path3,'指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移')
+    RatioGraph(topratio,chart_path3,('指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移','指定顧客種別購入　特定顧客内比率／全体比率　'))
     chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
-    RatioGraph(topbrand,chart_path4,'指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移')
+    RatioGraph(topbrand,chart_path4,('指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移','指定顧客ブランド別　　特定顧客内比率／全体比率'))
 
 @login_required
 @permission_required("bi.access_pos_data")

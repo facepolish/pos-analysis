@@ -324,38 +324,46 @@ def PosQueryPriceTrend(term, jan_code, shop=None):
 
 def PosQuerySales(userlist,term,res_rows=5):
     def PivotSumTable(alltable,limittable,target_col,max_count):
+        def postprocess(table,max_count):
+            table = table.fillna(0)
+            table.loc[:,'mean'] = table.mean(axis=1,numeric_only = True)
+            table = table.sort_values('mean',ascending = False)
+            table = table.drop(columns = 'mean')
+            table.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in table.columns]
+            if (table.shape[0]>max_count):
+                table = table.iloc[0:max_count,:]
+            return(table)
+            
+        def Calc_ratio_mult(sumDEPT1,sumDEPT2):
+            weeksum1 = pd.DataFrame(0,index = ['sum'],columns=sumDEPT1.columns)
+            weeksum2 = pd.DataFrame(0,index = ['sum'],columns=sumDEPT2.columns)
+            for week in sumDEPT1.columns:
+                weeksum1.loc['sum',week] = sum(sumDEPT1.loc[:,week])
+                weeksum2.loc['sum',week] = sum(sumDEPT2.loc[:,week])
+            sumDEPT5 = pd.DataFrame(0,index=sumDEPT1.index,columns=sumDEPT1.columns)
+            sumDEPT6 = pd.DataFrame(0,index=sumDEPT2.index,columns=sumDEPT2.columns)
+            for ind in sumDEPT1.index:
+                sumDEPT5.loc[ind,:] = sumDEPT1.loc[ind,:]/weeksum1.loc['sum',:]
+                sumDEPT6.loc[ind,:] = sumDEPT2.loc[ind,:]/weeksum2.loc['sum',:]
+            sumDEPT7 = sumDEPT6/sumDEPT5
+            return(sumDEPT7)
+            
         sumDEPT1 = pd.pivot_table(alltable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
         sumDEPT2 = pd.pivot_table(limittable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
+        
         sumDEPT2 = sumDEPT2[(sumDEPT2>0).all(1)]
         mutualindex = set(sumDEPT1.index) & set(sumDEPT2.index)
         mutualcolumns = set(sumDEPT1.columns) & set(sumDEPT2.columns)
         sumDEPT1.drop(index=list(set(sumDEPT1.index)-mutualindex),columns=list(set(sumDEPT1.columns)-mutualcolumns),inplace=True)
         sumDEPT2.drop(index=list(set(sumDEPT2.index)-mutualindex),columns=list(set(sumDEPT2.columns)-mutualcolumns),inplace=True)
-#        sumDEPT1 = sumDEPT1[sumDEPT1.columns.isin(mutualcolumns)]
-#        sumDEPT2 = sumDEPT2[sumDEPT2.index.isin(mutualindex)]
-#        sumDEPT2 = sumDEPT2[sumDEPT2.columns.isin(mutualcolumns)]
-#        sumDEPT3 = pd.DataFrame(0,index = sumDEPT2.index,columns=sumDEPT2.columns)
+        
         sumDEPT3 = sumDEPT2/sumDEPT1
-#        endcol = sumDEPT3.columns[-1]
-#        begcol = sumDEPT3.columns[0]
-        sumDEPT3 = sumDEPT3.fillna(0)
-        sumDEPT3.loc[:,'ratio_mean'] = sumDEPT3.mean(axis=1,numeric_only = True)
-        sumDEPT2.loc[:,'sales_mean'] = sumDEPT2.mean(axis=1,numeric_only = True)
-        sumDEPT3 = sumDEPT3.sort_values('ratio_mean',ascending = False)
-        sumDEPT2 = sumDEPT2.sort_values('sales_mean',ascending = False)
-#        sumDEPT3 = sumDEPT3.iloc[:,0:-2]
-        sumDEPT3 = sumDEPT3.iloc[:,0:-1]
-        sumDEPT2 = sumDEPT2.iloc[:,0:-1]
-        if (sumDEPT3.shape[0]>max_count):
-            sumDEPT3 = sumDEPT3.iloc[0:max_count,:]
-        if (sumDEPT2.shape[0]>max_count):
-            sumDEPT2 = sumDEPT2.iloc[0:max_count,:]
-#        drp_ind = set(sumDEPT2.index) - set(sumDEPT3.index)
-#        sumDEPT2.drop(index = list(drp_ind),inplace=True)
+        sumDEPT4 = Calc_ratio_mult(sumDEPT1,sumDEPT2)
+        sumDEPT3 = postprocess(sumDEPT3,max_count)
+        sumDEPT2 = postprocess(sumDEPT2,max_count)
+        sumDEPT4 = postprocess(sumDEPT4,max_count)
         sumDEPT2 = sumDEPT2.rename(columns = {'price':'sales'})
-        sumDEPT2.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT2.columns]
-        sumDEPT3.columns = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumDEPT3.columns]
-        return(sumDEPT2,sumDEPT3)
+        return(sumDEPT2,sumDEPT3,sumDEPT4)
 
     tb = KojitsuPos()
     pos = tb.GetPosTable()
@@ -363,10 +371,11 @@ def PosQuerySales(userlist,term,res_rows=5):
     tpos = tpos[tpos.purchase_date<=term[1]]
     tpos2 = tpos[tpos.user_id.isin(userlist)]
 
-    sumDEPT2,sumDEPT3 = PivotSumTable(tpos,tpos2,'DEPT',res_rows)
+    sumDEPT2,sumDEPT3,sumDEPT4 = PivotSumTable(tpos,tpos2,'DEPT',res_rows)
     sumDEPT2.index = [tb.GetDeptName(x) for x in sumDEPT2.index]
     sumDEPT3.index = [tb.GetDeptName(x) for x in sumDEPT3.index]
-    sumbrand2,sumbrand3 = PivotSumTable(tpos,tpos2,'brand',res_rows)
+    sumDEPT4.index = [tb.GetDeptName(x) for x in sumDEPT4.index]
+    sumbrand2,sumbrand3,sumbrand4 = PivotSumTable(tpos,tpos2,'brand',res_rows)
 
 
 
@@ -378,7 +387,7 @@ def PosQuerySales(userlist,term,res_rows=5):
     sumpos2 = sumpos2.rename(columns = {'price':'sales'})
     sumpos2.index = [dt.datetime.strptime(x + ' 1', '%G %V %u').strftime('%Y/%m/%d') for x in sumpos2.index]
 
-    return(sumpos2,(sumDEPT2,sumDEPT3),(sumbrand2,sumbrand3))
+    return(sumpos2,(sumDEPT2,sumDEPT3,sumDEPT4),(sumbrand2,sumbrand3,sumbrand4))
 
 
 def PosQueryDiscount(term, shop=None):
