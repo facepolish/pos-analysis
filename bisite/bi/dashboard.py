@@ -347,17 +347,20 @@ def PosQuerySales(userlist,term,res_rows=5):
                 sumDEPT6.loc[ind,:] = sumDEPT2.loc[ind,:]/weeksum2.loc['sum',:]
             sumDEPT7 = sumDEPT6/sumDEPT5
             return(sumDEPT7)
-            
+
+        alltable = alltable[alltable.price>0]
+        limittable = limittable[limittable.price>0]
         sumDEPT1 = pd.pivot_table(alltable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
         sumDEPT2 = pd.pivot_table(limittable,index=target_col,columns='year_week',values='price',aggfunc='sum').fillna(0)
-        
-        sumDEPT2 = sumDEPT2[(sumDEPT2>0).all(1)]
+
+#        sumDEPT2 = sumDEPT2[(sumDEPT2>0).all(1)]
         mutualindex = set(sumDEPT1.index) & set(sumDEPT2.index)
         mutualcolumns = set(sumDEPT1.columns) & set(sumDEPT2.columns)
         sumDEPT1.drop(index=list(set(sumDEPT1.index)-mutualindex),columns=list(set(sumDEPT1.columns)-mutualcolumns),inplace=True)
         sumDEPT2.drop(index=list(set(sumDEPT2.index)-mutualindex),columns=list(set(sumDEPT2.columns)-mutualcolumns),inplace=True)
         
         sumDEPT3 = sumDEPT2/sumDEPT1
+        sumDEPT3 = sumDEPT3.fillna(0)
         sumDEPT4 = Calc_ratio_mult(sumDEPT1,sumDEPT2)
         sumDEPT3 = postprocess(sumDEPT3,max_count)
         sumDEPT2 = postprocess(sumDEPT2,max_count)
