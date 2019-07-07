@@ -117,7 +117,7 @@ class KojitsuPos(object):
                 __posupdated = True
     else:
         postable = getallpos(update=False)
-        postable = posaddcols(postable)
+#        postable = posaddcols(postable)
         __posupdated = True
     if __posupdated == True:
         postable.to_pickle(posfile)

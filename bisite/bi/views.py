@@ -19,7 +19,7 @@ from .recency import PosQueryRecency,recency_intervals,get_stack
 
 from django.contrib.auth.decorators import login_required,permission_required
 
-def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
+def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_id):
     def RatioGraph(tabletpl, outputfile, titles):
         font = {'family': 'IPAexGothic'}
 
@@ -50,7 +50,14 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
                 ax[i].plot(tabletpl[i].columns, row, label=str(ind), color=nc.color())
             ax[i].legend(prop=fontp)
         fig.savefig(outputfile, format="png")
-
+    path_h = 'bi/static/'
+    app_h = 'bi/'+str(campaign_id)+'_'
+    chart2 = app_h+'chart2.png'
+    chart3 = app_h+'chart3.png'
+    chart4 = app_h+'chart4.png'
+    chart_path2=os.path.join(settings.BASE_DIR, path_h+chart2) # 'bi/static/bi/chart2.png'
+    chart_path3=os.path.join(settings.BASE_DIR, path_h+chart3) #'bi/static/bi/chart3.png'
+    chart_path4=os.path.join(settings.BASE_DIR, path_h+chart4) #'bi/static/bi/chart4.png'
     
     table,topratio,topbrand = PosQuerySales(userlist,(check_start_date,check_end_date))
     fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
@@ -62,13 +69,11 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date):
     ax[1].set_xticklabels(table.index,rotation='vertical',fontsize = 'small')
     ax[1].set_title('Sales Share of Selected customers')
     ax[1].legend()
-    chart_path2=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart2.png')
     fig.savefig(chart_path2,format="png")
-    chart_path3=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart3.png')
-
+    
     RatioGraph(topratio,chart_path3,('指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移','指定顧客種別購入　特定顧客内比率／全体比率　'))
-    chart_path4=os.path.join(settings.BASE_DIR, 'bi/static/bi/chart4.png')
     RatioGraph(topbrand,chart_path4,('指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移','指定顧客ブランド別　　特定顧客内比率／全体比率'))
+    return(chart2,chart3,chart4)
 
 @login_required
 @permission_required("bi.access_pos_data")
@@ -112,11 +117,14 @@ def campaign_create(request):
         campaign.save()
         check_start_date = s-timedelta(days=365)
         check_end_date = s
-        SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date)
+        chart2,chart3,chart4 = SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign.id)
 #        count =  campaign.target_customers.count()
         context = {'user_count':count}
         context['start_date'] = check_start_date
         context['end_date'] = check_end_date
+        context['chart2'] = chart2 #"bi/chart2.png"
+        context['chart3'] = chart3 #"bi/chart3.png"
+        context['chart4'] = chart4 #"bi/chart4.png"
         template = loader.get_template('bi/campaign_check.html')
         return HttpResponse(template.render(context,request))
 
@@ -154,7 +162,7 @@ def campaigndetail(request, campaign_id):
         table = kp.GetPosTable()
         maxdate=max(table.purchase_date)
         year_before = maxdate - timedelta(days=365)
-        SaveCustomerBehaviorGraph(userlist,year_before,maxdate)
+        chart2,chart3,chart4 = SaveCustomerBehaviorGraph(userlist,year_before,maxdate,campaign_id)
 
         table,per_cs,per_cs2 = qt.GenerateSummary(campaign.campaign_start_date,campaign.campaign_end_date,userlist)
         rowlisttop=['ブランド']
@@ -169,7 +177,9 @@ def campaigndetail(request, campaign_id):
         content['start_date'] = year_before
         content['end_date'] = maxdate
         content['user_count'] = len(userlist)
-        SaveCustomerBehaviorGraph
+        content['chart2'] = chart2 #"bi/chart2.png"
+        content['chart3'] = chart3 #"bi/chart3.png"
+        content['chart4'] = chart4 #"bi/chart4.png"
         return render(request, 'bi/campaigndetail.html', content)
     elif request.method == 'POST':
         return render(request, 'bi/campaigndetail.html', {'campaign': campaign})
