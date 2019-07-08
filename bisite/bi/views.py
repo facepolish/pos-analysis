@@ -15,10 +15,44 @@ import logging
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 import matplotlib
+from .posenv import campaign_cache_file
 from .recency import PosQueryRecency,recency_intervals,get_stack
+import pickle
 
 from django.contrib.auth.decorators import login_required,permission_required
 
+class CampaignCache(object):
+    def __init__(self):
+        if os.path.exists(campaign_cache_file):
+            with open (campaign_cache_file,mode='rb') as f:
+                self.campaigncachedict = pickle.load(f)
+        else:
+            self.campaigncachedict = {}
+    def flush(self):
+        with open (campaign_cache_file,mode='wb') as f:
+            pickle.dump(self.campaigncachedict,f)
+    def clear(self,id):
+        id = int(id)
+        lis = self.campaigncachedict.pop(id,0)
+        if not(lis == 0):
+            for file in lis:
+                try:
+                    os.remove(file)
+                except:
+                    continue
+#        self.flush()
+        
+    def add(self,id,lis):
+        id = int(id)
+        existing = self.campaigncachedict.get(id,0)
+        if existing == 0:
+            self.campaigncachedict.update({id:lis})
+        else:
+            existing = existing.extend(lis)
+            self.campaigncachedict.update({id:existing})
+        self.flush()
+        
+    
 def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_id):
     def RatioGraph(tabletpl, outputfile, titles):
         font = {'family': 'IPAexGothic'}
@@ -42,22 +76,28 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_
         fig, ax = plt.subplots(tpl_len, 1, figsize=(12, 4*tpl_len), constrained_layout=True)
         fontp = font_manager.FontProperties(**font)
         plt.rcParams['font.family'] = 'IPAexGothic'
-        nc = numcol()
         for i in range(len(tabletpl)):
             ax[i].set_title(titles[i], **font)
             ax[i].set_xticklabels(tabletpl[i].columns, rotation='vertical', fontsize='small', **font)
+            nc = numcol()
             for ind, row in tabletpl[i].iterrows():
                 ax[i].plot(tabletpl[i].columns, row, label=str(ind), color=nc.color())
             ax[i].legend(prop=fontp)
         fig.savefig(outputfile, format="png")
     path_h = 'bi/static/'
-    app_h = 'bi/'+str(campaign_id)+'_'
+    begw = check_start_date.isocalendar()
+    endw = check_end_date.isocalendar()
+    datestr = str(begw[0])+str(begw[1]).zfill(2)+str(endw[0])+str(endw[1]).zfill(2)
+    app_h = 'bi/'+str(campaign_id)+'_'+datestr+'_'
     chart2 = app_h+'chart2.png'
     chart3 = app_h+'chart3.png'
     chart4 = app_h+'chart4.png'
     chart_path2=os.path.join(settings.BASE_DIR, path_h+chart2) # 'bi/static/bi/chart2.png'
     chart_path3=os.path.join(settings.BASE_DIR, path_h+chart3) #'bi/static/bi/chart3.png'
     chart_path4=os.path.join(settings.BASE_DIR, path_h+chart4) #'bi/static/bi/chart4.png'
+    if os.path.exists(chart_path3):
+        return(chart2,chart3,chart4)
+        
     
     table,topratio,topbrand = PosQuerySales(userlist,(check_start_date,check_end_date))
     fig,ax = plt.subplots( 2, 1, figsize=(12,8), constrained_layout=True)
@@ -73,6 +113,8 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_
     
     RatioGraph(topratio,chart_path3,('指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移','指定顧客種別購入　特定顧客内比率／全体比率　'))
     RatioGraph(topbrand,chart_path4,('指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移','指定顧客ブランド別　　特定顧客内比率／全体比率'))
+    cc = CampaignCache()
+    cc.add(campaign_id,[chart_path2,chart_path3,chart_path4])
     return(chart2,chart3,chart4)
 
 @login_required
@@ -134,11 +176,13 @@ def campaign(request):
     if request.method=='POST':
         dellist = request.POST.getlist("delcampaign")
         kp = KojitsuPos()
+        cc = CampaignCache()
         for ob in dellist:
             Campaign.objects.filter(pk=ob).delete()
             kp.campaign_targets.del_col(ob)
+            cc.clear(ob)
         kp.campaign_targets.flush()
-        
+        cc.flush()
     latest_campaign_list = Campaign.objects.filter(owner=request.user).order_by('-campaign_start_date')[:]
 #    latest_campaign_list = Campaign.objects.order_by('-campaign_start_date')[:]
     template = loader.get_template('bi/campaign.html')

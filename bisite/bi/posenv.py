@@ -14,6 +14,7 @@ sdepttablefile = os.path.join(BASE_DIR, 'bi/data/bi/sdept.pkl')
 deptsdepttablefile = os.path.join(BASE_DIR, 'bi/data/bi/deptsdept.pkl')
 itemdbfile = os.path.join(BASE_DIR, 'bi/data/bi/itemdb.pkl')
 campaign_target_file = os.path.join(BASE_DIR, 'bi/data/bi/campaign_targets.pkl')
+campaign_cache_file = os.path.join(BASE_DIR, 'bi/data/bi/campaign_cache.pkl')
 
 deptvecfile=os.path.join(BASE_DIR, 'bi/data/bi/deptvec.pkl')
 deptuserfile=os.path.join(BASE_DIR, 'bi/data/bi/deptuser.pkl')
