@@ -23,4 +23,3 @@ if __name__=='__main__':
     print ('Customer based recommends are')
     print (list[1:11])
     '''
-

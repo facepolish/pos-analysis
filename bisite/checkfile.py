@@ -1,29 +1,29 @@
-﻿import pandas as pd
-import pickle
-from scipy.sparse import csr_matrix
-from pandas.api.types import CategoricalDtype
-from sklearn.decomposition import NMF
-import numpy as np
-import os
-#from .posenv import uservecfile,itemvecfile,posfile,deptuserfile,sdeptvecfile,sdeptuserfile,samecartitemvecfile,deptvecfile,depttablefile
+﻿import numpy as np
+import pandas as pd
+from bi.posenv import postempfile,itemdbfile,postempfile2
+from bi.tableclass import posaddcols,convert_table
 
-
-import numpy as np
-import math
-from sklearn.preprocessing import normalize
 
 if __name__=='__main__':
-    table2 = pd.read_pickle('C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/pos.pkl')
-    '''
-    table = pd.read_pickle('E:/download/pos.pkl')
-    table3 = pd.read_pickle('J:/Kobe results/workspace/Kojitsu/src/bisite/bi/data/bi/pos.pkl')
-    table4 = pd.read_pickle('J:/Kobe results/workspace/Kojitsu/src/bisite/temppos.pkl')
-    table5 = pd.read_pickle('J:/Kobe results/workspace/Kojitsu/src/bisite/outpos.pkl')
-    
-    table4.cost = table4.cost.fillna(0)
-    table4 = posaddcols(table4)
-    table4.to_pickle(table5)
-    '''
-    collen = len(table2.columns)
-    print ("num of col = "+str(collen))
+
+    table2 = pd.read_pickle(postempfile)
+    table5 = pd.read_pickle(itemdbfile)
+    table2 = convert_table(table2)
+    table5 = convert_table(table5)
+
+    janinpos = set(table2.jan_code)
+    table5 = table5.reset_index()
+    janindb = set(table5.jan_code)
+    pos_diff = janinpos - janindb
+    print ("pos jan count is "+str(len(janinpos)))
+    print("jan in db count is "+str(len(janindb)))
+    print ("POS only jan count is "+str(len(pos_diff)))
+#    nans = (table2.user_id == np.nan)
+#    nan_count = nans.sum()
+#    print ("nan in user_id is "+str(len(nan_count)))
+    table2 = posaddcols(table2)
+    table2 = pd.merge(table2,table5,on='jan_code',how='inner')
+    table2.cost = table2.cost.fillna(0)
+
+    table2.to_pickle(postempfile2)
     print (table2.columns)

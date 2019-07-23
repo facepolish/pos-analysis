@@ -54,9 +54,10 @@ def convert_table(table):
     return(table)
 
 class itemdb():
+    if os.path.exists(itemdbfile):
+        item_tableold = pd.read_pickle(itemdbfile)
     if DB_OFFLINE:
-        if os.path.exists(itemdbfile):
-            item_table = pd.read_pickle(itemdbfile)
+        item_table = item_tableold
     else:
         with db_conn() as connection:
             item_master_cols = ['JANｺｰﾄﾞ','DEPT','S_DEPT','ﾒｰｶｰｺｰﾄﾞ','商品名_漢字','原価']
@@ -70,6 +71,9 @@ class itemdb():
             item_table = pd.merge(item_table,maker_code_table,on='maker_code',how='left')
         item_table = convert_table(item_table)
         item_table = item_table.set_index('jan_code')
+        dif_ind = set(item_tableold.index) - set(item_table.index)
+        item_tableold = item_tableold[item_tableold.index.isin(dif_ind)]
+        item_table = item_table.append(item_tableold)
         item_table.to_pickle(itemdbfile)
     @classmethod
     def getitemdb(cls):
@@ -105,7 +109,7 @@ def getposdb(posdb=None,max_rep=10,update = False):
                 outframe = outframe.append(sqlpos)
                 last_receit = max(outframe.slip_id)
         item_table_merge = item_table.reset_index()
-        outframe = pd.merge(outframe,item_table_merge,on='jan_code',how='left')
+        outframe = pd.merge(outframe,item_table_merge,on='jan_code',how='inner')
 
         print (item_table.head())
 #    outframe = posaddcols(outframe)

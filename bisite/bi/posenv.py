@@ -3,6 +3,8 @@ from pathlib import Path
 
 #from django.conf import settings
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+postempfile = os.path.join(BASE_DIR, 'bi/data/bi/postemp.pkl')
+postempfile2 = os.path.join(BASE_DIR, 'bi/data/bi/postemp2.pkl')
 
 posfile = os.path.join(BASE_DIR, 'bi/data/bi/pos.pkl')
 userfile = os.path.join(BASE_DIR, 'bi/data/bi/user.pkl')
@@ -105,6 +107,7 @@ col_dtype = {
     'type':str,
     'cost':int,
     'price':int,
+    'DEPT':str,
     'receit_id':str,
     'maker_code':str,
     'jan_code':str }
@@ -137,4 +140,3 @@ db_settings = {
     "port":'1521'
 }
 DB_OFFLINE = True
-

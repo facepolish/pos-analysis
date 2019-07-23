@@ -162,17 +162,43 @@ class ItemRecommend(object):
 
         _, self.samecartitem_vec = PivotAndNMF(table, 'cartid', 'jan_code', 'count')
         self.samecartitem_vec.to_pickle(samecartitemvecfile)
-
-        self.deptuser_vec, self.dept_vec = PivotAndNMF(table, 'user_id', 'DEPT', 'price')
+        tablefdept = table.dropna(subset=['DEPT'])
+        self.deptuser_vec, self.dept_vec = PivotAndNMF(tablefdept, 'user_id', 'DEPT', 'price')
         self.dept_vec.to_pickle(deptvecfile)
         self.deptuser_vec.to_pickle(deptuserfile)
         self.sdeptuser_vec, self.sdept_vec = PivotAndNMF(table, 'user_id', 'DEPTSDEPT', 'price')
         self.sdept_vec.to_pickle(sdeptvecfile)
         self.sdeptuser_vec.to_pickle(sdeptuserfile)
-
-        self.branduser_vec, self.brand_vec = PivotAndNMF(table, 'user_id', 'brand', 'count')
+        tablefbrand = table.dropna(subset=['brand'])
+        self.branduser_vec, self.brand_vec = PivotAndNMF(tablefbrand, 'user_id', 'brand', 'count')
         self.brand_vec.to_pickle(brandvecfile)
         self.branduser_vec.to_pickle(branduservecfile)
+
+    def vec_update2(self,table):
+        table.loc[:, 'count'] = 1
+        table.loc[:, 'cartid'] = table.user_id + table.year_week
+        table.loc[:, 'DEPTSDEPT'] = [DEPTSDEPTcode(x,y) for x, y in zip(table.DEPT, table.SDEPT)]
+        '''
+        self.user_vec, self.item_vec = PivotAndNMF(table, 'user_id', 'jan_code', 'price')
+        self.item_vec.to_pickle(itemvecfile)
+        self.user_vec.to_pickle(uservecfile)
+
+        _, self.samecartitem_vec = PivotAndNMF(table, 'cartid', 'jan_code', 'count')
+        self.samecartitem_vec.to_pickle(samecartitemvecfile)
+        '''
+        tablefdept = table.dropna(subset=['DEPT'])
+        self.deptuser_vec, self.dept_vec = PivotAndNMF(table, 'user_id', 'DEPT', 'price')
+        self.dept_vec.to_pickle(deptvecfile)
+        self.deptuser_vec.to_pickle(deptuserfile)
+        self.sdeptuser_vec, self.sdept_vec = PivotAndNMF(tablefdept, 'user_id', 'DEPTSDEPT', 'price')
+        self.sdept_vec.to_pickle(sdeptvecfile)
+        self.sdeptuser_vec.to_pickle(sdeptuserfile)
+
+        tablefbrand = table.dropna(subset=['brand'])
+        self.branduser_vec, self.brand_vec = PivotAndNMF(tablefbrand, 'user_id', 'brand', 'count')
+        self.brand_vec.to_pickle(brandvecfile)
+        self.branduser_vec.to_pickle(branduservecfile)
+
 
 
 

@@ -13,7 +13,7 @@ class ItemCategory (models.Model):
     subcategory_name = models.CharField(max_length=20)
     def __str__(self):
         return (self.category_name+self.subcategory_name)
-        
+
 class SetUpData(models.Model):
     FILE_CHOICE = ((1,'店舗リスト'),(2,'顧客リスト'),(3,'POSデータ'),(4,'ECデータ'))
     datatype = models.PositiveSmallIntegerField(default=2,choices=FILE_CHOICE)
@@ -42,7 +42,7 @@ class Shops (models.Model):
     shop_name = models.CharField(max_length=100)
     def __str__(self):
         return(self.shop_name)
-        
+
 class Customer(models.Model):
     user_id = models.CharField(max_length=10,unique=True)
     address = models.CharField(max_length=200)
@@ -102,8 +102,8 @@ class Campaign (models.Model):
     for rg in regionset:
         REGION_CHOICES.append((rg, rg))
     DEPT_CHOICES = ((str(k),v) for k,v in kp.dept_dic.items())
-    campaign_name = models.CharField(max_length=200) 
-    campaign_detail_text = models.TextField(max_length=400,null=True,blank=True) 
+    campaign_name = models.CharField(max_length=200)
+    campaign_detail_text = models.TextField(max_length=400,null=True,blank=True)
     campaign_start_date = models.DateField(default=datetime.now, blank=True)
     campaign_end_date = models.DateField(default=datetime.now, blank=True)
     owner = models.ForeignKey(get_user_model(), verbose_name=u'オーナー', on_delete=models.CASCADE)
@@ -111,8 +111,8 @@ class Campaign (models.Model):
     UseAgeRange = models.BooleanField(default=False)
     agelower=models.PositiveSmallIntegerField(default=1)
     ageupper=models.PositiveSmallIntegerField(default=120)
-    
-    UseGender = models.BooleanField(default=False) 
+
+    UseGender = models.BooleanField(default=False)
     gender=models.CharField(blank=True,max_length=2,choices=GENDER_CHOICE)
 
     UseGradeRange = models.BooleanField(default=False)
@@ -121,11 +121,11 @@ class Campaign (models.Model):
 
     UseRegion = models.BooleanField(default=False)
     region=models.CharField(blank=True,max_length=20,choices=REGION_CHOICES)
-    
+
     UseVisitCount = models.BooleanField(default=False)
     visitcount=models.PositiveSmallIntegerField(default=1,choices=count_choice,blank=True)
     visitcountterm=models.PositiveSmallIntegerField(default=1,choices=count_term,blank=True)
-    
+
     UseLastPurchase = models.BooleanField(default=False)
     checkpointdate = models.DateField(default=datetime.now,blank=True)
     checkpointdateterm = models.PositiveSmallIntegerField(default=1,choices=checkdateterms,blank=True)
@@ -140,7 +140,7 @@ class Campaign (models.Model):
 
     UseDEPT = models.BooleanField(default=False)
     DEPT_id =models.CharField(blank=True,max_length=2,choices = DEPT_CHOICES)
-    
+
 #    target_customers = models.ManyToManyField(Customer)
     def __str__(self):
         return self.campaign_name
