@@ -12,21 +12,35 @@ deptfile=depttablefile
 import numpy as np
 import math
 from sklearn.preprocessing import normalize
-def update_uv(M, U, V):
+def update_uv(M, U, V,hold_u=False,hold_v=False):
     divu = np.dot(U,np.dot(V.T, V))
     divu = np.where(divu == 0,0.1,divu)
-    U = U * M.dot(V) / divu
+    if hold_u == False:
+        U = U * M.dot(V) / divu
     divv = np.dot(np.dot(U.T, U), V.T).T
     divv = np.where(divv == 0,0.1,divv)
-    V = V * (M.T).dot(U) / divv
+    if hold_v == False:
+        V = V * (M.T).dot(U) / divv
     return U, V
 
-def SparseNMF(sparse_matrix):
-    k = 16
+def SparseNMF(sparse_matrix,res_width=16,given_u=None,given_v = None):
+    k = res_width
     m = sparse_matrix.shape[0]
     n = sparse_matrix.shape[1]
-    U = np.abs(np.random.uniform(low=0,high=1,size=(m,k)))
-    V = np.abs(np.random.uniform(low=0,high=1,size=(n,k)))
+    if given_u is not None:
+        U = given_u
+        k = given_u.shape[1]
+        hold_u = True
+    else:
+        U = np.abs(np.random.uniform(low=0,high=1,size=(m,k)))
+        hold_u = False
+    if given_v is not None:
+        V = given_v
+        k = given_v.shape[1]
+        hold_v = True
+    else:
+        V = np.abs(np.random.uniform(low=0,high=1,size=(n,k)))
+        hold_v = False
     iters = 10000
     minU = 1000
     ng_max = 100
@@ -35,7 +49,7 @@ def SparseNMF(sparse_matrix):
         print('count = '+str(_))
         lastU = U
         lastV = V
-        U, V = update_uv(sparse_matrix, U, V)
+        U, V = update_uv(sparse_matrix, U, V,hold_u,hold_v)
         lastU = U - lastU
         diffU = np.linalg.norm(lastU)
         nrmU = np.linalg.norm(U)
@@ -69,12 +83,30 @@ def SparsePivot(table,index_label,col_label,val_label):
                                 shape=(person_c.categories.size,thing_c.categories.size))
     dfs = pd.SparseDataFrame(sparse_matrix,index=person_c.categories,columns=thing_c.categories,default_fill_value=0)
     return(sparse_matrix,dfs)
+    
 def PivotAndNMF(table, ind, col, how):
     sparse_matrix, dfs = SparsePivot(table, ind, col, how)
     U, V = SparseNMF(sparse_matrix)
     u_vec = pd.DataFrame(U, index=dfs.index)
     i_vec = pd.DataFrame(V, index=dfs.columns)
     return (u_vec, i_vec)
+
+def SparsePivot_with_fixedind(table,index_label,col_label,val_label,given_index_u,given_index_v):
+    person_c = CategoricalDtype(given_index_v,ordered=True)
+    thing_c = CategoricalDtype(given_index_u,ordered=True)
+    row = table.loc[:,index_label].astype(person_c).cat.codes
+    col = table.loc[:,col_label].astype(thing_c).cat.codes
+    sparse_matrix = csr_matrix((table[val_label],(row,col)),
+                                shape=(person_c.categories.size,thing_c.categories.size))
+    dfs = pd.SparseDataFrame(sparse_matrix,index=person_c.categories,columns=thing_c.categories,default_fill_value=0)
+    return(sparse_matrix,dfs)
+
+def PivotAndNMF_fixedU(table,ind,col,how,given_index_v,U):
+    sparse_matrix, dfs = SparsePivot_with_fixedind(table, ind, col, how,given_index_v,U.index)
+    U, V = SparseNMF(sparse_matrix,given_u = U)
+    v_vec = pd.DataFrame(V, index=dfs.columns)
+    return (v_vec)
+    
 
 def DEPTSDEPTcode (dept,sdept):
     return(str(dept).zfill(2)+str(sdept).zfill(3))
