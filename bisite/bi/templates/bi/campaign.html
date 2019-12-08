@@ -2,8 +2,8 @@
 {% load humanize %}
 {% load static %}
 {% block mainbody %}
-<h1>キャンペーン</h1>
-<h2>自分の登録したキャンペーン一覧です。</h2>
+<h1>条件集計</h1>
+<h2>自分の登録した条件集計一覧です。</h2>
 {% if latest_campaign_list %}
 <form action="{% url 'campaign' %}" method="post">
 {% csrf_token %}
@@ -11,16 +11,16 @@
     <ul>
     {% for campaign in latest_campaign_list %}
         <li><a href="{% url 'campaign' %}{{ campaign.id }}/">{{ campaign.campaign_name }}</a></li>
-        キャンペーン期間:{{campaign.campaign_start_date|date:"Y/m/d"}}  から  {{campaign.campaign_end_date|date:"Y/m/d"}} まで <input type="checkbox" name="delcampaign" value={{campaign.id}}
+        集計期間:{{campaign.campaign_start_date|date:"Y/m/d"}}  から  {{campaign.campaign_end_date|date:"Y/m/d"}} まで <input type="checkbox" name="delcampaign" value={{campaign.id}}
 <br>
         {{campaign.campaign_detail_text}}
     {% endfor %}
     </ul>
     </div>
-	<input type="submit" value="選択したキャンペーンを削除">
+	<input type="submit" value="選択した条件集計を削除">
 </form>
 {% else %}
-    <p>登録されているキャンペーンはありません</p>
+    <p>登録されている条件集計はありません</p>
 {% endif %}
 {% endblock %}
-指定条件でキャンペーンのリストを表示
+指定条件で条件集計のリストを表示

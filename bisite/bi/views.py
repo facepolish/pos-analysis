@@ -157,8 +157,8 @@ def campaign_create(request):
 #            cs = Customer.objects.filter(user_id__in=chunklist)
 #            campaign.target_customers.add(*cs)
         campaign.save()
-        check_start_date = s-timedelta(days=365)
-        check_end_date = s
+        check_start_date = s #-timedelta(days=365)
+        check_end_date = e
         chart2,chart3,chart4 = SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign.id)
 #        count =  campaign.target_customers.count()
         context = {'user_count':count}

@@ -9,7 +9,7 @@ class CampaignCreateForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['target_customers']
 #        CAMPAIGNFORMLIST
-        labels = {'campaign_name':"キャンペーン名",'campaign_detail_text':"キャンペーン詳細",'campaign_start_date':"開始日",'campaign_end_date':"終了日",
+        labels = {'campaign_name':"集計名",'campaign_detail_text':"集計条件詳細",'campaign_start_date':"開始日",'campaign_end_date':"終了日",
         'UseAgeRange':"年齢帯を使う",'UseGender':'性別を使う','UseGradeRange':'会員等級を使う',
         'UseRegion':'地域で絞る','UsePurchaseAddup':'期間購買金額で絞る',
         'UseRegisteredDate':'登録日で絞る',

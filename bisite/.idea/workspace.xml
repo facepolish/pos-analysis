@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="379b0a0b-f155-423c-bb0d-c00ac65b8b52" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/bi/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/bi/dashboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bi/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/bi/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bi/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bi/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bi/templates/bi/campaign_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/bi/templates/bi/campaign_create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/bi/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -279,7 +277,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24973656" />
