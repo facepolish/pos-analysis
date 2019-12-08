@@ -674,12 +674,24 @@ class QueryUsersByTerm(object):
             user2 = user
         return(user2)
 
+    def registereddate(self,user,para):
+        bottomdate = para[0]
+        topdate = para[1]
+        day1 = dt.datetime.strptime(bottomdate, '%Y-%m-%d')
+        day1 = day1.strftime('%Y%m%d')
+        day2 = dt.datetime.strptime(topdate, '%Y-%m-%d')
+        day2 = day2.strftime('%Y%m%d')
+        user2 = user[user.registered_date>=day1]
+        user3 = user2[user2.registered_date<=day2]
+        return(user3)
+
 
     factors = {'UseAgeRange': (('agelower', 'ageupper'), age),
                'UseGender': (('gender',), gender),
                'UseGradeRange': (('gradelower', 'gradeupper'), grade),
                'UseRegion': (('region',), region),
                'UseVisitCount':(('visitcount','visitcountterm'),visitcount),
+               'UseRegisteredDate':(('regdatebegin','regdateend'),registereddate),
                'UseLastPurchase':(('checkpointdate','checkpointdateterm'),purchasedatecheck),
                'UsePurchaseAddup': (('start_addup_date', 'end_addup_date', 'purchase_amount'), Addup),
                'UseDEPT':(('DEPT_id',),dept),

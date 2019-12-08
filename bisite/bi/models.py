@@ -125,6 +125,10 @@ class Campaign (models.Model):
     UseVisitCount = models.BooleanField(default=False)
     visitcount=models.PositiveSmallIntegerField(default=1,choices=count_choice,blank=True)
     visitcountterm=models.PositiveSmallIntegerField(default=1,choices=count_term,blank=True)
+    
+    UseRegisteredDate = models.BooleanField(default=False)
+    regdatebegin = models.DateField(default=datetime.now,blank=True)
+    regdateend = models.DateField(default=datetime.now,blank=True)
 
     UseLastPurchase = models.BooleanField(default=False)
     checkpointdate = models.DateField(default=datetime.now,blank=True)

@@ -12,6 +12,7 @@ class CampaignCreateForm(forms.ModelForm):
         labels = {'campaign_name':"キャンペーン名",'campaign_detail_text':"キャンペーン詳細",'campaign_start_date':"開始日",'campaign_end_date':"終了日",
         'UseAgeRange':"年齢帯を使う",'UseGender':'性別を使う','UseGradeRange':'会員等級を使う',
         'UseRegion':'地域で絞る','UsePurchaseAddup':'期間購買金額で絞る',
+        'UseRegisteredDate':'登録日で絞る',
         'UseBrand':'顧客ブランド親和性指標で絞る','UseCategory':'商品種別親和性指標で絞る','UseDEPT':'商品代分類で絞る','UseVisitCount':'直近までの購買回数で絞る',
         'UseLastPurchase':'指定日以降の購買の有無で絞る'}
 '''
