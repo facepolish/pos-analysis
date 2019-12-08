@@ -92,9 +92,13 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_
     chart2 = app_h+'chart2.png'
     chart3 = app_h+'chart3.png'
     chart4 = app_h+'chart4.png'
+    file2  = app_h+'chart2.xlsx'
     chart_path2=os.path.join(settings.BASE_DIR, path_h+chart2) # 'bi/static/bi/chart2.png'
     chart_path3=os.path.join(settings.BASE_DIR, path_h+chart3) #'bi/static/bi/chart3.png'
     chart_path4=os.path.join(settings.BASE_DIR, path_h+chart4) #'bi/static/bi/chart4.png'
+
+    file_path2=os.path.join(settings.BASE_DIR, path_h+file2) # 'bi/static/bi/chart2.png'
+    
     if os.path.exists(chart_path3):
         return(chart2,chart3,chart4)
         
@@ -110,12 +114,13 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_
     ax[1].set_title('Sales Share of Selected customers')
     ax[1].legend()
     fig.savefig(chart_path2,format="png")
+    table.to_excel(file_path2)
     
     RatioGraph(topratio,chart_path3,('指定顧客種別売り上げ上位５推移','指定顧客種別購入比率上位５推移','指定顧客種別購入　特定顧客内比率／全体比率　'))
     RatioGraph(topbrand,chart_path4,('指定顧客ブランド別売り上げ金額上位５推移','指定顧客ブランド別購入比率上位５推移','指定顧客ブランド別　　特定顧客内比率／全体比率'))
     cc = CampaignCache()
     cc.add(campaign_id,[chart_path2,chart_path3,chart_path4])
-    return(chart2,chart3,chart4)
+    return(chart2,chart3,chart4,file2)
 
 @login_required
 @permission_required("bi.access_pos_data")
@@ -159,7 +164,7 @@ def campaign_create(request):
         campaign.save()
         check_start_date = s #-timedelta(days=365)
         check_end_date = e
-        chart2,chart3,chart4 = SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign.id)
+        chart2,chart3,chart4,file2 = SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign.id)
 #        count =  campaign.target_customers.count()
         context = {'user_count':count}
         context['start_date'] = check_start_date
@@ -167,6 +172,8 @@ def campaign_create(request):
         context['chart2'] = chart2 #"bi/chart2.png"
         context['chart3'] = chart3 #"bi/chart3.png"
         context['chart4'] = chart4 #"bi/chart4.png"
+
+        context['file2'] = file2 #"bi/chart2.png"
         template = loader.get_template('bi/campaign_check.html')
         return HttpResponse(template.render(context,request))
 
@@ -206,7 +213,7 @@ def campaigndetail(request, campaign_id):
         table = kp.GetPosTable()
         maxdate=max(table.purchase_date)
         year_before = maxdate - timedelta(days=365)
-        chart2,chart3,chart4 = SaveCustomerBehaviorGraph(userlist,year_before,maxdate,campaign_id)
+        chart2,chart3,chart4,file2 = SaveCustomerBehaviorGraph(userlist,year_before,maxdate,campaign_id)
 
         table,per_cs,per_cs2 = qt.GenerateSummary(campaign.campaign_start_date,campaign.campaign_end_date,userlist)
         rowlisttop=['ブランド']
@@ -224,6 +231,9 @@ def campaigndetail(request, campaign_id):
         content['chart2'] = chart2 #"bi/chart2.png"
         content['chart3'] = chart3 #"bi/chart3.png"
         content['chart4'] = chart4 #"bi/chart4.png"
+
+        content['file2'] = file2 #"bi/chart2.png"
+
         return render(request, 'bi/campaigndetail.html', content)
     elif request.method == 'POST':
         return render(request, 'bi/campaigndetail.html', {'campaign': campaign})
