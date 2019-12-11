@@ -2,7 +2,5 @@
 *.png
 *.csv
 *.sqlite3
-bisite/.idea/workspace.xml
 *.xlsx
-*.xml
 *.pyc

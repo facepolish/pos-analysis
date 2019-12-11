@@ -100,7 +100,7 @@ def SaveCustomerBehaviorGraph(userlist,check_start_date,check_end_date,campaign_
     file_path2=os.path.join(settings.BASE_DIR, path_h+file2) # 'bi/static/bi/chart2.png'
     
     if os.path.exists(chart_path3):
-        return(chart2,chart3,chart4)
+        return(chart2,chart3,chart4,file2)
         
     
     table,topratio,topbrand = PosQuerySales(userlist,(check_start_date,check_end_date))
@@ -211,9 +211,9 @@ def campaigndetail(request, campaign_id):
         raise Http404("Campaign does not exist")
     if request.method == 'GET':
         table = kp.GetPosTable()
-        maxdate=max(table.purchase_date)
-        year_before = maxdate - timedelta(days=365)
-        chart2,chart3,chart4,file2 = SaveCustomerBehaviorGraph(userlist,year_before,maxdate,campaign_id)
+#        maxdate=max(table.purchase_date)
+#        year_before = maxdate - timedelta(days=365)
+        chart2,chart3,chart4,file2 = SaveCustomerBehaviorGraph(userlist,campaign.campaign_start_date,campaign.campaign_end_date,campaign_id)
 
         table,per_cs,per_cs2 = qt.GenerateSummary(campaign.campaign_start_date,campaign.campaign_end_date,userlist)
         rowlisttop=['ブランド']
@@ -225,8 +225,8 @@ def campaigndetail(request, campaign_id):
             tablelist.append(rowlist)
         summary_sheet = table.to_html()
         content = {'campaign': campaign,'table':tablelist}
-        content['start_date'] = year_before
-        content['end_date'] = maxdate
+        content['start_date'] = campaign.campaign_start_date
+        content['end_date'] = campaign.campaign_end_date
         content['user_count'] = len(userlist)
         content['chart2'] = chart2 #"bi/chart2.png"
         content['chart3'] = chart3 #"bi/chart3.png"
