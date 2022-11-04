@@ -5,13 +5,13 @@ from sklearn.decomposition import NMF
 import os
 import pickle
 import datetime as dt
-from django.conf import settings
+#from django.conf import settings
 from scipy.sparse import csr_matrix
 from pandas.api.types import CategoricalDtype
-from .tableclass import postable, DEPTtable, getallpos, getallusers,itemdb,posaddcols,convert_table
+from .tableclass import postable, DEPTtable, getallpos, getallusers,itemdb,posaddcols
 from .kakakucom import GetPricefromKakaku
 from .createitemvec import ItemRecommend
-from .posenv import itemdbfile,posfile,userfile,depttablefile,deptsdepttablefile,gradedic,DB_OFFLINE,campaign_target_file
+from .posenv import posfile,userfile,depttablefile,deptsdepttablefile,DB_OFFLINE,campaign_target_file, itemiddicfile
 
 
 
@@ -22,7 +22,8 @@ class Campaign_targets(object):
         addlist = list(set(lis)-set(existing_users))
         added_frame = pd.DataFrame(np.nan,index = addlist, columns=existing_cols)
 #        added_frame = added_frame.to_sparse()
-        self.campaign_targets = self.campaign_targets.append(added_frame)
+#        self.campaign_targets = self.campaign_targets.append(added_frame)
+        self.campaign_targets = pd.concat([self.campaign_targets, added_frame],ignore_index=True)
 
     def add_cols(self,lis):
         existing_cols = self.campaign_targets.columns
@@ -42,7 +43,7 @@ class Campaign_targets(object):
         else:
             self.campaign_targets = pd.DataFrame(np.nan,index = list(set(users)), columns=campaign_list)
 #            self.campaign_targets = self.campaign_targets.to_sparse()
-        
+
 
     def del_col(self,id):
         if (id in self.campaign_targets.columns):
@@ -90,7 +91,7 @@ def UserItemVec(pos1, user1):
 
     P = model.fit_transform(userbyitem)
     Q = model.components_
-    user_vec = pd.DataFrame(P, index=userbybrand.index)
+    user_vec = pd.DataFrame(P, index=userbyitem.index)
     user_vec = user_vec[user_vec.index.isin(user1.index)]
     item_vec = pd.DataFrame(Q.T, index=userbyitem.columns)
     return (user_vec, item_vec)
@@ -181,17 +182,17 @@ class KojitsuPos(object):
     @classmethod
     def refreshtables(cls):
         cls.postable = getallpos()
-        cls.postable.to_pickle(posenv.posfile)
+        cls.postable.to_pickle(posfile)
         cls.usertable = getallusers()
-        cls.usertable.to_pickle(posenv.userfile)
+        cls.usertable.to_pickle(userfile)
         cls.rec_vecs.vec_update(cls.postable)
 
     @classmethod
     def diffupdatetables(cls):
         cls.postable = getallpos(cls.postable)
-        cls.postable.to_pickle(posenv.posfile)
+        cls.postable.to_pickle(posfile)
         cls.usertable = getallusers(cls.usertable)
-        cls.usertable.to_pickle(posenv.userfile)
+        cls.usertable.to_pickle(userfile)
         cls.rec_vecs.vec_update(cls.postable)
         
         
@@ -199,19 +200,19 @@ class KojitsuPos(object):
     def updatetables(cls):
         __posupdated = False
         __userupdated = False
-        if os.path.exists(posenv.posfile):
-            cls.postable = pd.read_pickle(posenv.posfile)
+        if os.path.exists(posfile):
+            cls.postable = pd.read_pickle(posfile)
             __posupdated = True
-        if os.path.exists(posenv.userfile):
-            cls.usertable = pd.read_pickle(posenv.userfile)
+        if os.path.exists(userfile):
+            cls.usertable = pd.read_pickle(userfile)
             __userupdated = True
-        if os.path.exists(posenv.depttablefile) &os.path.exists(posenv.deptsdepttablefile):
-            with open(posenv.depttablefile, 'rb') as f:
+        if os.path.exists(depttablefile) &os.path.exists(deptsdepttablefile):
+            with open(depttablefile, 'rb') as f:
                 cls.dept_dic = pickle.load(f)
-            with open(posenv.deptsdepttablefile, 'rb') as f:
+            with open(deptsdepttablefile, 'rb') as f:
                 cls.deptsdept_dic = pickle.load(f)
-        if os.path.exists(posenv.itemiddicfile):
-            with open(posenv.itemiddicfile, 'rb') as f:
+        if os.path.exists(itemiddicfile):
+            with open(itemiddicfile, 'rb') as f:
                 cls.itemid_dic = pickle.load(f)
         cls.rec_vecs = ItemRecommend()
 

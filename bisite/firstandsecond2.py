@@ -1,8 +1,6 @@
 ﻿from bi.posenv import depttablefile
-import matplotlib.pyplot as plt
 import pandas as pd
-from datetime import timedelta,datetime,date
-from numba import jit
+from datetime import datetime
 
 posfile = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/pos.pkl'
 userfile = 'C:/Users/Hiroshi Sakai/workspace/Kojitsu/src/bisite/bi/data/bi/user.pkl'
@@ -111,14 +109,14 @@ def set_freq (table):
     count_table = count_table.sort_index(axis = 1)
     brand_ptable = brand_ptable.sort_index(axis = 1)
     brand_ctable = brand_ctable.sort_index(axis = 1)
-    return(price_table,count_table,brand_ptable,brand_ctable)
+    return price_table,count_table,brand_ptable,brand_ctable
 
 
 if __name__=='__main__':
     def cnv_deptlabel(table):
         table.columns = [int(x) for x in table.columns]
         table.index = [int(x) for x in table.index]
-        return(table)
+        return table
     zerodic = {-1:'初回計',0:'２回目合計'}
 
     depdic = pd.read_pickle(depttablefile)
